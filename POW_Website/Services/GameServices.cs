@@ -44,7 +44,19 @@ public class GameService : IGameService
             DetailedDescription = "Bad of Greenthorn is a 2D hack and slash action platformer that takes you on a thrilling adventure! As the hero of the kingdom, you will embark on a dangerous journey to destroy the treacherous mage Greenthorn - who has spread chaos and darkness everywhere.",
             TrailerUrl = "https://www.youtube.com/embed/UOMMnQUUchM?si=PcooWto9nK3Z7dLe"
         },
-        new Game
+            
+     new Game
+        {
+            Title = "HIT REACTION ANIMATIONS",
+            Slug = "hit-reaction-animations",
+            ShortDescription = "Enemy hit reaction animations – minimal, usable, effective.",
+            DetailedDescription = "This pack includes carefully crafted animations for enemy hit reactions, designed to fit real gameplay scenarios. Instead of focusing on quantity, this Asset is designed with the goal of optimizing costs for real game projects - no excess, no frills, but enough for most gameplay situations. Ideal for monster, zombie games, or any project that needs grounded and responsive enemy reactions.",
+            BgImageUrl = "/Image/ArtworkGame/HitReactionAnimationsBg.jpg",
+            ItchioUrl = "https://powstudio.itch.io/hit-reaction-animations",
+            FabUrl = "https://fab.com/s/bf12ffe297f2",
+            TrailerUrl = "https://www.youtube.com/embed/RrXuBIbXjQE?si=we2LmLwvO4vV-tBw"
+        },
+     new Game
         {
             Title = "Interactive Paper",
             Slug = "interactive-paper",
