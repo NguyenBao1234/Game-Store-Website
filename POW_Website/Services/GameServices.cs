@@ -24,6 +24,17 @@ public class GameService : IGameService
         },
         new Game
         {
+            bPublic = false,
+            Title = "Pictureal",
+            Slug = "pictureal",
+            TittleImageUrl = "/Image/Logo/PicturealGameTittle.png",
+            DetailedDescription = "Tựa game giải đố phiêu lưu góc nhìn thứ nhất. Trải nhiệm câu chuyện sử dụng các điển tích trong tôn giáo, cùng với cơ chế thú vị chụp ảnh, đặt lại vật thể trong ảnh ra môi  trường theo đúng góc nhìn của ảnh",
+            ShortDescription = "Phiêu lưu trong thế giới siêu thực",
+            BgImageUrl = "/Image/ArtworkGame/PicturealArtwork.jpg",
+            ItchioUrl = "https://powstudio.itch.io/pictureal",
+        },
+        new Game
+        {
             Title = "Horror Serum",
             Slug = "horrorserum",
             TittleImageUrl = "/Image/Logo/HorrorSerumTitle.png",
