@@ -24,7 +24,6 @@ public class GameService : IGameService
         },
         new Game
         {
-            bPublic = false,
             Title = "Pictureal",
             Slug = "pictureal",
             TittleImageUrl = "/Image/Logo/PicturealGameTittle.png",
@@ -32,6 +31,7 @@ public class GameService : IGameService
             ShortDescription = "Phiêu lưu trong thế giới siêu thực",
             BgImageUrl = "/Image/ArtworkGame/PicturealArtwork.jpg",
             ItchioUrl = "https://powstudio.itch.io/pictureal",
+            TrailerUrl = "https://www.youtube.com/embed/hMAkXnCutAw?si=d7tB9yqtC-7q1TEX"
         },
         new Game
         {
