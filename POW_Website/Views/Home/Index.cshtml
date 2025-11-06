@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <a class="scrollCaretButton" style="bottom: 10px; z-index: 3;" onclick="smoothScrollTo(document.getElementById('nextSection'))">
+    <a class="scrollCaretButton" style="bottom: 10px; z-index: 3;" onclick="smoothScrollTo(document.getElementById('nextSection'))">@*smoothScrollTo is Layout's Function*@
         <div class="caret-wrapper"><div class = "caret-icon"></div></div>
     </a>
     
@@ -41,7 +41,7 @@
                 </div>
                 <p class="mt-4">@game.ShortDescription</p>
                 
-                <a asp-controller="Game" asp-action="Detail" asp-route-slug="@game.Slug">
+                <a asp-controller="Game" asp-action="Detail" asp-route-slug="@game.Slug">@* asp-route-<param name> *@
                     <button class="btn btn-outline-light text-uppercase border-1 rounded-0 " style="transition: all 0.4s ease-in-out;margin-bottom: 1vh;padding: 14px 32px;
     font-size: 1.1rem;">Learn More &raquo; </button>
                 </a>

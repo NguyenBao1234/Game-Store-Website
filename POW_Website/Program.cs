@@ -1,10 +1,38 @@
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using POWStudio.Models;
 using POWStudio.Services;
+using POWStudio.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IGameService, GameService>();// Configure the HTTP request pipeline.
+
 builder.Services.AddControllersWithViews();
+
+
+//SetUp Identity _____________________________________
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+builder.Services.AddDbContext<GameStoreDbContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        options.Lockout.MaxFailedAccessAttempts = 5; 
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<GameStoreDbContext>();
+
+
+builder.Services.AddAuthorizationBuilder().AddPolicy("IsAdmin", policy => policy.RequireRole("Admin"));
+//____________________________________
+
+builder.Services.AddMvc();
 
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
@@ -21,14 +49,16 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "page",
-    pattern: "{slug}",
-    defaults: new { controller = "Page", action = "Show" });
+// app.MapControllerRoute(
+//     name: "page",
+//     pattern: "{slug}",
+//     defaults: new { controller = "Page", action = "Show" });
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapGet("/healthz", () => Results.Ok("Healthy"));
+
+// DbUtils.HardCodeInsertGame();
 
 app.Run();

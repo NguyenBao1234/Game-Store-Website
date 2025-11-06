@@ -6,7 +6,7 @@
     <title>POW @ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/POW_Website.styles.css" asp-append-version="true"/>
+
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true"/>
     <link rel="icon" type="image/png" sizes="256x256" href="~/Image/Logo/POW_Logo_Transparent_Small.png">
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;700&display=swap" rel="stylesheet">
@@ -31,9 +31,9 @@
                     <li class="nav-item"><a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="AboutPow">ABOUT POW</a></li>
                     <li class="nav-item">
                         @{
+                            // PROJECT is still home page, so need check where action user is to behave suitably
                             var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
                             var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
-                            
                             if (currentController == "Home" && currentAction == "Index")
                             {
                                 <a class="nav-link text-white" href="#" onclick="smoothScrollTo(document.getElementById('nextSection'))">PROJECTS</a>

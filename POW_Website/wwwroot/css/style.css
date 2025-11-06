@@ -109,7 +109,7 @@ body.fade-in-active {
     border-radius: 1px;
     color: white;
     text-decoration: none;
-    transition: background-color 0.4s, color 0.s;
+    transition: background-color 0.4s;
 }
 
 .button:hover {
