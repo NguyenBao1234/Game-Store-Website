@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 namespace POWStudio.Models;
 
-public class GameStoreDbContext : IdentityDbContext
+public class GameStoreDbContext : IdentityDbContext<ApplicationUser>
 {
     public GameStoreDbContext(DbContextOptions<GameStoreDbContext> options) : base(options) {}
     public GameStoreDbContext(){}
@@ -29,7 +29,7 @@ public class GameStoreDbContext : IdentityDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<IdentityUser>(b => b.ToTable("User"));
+        builder.Entity<ApplicationUser>(b => b.ToTable("User"));
         builder.Entity<IdentityRole>(b => b.ToTable("Role"));
         builder.Entity<IdentityUserRole<string>>(b => b.ToTable("UserRole"));
         builder.Entity<IdentityUserClaim<string>>(b => b.ToTable("UserClaim"));
