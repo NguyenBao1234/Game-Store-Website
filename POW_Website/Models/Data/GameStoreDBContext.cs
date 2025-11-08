@@ -10,6 +10,7 @@ public class GameStoreDbContext : IdentityDbContext
     public GameStoreDbContext(){}
     //Table Definition:
     public DbSet<Game> Game { get; set; }
+    public DbSet<GameSpotlight>  GameSpotlight { get; set; }
     public DbSet<Category> Category { get; set; }
     public DbSet<GameCategory> GameCategory { get; set; }
     public DbSet<Order> Order { get; set; }

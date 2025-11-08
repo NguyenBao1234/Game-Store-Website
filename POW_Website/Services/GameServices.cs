@@ -71,6 +71,7 @@ public class GameService : IGameService
         {
             Title = "Interactive Paper",
             Slug = "interactive-paper",
+            TittleImageUrl = "https://usercontent.one/wp/biohaze.com/wp-content/uploads/2022/06/Resident_Evil_4_Logo_Light-1024x258.png?media=1750456678",
             ShortDescription = "Tool for interactive paper game.",
             BgImageUrl = "/Image/ArtworkGame/PaperInteractive16div9.png",
             ItchioUrl = "https://powstudio.itch.io/interactive-paper-effect-ue",

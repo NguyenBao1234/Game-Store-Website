@@ -319,6 +319,19 @@ namespace POWStudio.Migrations
                     b.ToTable("GameCategory");
                 });
 
+            modelBuilder.Entity("POWStudio.Models.GameSpotlight", b =>
+                {
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.HasKey("GameId");
+
+                    b.ToTable("GameSpotlight");
+                });
+
             modelBuilder.Entity("POWStudio.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -496,6 +509,17 @@ namespace POWStudio.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("POWStudio.Models.GameSpotlight", b =>
+                {
+                    b.HasOne("POWStudio.Models.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Game");
                 });
