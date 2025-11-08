@@ -1,0 +1,36 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link text-white dropdown-toggle" href="#" id="IdentityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="IdentityDropdown">
+                <a class="nav-link text-white" asp-controller="Account" asp-action="Login">Profile</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Admin</a>
+                }
+                <form asp-controller="Home" asp-action="Logout" method="post">
+                    <button type="submit" class="dropdown-item">Đăng xuất</button>
+                </form>
+
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link text-white dropdown-toggle" href="#" id="IdentityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="IdentityDropdown">
+                <a class="nav-link text-white" asp-controller="Account" asp-action="Login">Login</a>
+                <a class="nav-link text-white" asp-controller="Account" asp-action="Register">Register</a>
+            </ul>
+        </li>
+    }
+</ul>

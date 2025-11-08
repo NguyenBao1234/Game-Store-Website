@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using POWStudio.Models;
 using POWStudio.Services;
@@ -9,9 +11,11 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IGameService _gameService;
-    public HomeController(ILogger<HomeController> logger, IGameService gameService)
+    private readonly SignInManager<ApplicationUser> mSignInManager;
+    public HomeController(ILogger<HomeController> logger, IGameService gameService, SignInManager<ApplicationUser> inSignInManager)
     {
         _gameService = gameService;
+        mSignInManager = inSignInManager;
         _logger = logger;
     }
 
@@ -21,10 +25,16 @@ public class HomeController : Controller
         return View(games);
     }
     
-    public IActionResult Privacy()
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
     {
-        return View();
+        await mSignInManager.SignOutAsync();
+        return RedirectToAction("Logout", "Account");
     }
+
+
     [Route("/About")]
     public IActionResult AboutPow()
     {
@@ -46,5 +56,10 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+    
+    public IActionResult Privacy()
+    {
+        return View();
     }
 }
