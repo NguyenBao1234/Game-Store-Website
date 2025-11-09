@@ -24,16 +24,6 @@ public class HomeController : Controller
         var games = _gameService.GetAll();
         return View(games);
     }
-    
-    [Authorize]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout()
-    {
-        await mSignInManager.SignOutAsync();
-        return RedirectToAction("Logout", "Account");
-    }
-
 
     [Route("/About")]
     public IActionResult AboutPow()
@@ -53,8 +43,9 @@ public class HomeController : Controller
     }
     
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    public IActionResult Error(string? message = null)
     {
+        ViewBag.Message = message ?? "Unhandled Error.";
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
     

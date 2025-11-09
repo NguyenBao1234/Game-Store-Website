@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace POWStudio.Models.ViewModel;
+namespace POWStudio.Models.ViewModels;
 
 public class RegisterModel
 {
