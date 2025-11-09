@@ -1,0 +1,79 @@
+﻿@model POWStudio.Models.Game
+
+@{
+    ViewData["Title"] = "— Add Game";
+}
+
+<div class="content-card">
+    <div class="center-content-wrapper">
+        <h1 class="mt-4">Add Game Page tạo bởi Vyes</h1>
+    </div>
+</div>
+
+<form asp-controller="Game" asp-action="AddGame" method="post">
+    <div class="input-group mb-3">
+        <span class="input-group-text">Title</span>
+        <input asp-for="Title" type="text" class="form-control" placeholder="Title" aria-label="Title">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Slug</span>
+        <input asp-for="Slug" type="text" class="form-control" placeholder="Slug" aria-label="Slug">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">TittleImageUrl</span>
+        <input asp-for="TittleImageUrl" type="text" class="form-control" placeholder="TittleImageUrl"
+               aria-label="TittleImageUrl">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">ShortDescription</span>
+        <input asp-for="ShortDescription" type="text" class="form-control" placeholder="ShortDescription"
+               aria-label="ShortDescription">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">DetailedDescription</span>
+        <input asp-for="DetailedDescription" type="text" class="form-control" placeholder="DetailedDescription"
+               aria-label="DetailedDescription">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">BgImageUrl</span>
+        <input asp-for="BgImageUrl" type="text" class="form-control" placeholder="BgImageUrl" aria-label="BgImageUrl">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">bPublic</span>
+        <input asp-for="bPublic" class = "form-check-input"/>
+        <label>Public</label>
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">TrailerUrl</span>
+        <input asp-for="TrailerUrl" type="text" class="form-control" placeholder="TrailerUrl" aria-label="TrailerUrl">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">ItchioUrl</span>
+        <input asp-for="ItchioUrl" type="text" class="form-control" placeholder="ItchioUrl" aria-label="ItchioUrl">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">SteamUrl</span>
+        <input asp-for="SteamUrl" type="text" class="form-control" placeholder="SteamUrl" aria-label="SteamUrl">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">EpicUrl</span>
+        <input asp-for="EpicUrl" type="text" class="form-control" placeholder="EpicUrl" aria-label="EpicUrl">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">FabUrl</span>
+        <input asp-for="FabUrl" type="text" class="form-control" placeholder="FabUrl" aria-label="FabUrl">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Price</span>
+        <input asp-for="Price" type="number" class="form-control" placeholder="Price" aria-label="Price">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">DiscountPercent</span>
+        <input asp-for="DiscountPercent" type="number" class="form-control" placeholder="DiscountPercent"
+               aria-label="DiscountPercent">
+    </div>
+    
+    <button type="submit" class="button">Them game</button>
+</form>
+
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
