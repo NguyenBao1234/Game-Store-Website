@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using POWStudio.Models;
 using POWStudio.Services;
 
@@ -12,11 +14,15 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IGameService _gameService;
     private readonly SignInManager<ApplicationUser> mSignInManager;
-    public HomeController(ILogger<HomeController> logger, IGameService gameService, SignInManager<ApplicationUser> inSignInManager)
+    private readonly GameStoreDbContext db;
+
+    public HomeController(ILogger<HomeController> logger, IGameService gameService,
+        SignInManager<ApplicationUser> inSignInManager, GameStoreDbContext dbContext)
     {
         _gameService = gameService;
         mSignInManager = inSignInManager;
         _logger = logger;
+        db = dbContext;
     }
 
     public IActionResult Index()
@@ -30,12 +36,13 @@ public class HomeController : Controller
     {
         return View();
     }
+
     [Route("/Contact")]
     public IActionResult Contact()
     {
         return View();
     }
-    
+
     [Route("/WishList")]
     public IActionResult WishList()
     {
@@ -45,16 +52,32 @@ public class HomeController : Controller
     [Route("/Admin")]
     public IActionResult Admin()
     {
-        return View();
+        try
+        {
+            var models = db.GameCategory.Include(g => g.Game).Include(g => g.Category).ToList();
+            if (!models.Any()) ViewBag.Message = "No data in GameCategory.";
+            return View(models);
+        }
+        catch (SqlException sqlEx)
+        {
+            _logger.LogError(sqlEx, "Cannot connect to SQL Server in Admin()");
+            return RedirectToAction("Error", new { message = "Cannot connect to database. Check connection string and SQL Server service." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error in Admin()");
+            return RedirectToAction("Error", new { message = "Unhandled error." });
+        }
     }
-    
+
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error(string? message = null)
     {
         ViewBag.Message = message ?? "Unhandled Error.";
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
-    
+
     public IActionResult Privacy()
     {
         return View();

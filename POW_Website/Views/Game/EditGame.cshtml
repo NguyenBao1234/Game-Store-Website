@@ -1,7 +1,7 @@
 ﻿@model POWStudio.Models.GameCategory
 
 @{
-    ViewData["Title"] = "- Add Game";
+    ViewBag.Title = "- Edit Game";
 }
 
 <div class="content-card">
@@ -10,7 +10,8 @@
     </div>
 </div>
 
-<form asp-controller="Game" asp-action="AddGame" method="post">
+<form asp-controller="Game" asp-action="EditGame" method="post">
+    <input type="hidden" asp-for="GameId"/>
     <div class="input-group mb-3">
         <span class="input-group-text">Title</span>
         <input asp-for="Game.Title" type="text" class="form-control" placeholder="Title" aria-label="Title">
@@ -79,7 +80,5 @@
                aria-label="DiscountPercent">
     </div>
 
-    <button type="submit" class="button">Them game</button>
+    <button type="submit" class="button">Sua game</button>
 </form>
-
-<div asp-validation-summary="All" class="text-danger mb-3"></div>

@@ -1,0 +1,16 @@
+﻿@model POWStudio.Models.Game
+
+@{
+    ViewBag.Title = "- Delete Game";
+}
+
+
+<div class="content-card">
+    <h1>Ban co chac chan xoa game @Model.Title khong</h1>
+    <form asp-controller="Game" asp-action="DeleteGame" method="post">
+        <button class="button" type="submit">Delete</button>
+    </form>
+    <a class="button" asp-controller="Home" asp-action="Admin">Cancel</a>
+</div> 
+
+
