@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<POWStudio.Models.GameCategory>
+
+@{
     ViewData["Title"] = "— Admin";
 }
 
@@ -8,6 +10,35 @@
     </div>
 </div>
 
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Category</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var gameCategory in Model)
+    {
+        <tr>
+            <th scope="row">@gameCategory.Game.Id</th>
+            <td>@gameCategory.Game.Title</td>
+            <td>@gameCategory.Category.Name</td>
+            <td>
+                <a class="button" asp-controller="Game" asp-action="EditGame" asp-route-id="@gameCategory.Game.Id">Sua</a>
+            </td>
+            <td>
+                <a class="button" asp-controller="Game" asp-action="DeleteGame" asp-route-id="@gameCategory.Game.Id">Xoa</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
 <div class="content-card">
     <a class="button" asp-controller="Game" asp-action="AddGame">Thêm game mới</a>
+    <a class="button" asp-controller="Game" asp-action="AddCategory">Them the loai</a>
 </div>
