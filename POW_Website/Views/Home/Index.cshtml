@@ -29,27 +29,79 @@
     
 </div>
 
-<div  id="nextSection" class="display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0;">
-    @foreach (var game in Model)
-    {
-        <div class="content-card" style="background-image: url('@game.BgImageUrl')">
-            <div class="center-content-wrapper">
-                <div>
-                    <img class="game-title-image" src="@game.TittleImageUrl" style="object-fit: cover;  width: 100%"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                    <h1 style="display: none;font-size: 5em; font-weight: bold">@game.Title</h1>
-                </div>
-                <p class="mt-4">@game.ShortDescription</p>
-                
-                <a asp-controller="Game" asp-action="Detail" asp-route-slug="@game.Slug">@* asp-route-<param name> *@
-                    <button class="btn btn-outline-light text-uppercase border-1 rounded-0 " style="transition: all 0.4s ease-in-out;margin-bottom: 1vh;padding: 14px 32px;
-    font-size: 1.1rem;">Learn More &raquo; </button>
+<div id="nextSection" class="container py-5">
+    <h2 class="text-center mb-5 fw-bold text-white">Discover Our Games</h2>
+
+    <div class="game-grid">
+        @foreach (var game in Model)
+        {
+            <div class="game-card">
+                <a asp-controller="Game" asp-action="Detail" asp-route-slug="@game.Slug" class="text-decoration-none text-white">
+                    <img src="@game.TittleImageUrl" alt="@game.Title" class="game-thumbnail" />
+                    <div class="game-info">
+                        <h5 class="fw-semibold mb-1">@game.Title</h5>
+                        <p class="small text-muted mb-2">@game.ShortDescription</p>
+                        <p class="price mb-0">
+                            @if (game.Price == 0 || game.Price == null)
+                            {
+                                <span class="text-success">Free</span>
+                            }
+                            else
+                            {
+                                <span>@game.Price?.ToString("C")</span>
+                            }
+                        </p>
+                    </div>
                 </a>
-                
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
+
+<style>
+   
+    .game-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    .game-card {
+        background: #1a1a1a;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .game-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .game-thumbnail {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+        background-color: #000;
+    }
+
+    .game-info {
+        padding: 12px 14px;
+    }
+
+    .price {
+        font-weight: 600;
+        color: #ccc;
+    }
+
+    #nextSection {
+        background-color: #111;
+        color: #fff;
+        min-height: 100vh;
+    }
+</style>
+
 
 @* FistSplashBG YTB loaded Callback *@
 <script src="https://www.youtube.com/iframe_api"></script>

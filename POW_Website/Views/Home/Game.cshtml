@@ -1,0 +1,58 @@
+@model List<POWStudio.Models.Game>
+
+@{
+    ViewData["Title"] = "Game";
+}
+
+<section class="text-center mt-5">
+    <h1 class="mb-4">Our Games</h1>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row justify-content-center">
+            @foreach (var game in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm bg-dark text-light">
+                        <!-- Ảnh tiêu đề -->
+                        <img src="@game.TittleImageUrl" class="card-img-top" alt="@game.Title" />
+
+                        <div class="card-body">
+                            <h5 class="card-title">@game.Title</h5>
+                            <p class="card-text">@game.ShortDescription</p>
+
+                            <!-- Liên kết tới các nền tảng -->
+                            <div class="d-flex justify-content-center gap-2 mt-3">
+                                @if (!string.IsNullOrEmpty(game.ItchioUrl))
+                                {
+                                    <a href="@game.ItchioUrl" class="btn btn-outline-light" target="_blank">Itch.io</a>
+                                }
+                                @if (!string.IsNullOrEmpty(game.SteamUrl))
+                                {
+                                    <a href="@game.SteamUrl" class="btn btn-outline-light" target="_blank">Steam</a>
+                                }
+                                @if (!string.IsNullOrEmpty(game.EpicUrl))
+                                {
+                                    <a href="@game.EpicUrl" class="btn btn-outline-light" target="_blank">Epic</a>
+                                }
+                                @if (!string.IsNullOrEmpty(game.FabUrl))
+                                {
+                                    <a href="@game.FabUrl" class="btn btn-outline-light" target="_blank">Fab</a>
+                                }
+                            </div>
+
+                            @if (game.Price.HasValue)
+                            {
+                                <p class="mt-3 mb-0">Price: <strong>@game.Price?.ToString("C")</strong></p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No games available yet.</p>
+    }
+</section>

@@ -35,7 +35,13 @@ public class HomeController : Controller
     {
         return View();
     }
-    
+    [Route("/Game")]
+    public IActionResult Game()
+    {
+        var games = _gameService.GetAll();
+        return View(games);
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
