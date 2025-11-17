@@ -1,0 +1,95 @@
+@model IEnumerable<POWStudio.Models.Game>
+
+@{
+    Layout = null;
+    string searchTerm = ViewData["SearchTerm"]?.ToString() ?? "";
+}
+
+<div class="p-3">
+    <h6 class="text-uppercase text-muted" style="font-size: 0.75rem;">TOP RESULTS</h6>
+</div>
+@foreach (var game in Model)
+{
+    <a class="suggestion-item" asp-controller="Game" asp-action="Detail" asp-route-slug="@game.Slug">
+        <img src="@game.BgImageUrl" alt="@game.Title" />
+        <div>
+            <small class="text-muted">Base Game</small><br />
+            <span class="text-white game-title" data-original-title="@game.Title">@game.Title</span> 
+        </div>
+    </a>
+}
+
+<a class="suggestion-item" asp-controller="Game" asp-action="Index" asp-route-SearchTerm="@searchTerm" style="justify-content: flex-end;">
+    View all results <i class="bi bi-arrow-right ms-2"></i>
+</a>
+
+
+<script>
+    function highlight(text, term)
+    {
+        if (!term) return text;
+        const regex = new RegExp('(' + term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + ')', 'gi')// Sử dụng Regex để thay thế không phân biệt chữ hoa/chữ thường
+        return text.replace(regex, '<strong>$1</strong>');
+    }
+
+    // Thực hiện highlight sau khi Partial View được tải
+    const currentTerm = '@searchTerm';
+    if (currentTerm && currentTerm.length > 0)
+    {
+        $('.game-title').each(function() {
+            const originalText = $(this).attr('data-original-title');
+            $(this).html(highlight(originalText, currentTerm));
+        });
+    }
+</script>
+
+<style>
+    .suggestions-popup 
+    {
+        position: absolute;
+        top: 100%;
+        left: 15px; 
+        right: 15px;
+        z-index: 1000; 
+        max-height: 400px; 
+        overflow-y: auto;
+
+        /*ACRYLIC EFFECT*/
+        background-color: rgba(30, 30, 30, 0.85);
+        backdrop-filter: blur(8px); 
+        -webkit-backdrop-filter: blur(8px); /* Hỗ trợ trình duyệt Webkit */
+
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        display: none; /* Mặc định ẩn, chỉ hiển thị khi nhập tìm kiếm */
+    }
+    
+    .suggestion-item 
+    {
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .suggestion-item:hover {
+        background-color: rgba(60, 60, 60, 0.7); 
+    }
+
+    .suggestion-item img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        margin-right: 15px;
+        border-radius: 4px;
+    }
+
+    .suggestion-item strong {
+        color: #19c2ff; 
+        font-weight: 500;
+    }
+</style>

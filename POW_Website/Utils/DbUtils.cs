@@ -31,14 +31,44 @@ public class DbUtils
     }
 
 
+    //Hardcode to insert into db_____________________________________
+    public static void HardCodeInsertGameCate()
+    {
+        using var dbCtx = new GameStoreDbContext();
+        dbCtx.AddRange(gameCateList);
+        int number_rows = dbCtx.SaveChanges();
+        Console.WriteLine("Inserted " + number_rows + "game cate");
+    }
     public static void HardCodeInsertGame()
     {
         using var dbCtx = new GameStoreDbContext();
         dbCtx.AddRange(gameList);
         int number_rows = dbCtx.SaveChanges();
-        Console.WriteLine("Inserted " + number_rows + " data");
+        Console.WriteLine("Inserted " + number_rows + "game data");
     }
-    //Hardcode to insert into db
+    public static void HardCodeInsertCategory()
+    {
+        using var dbCtx = new GameStoreDbContext();
+        dbCtx.AddRange(categoryList);
+        int number_rows = dbCtx.SaveChanges();
+        Console.WriteLine("Inserted " + number_rows + " category data");
+    }
+
+    private static List<GameCategory> gameCateList =
+    [
+        new GameCategory { CategoryId = 2, GameId = 2 },
+        new GameCategory { CategoryId = 1, GameId = 3 },
+        new GameCategory { CategoryId = 3, GameId = 4 },
+        new GameCategory { CategoryId = 3, GameId = 5 },
+        new GameCategory { CategoryId = 1, GameId = 6 }
+    ];
+    private static List<Category> categoryList =
+    [
+        new Category { Name = "Action" },
+        new Category { Name = "Adventure" },
+        new Category { Name = "Horror" },
+        new Category { Name = "Puzzle" },
+    ];
     private static List<Game?> gameList =
     [
         new Game

@@ -1,16 +1,30 @@
 ﻿@model POWStudio.Models.Category
 
 @{
-    ViewData["Title"] = "— Add Category";
+    ViewData["Title"] = "- Add Category";
 }
 
 <div class="content-card">
-    <form asp-controller="Game" asp-action="AddCategory" method="post">
-        <div class="input-group mb-3">
-            <span class="input-group-text">Name</span>
-            <input asp-for="Name" type="text" class="form-control" placeholder="Name" aria-label="Name">
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Thêm Category</button>
-    </form>
+    
+    <div class="p-4 rounded-0 border border-secondary" style="max-width: 400px; width: 90%; background-color: #1a1a1a;">
+
+        <h1 class="text-warning fw-bold mb-4 text-center" style="font-size: 1.8rem;">
+            <i class="bi bi-tag-fill me-2"></i> Thêm Danh mục
+        </h1>
+
+        <form asp-controller="Game" asp-action="AddCategory" method="post">
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Name" type="text" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="Tên Danh mục"/>
+                <label asp-for="Name" class="text-secondary">Tên Danh mục</label>
+                <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span> 
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-warning btn-lg rounded-0 fw-bold">
+                    Thêm Category
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

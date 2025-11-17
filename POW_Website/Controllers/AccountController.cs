@@ -51,15 +51,35 @@ public class AccountController : Controller
 
         return View(inLoginModel);
     }
-    
+    // GET: /Logout - Dùng để hiển thị trang sau khi đăng xuất HOẶC kiểm tra trạng thái
+    [Route("/Logout")]
+    [HttpGet]
+    public IActionResult Logout()
+    {
+        if (!mSignInManager.IsSignedIn(User))
+        {
+            
+            if (TempData["LoggedOutSuccess"] != null)
+            {
+                TempData.Remove("LoggedOutSuccess"); 
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
+        }
+        return View(); 
+    }
     [Route("/Logout")]
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> LogoutPost()
     {
         await mSignInManager.SignOutAsync();
         Console.WriteLine("User logged out.");
-        return View();
+        //return View();
+        TempData["LoggedOutSuccess"] = true;
+        
+        // Chuyển hướng đến Action có tên "Logout" (chính là [HttpGet] Logout())
+        return RedirectToAction(nameof(Logout));
     }
     
     //REGISTER_________________

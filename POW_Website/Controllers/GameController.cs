@@ -11,14 +11,38 @@ namespace POWStudio.Controllers;
 public class GameController : Controller
 {
     private readonly IGameService _gameService;
-    private readonly GameStoreDbContext db;
+    private readonly GameStoreDbContext mDbContext;
 
-    public GameController(IGameService gameService, GameStoreDbContext dbContext)
+    public GameController(IGameService gameService, GameStoreDbContext mDbContextContext)
     {
         _gameService = gameService;
-        db = dbContext;
+        mDbContext = mDbContextContext;
     }
+    [Route("/Games")]
+    [HttpGet]
+    public IActionResult Index(string SearchTerm)
+    {
+        List<Game> games;
+        if (string.IsNullOrEmpty(SearchTerm)) games = _gameService.GetAll();
+        else games = _gameService.GetGamesByTerm(SearchTerm, 0, true);
+        ViewData["CurrentSearchTerm"] = SearchTerm;
+        return View(games);
+    }
+    
+    [HttpGet]
+    public IActionResult SuggestGames(string term)
+    {
+        if (string.IsNullOrEmpty(term)) return Content("");
+        
+        var gameSuggestions = _gameService.GetGamesByTerm(term, 4, false); 
+        
+        // Truyền từ khóa tìm kiếm để dùng cho việc highlight trong View
+        ViewData["SearchTerm"] = term;
 
+        // Trả về Partial View chứa kết quả
+        return PartialView("_SuggestionResultPartial", gameSuggestions); 
+    }
+    
     [Route("/{slug}")]
     public IActionResult Detail(string slug)
     {
@@ -35,7 +59,7 @@ public class GameController : Controller
     [Route("/Admin/AddGame")]
     public IActionResult AddGame()
     {
-        var categories = db.Category.ToList();
+        var categories = mDbContext.Category.ToList();
         ViewBag.Categories = new SelectList(categories, "Id", "Name");
         return View();
     }
@@ -53,19 +77,22 @@ public class GameController : Controller
             return View(gameCat);
         }
 
+        // DbUtils.InsertModel(gameCat.Game);
         DbUtils.InsertModel(gameCat);
-        return View();
+        return View(new GameCategory());
     }
 
     [HttpGet]
     [Route("/Admin/EditGame/{id}")]
     public IActionResult EditGame(int id)
     {
-        var gameCat = db.GameCategory
+        //var gameCat = mDbContext.GameCategory.FirstOrDefault(gc => gc.GameId == id);
+        var gameCat = mDbContext.GameCategory
             .Include(g => g.Game)
             .Include(c => c.Category)
             .FirstOrDefault(gc => gc.GameId == id);
-        var categories = db.Category.ToList();
+        var categories = mDbContext.Category.ToList();
+        Console.WriteLine("game cate: "+gameCat);
         ViewBag.Categories = new SelectList(categories, "Id", "Name");
         return View(gameCat);
     }
@@ -79,7 +106,7 @@ public class GameController : Controller
             return View(gameCat);
         }
 
-        var game = db.GameCategory
+        var game = mDbContext.GameCategory
             .Include(g => g.Game)
             .FirstOrDefault(gc => gc.GameId == id);
 
@@ -100,7 +127,7 @@ public class GameController : Controller
         
         game.CategoryId = gameCat.CategoryId;
         
-        db.SaveChanges();
+        mDbContext.SaveChanges();
 
         return RedirectToAction("Admin", "Home");
     }
@@ -109,7 +136,7 @@ public class GameController : Controller
     [Route("/Admin/DeleteGame/{id}")]
     public IActionResult DeleteGame(int id)
     {
-        var model = db.Game.Find(id);
+        var model = mDbContext.Game.Find(id);
         return View(model);
     }
 
@@ -117,9 +144,9 @@ public class GameController : Controller
     [Route("/Admin/DeleteGame/{id}")]
     public IActionResult DeleteGame(int id, Game game)
     {
-        game = db.Game.Find(id);
-        db.Game.Remove(game);
-        db.SaveChanges();
+        game = mDbContext.Game.Find(id);
+        mDbContext.Game.Remove(game);
+        mDbContext.SaveChanges();
         return RedirectToAction("Admin", "Home");
     }
 
@@ -142,4 +169,6 @@ public class GameController : Controller
         DbUtils.InsertModel(category);
         return View();
     }
+    
+    
 }

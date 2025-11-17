@@ -11,9 +11,9 @@ public class Game
     public string? Title { get; set; }
     public string? Slug { get; set; } = string.Empty;
     public string? TittleImageUrl { get; set; } = string.Empty;
+    public string? BgImageUrl { get; set; } = string.Empty;
     public string? ShortDescription { get; set; } = string.Empty;
     public string? DetailedDescription { get; set; } = string.Empty;
-    public string? BgImageUrl { get; set; } = string.Empty;
     public bool bPublic { get; set; } = true;
     public string? TrailerUrl { get; set; }
     public string? ItchioUrl { get; set; } = string.Empty;

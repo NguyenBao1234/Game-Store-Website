@@ -62,5 +62,7 @@ app.MapControllerRoute(
 app.MapGet("/healthz", () => Results.Ok("Healthy"));
 
 // DbUtils.HardCodeInsertGame();
+//DbUtils.HardCodeInsertCategory();
+//DbUtils.HardCodeInsertGameCate();
 
 app.Run();

@@ -5,5 +5,6 @@ namespace POWStudio.Services;
 public interface IGameService
 {
     Game? GetBySlug(string slug);
-    List<Game?> GetAll();
+    public List<Game> GetGamesByTerm(string term, int inLimitAmount = 4, bool inGetAll = false);
+    List<Game> GetAll();
 }

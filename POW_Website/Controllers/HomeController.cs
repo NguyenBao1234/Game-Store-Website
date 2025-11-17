@@ -14,15 +14,15 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IGameService _gameService;
     private readonly SignInManager<ApplicationUser> mSignInManager;
-    private readonly GameStoreDbContext db;
+    private readonly GameStoreDbContext mDbContext;
 
     public HomeController(ILogger<HomeController> logger, IGameService gameService,
-        SignInManager<ApplicationUser> inSignInManager, GameStoreDbContext dbContext)
+        SignInManager<ApplicationUser> inSignInManager, GameStoreDbContext mDbContextContext)
     {
         _gameService = gameService;
         mSignInManager = inSignInManager;
         _logger = logger;
-        db = dbContext;
+        mDbContext = mDbContextContext;
     }
 
     public IActionResult Index()
@@ -54,9 +54,10 @@ public class HomeController : Controller
     {
         try
         {
-            var models = db.GameCategory.Include(g => g.Game).Include(g => g.Category).ToList();
-            if (!models.Any()) ViewBag.Message = "No data in GameCategory.";
-            return View(models);
+            //var models = mDbContext.GameCategory.Include(g => g.Game).Include(g => g.Category).ToList();
+            var games = _gameService.GetAll();
+            if (games.Count == 0) ViewBag.Message = "No data in GameCategory.";
+            return View(games);
         }
         catch (SqlException sqlEx)
         {

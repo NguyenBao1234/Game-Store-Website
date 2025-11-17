@@ -1,44 +1,67 @@
-﻿@model IEnumerable<POWStudio.Models.GameCategory>
+﻿@model IEnumerable<POWStudio.Models.Game>
 
 @{
     ViewData["Title"] = "— Admin";
 }
+<div class="container py-5" style="margin-top: 100px" >
 
-<div class="content-card">
-    <div class="center-content-wrapper">
-        <h1 class="mt-4">Admin Page tạo bởi Vyes</h1>
+    <div class="text-center mb-5">
+        <h1 class="text-white fw-bold mb-2" style="font-size: 2.5rem;">
+            <i class="bi bi-person-workspace me-2 text-warning"></i> Trang Quản Lý Game
+        </h1>
     </div>
-</div>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Category</th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var gameCategory in Model)
-    {
-        <tr>
-            <th scope="row">@gameCategory.Game.Id</th>
-            <td>@gameCategory.Game.Title</td>
-            <td>@gameCategory.Category.Name</td>
-            <td>
-                <a class="button" asp-controller="Game" asp-action="EditGame" asp-route-id="@gameCategory.Game.Id">Sua</a>
-            </td>
-            <td>
-                <a class="button" asp-controller="Game" asp-action="DeleteGame" asp-route-id="@gameCategory.Game.Id">Xoa</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+    <div class="p-4 rounded-0" style="background-color: #1a1a1a; border: 1px solid #333;">
+        
+        <h3 class="text-white mb-3">Danh sách Game hiện tại</h3>
+        
+        <table class="table table-dark table-hover table-bordered border-secondary" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 5%;">ID</th>
+                    <th scope="col" style="width: 40%;">Tên Game</th>
+                    @* <th scope="col" style="width: 25%;">Danh mục</th> *@
+                    <th scope="col" style="width: 15%;" class="text-center">Sửa</th>
+                    <th scope="col" style="width: 15%;" class="text-center">Xóa</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var game in Model)
+                {
+                    <tr>
+                        <th scope="row">@game.Id</th>
+                        <td>@game.Title</td>
+                        
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-outline-warning rounded-0 px-3" 
+                               asp-controller="Game" asp-action="EditGame" asp-route-id="@game.Id">
+                                Sửa
+                            </a>
+                        </td>
+                        
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-outline-danger rounded-0 px-3" 
+                               asp-controller="Game" asp-action="DeleteGame" asp-route-id="@game.Id">
+                                Xóa
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-<div class="content-card">
-    <a class="button" asp-controller="Game" asp-action="AddGame">Thêm game mới</a>
-    <a class="button" asp-controller="Game" asp-action="AddCategory">Them the loai</a>
+    <div class="mt-4 p-3 d-flex justify-content-end gap-3 rounded-0" style="background-color: #1a1a1a; border: 1px solid #333;">
+        
+        <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
+           asp-controller="Game" asp-action="AddGame">
+            <i class="bi bi-plus-circle me-1"></i> Thêm Game Mới
+        </a>
+        
+        <a class="btn btn-secondary btn-lg rounded-0 fw-bold" 
+           asp-controller="Game" asp-action="AddCategory">
+            <i class="bi bi-tags me-1"></i> Thêm Thể Loại
+        </a>
+        
+    </div>
 </div>

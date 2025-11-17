@@ -1,0 +1,170 @@
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+    /* Input group - border */
+    .search-input-custom {
+        border-radius: 50px; 
+        overflow: hidden; /* để các thành phần bên trong bo tròn theo */
+        border: 1px solid #333333; /* Viền nhẹ */
+    }
+    
+
+    .search-icon-custom {
+        background-color: #212121; 
+        color: #999999;
+        border: none;
+        padding-left: 1rem;
+        padding-right: 0.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 1.25rem;
+    }
+    
+    .search-field-custom {
+        background-color: #212121; /* dark theme  */
+        color: white; /* input text color */
+        border: none;
+        padding: 1rem 1.5rem 1rem 0.5rem; /* Tăng padding để input trông to hơn */
+        font-size: 1.1rem;
+        height: 55px; 
+    }
+
+    /* remove focus border of Bootstrap when select field */
+    .search-field-custom:focus {
+        color: white;
+        background-color: #212121;
+        box-shadow: none;
+    }
+    .search-field-custom:-webkit-autofill,
+    .search-field-custom:-webkit-autofill:hover,
+    .search-field-custom:-webkit-autofill:focus {
+        -webkit-text-fill-color: white !important;
+        box-shadow: 0 0 0px 1000px #212121 inset !important;
+    }
+</style>
+<script src="~/lib/jquery/dist/jquery.min.js"></script> 
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@{
+    // Lấy giá trị SearchTerm từ ViewData
+    string searchTerm = ViewData["CurrentSearchTerm"]?.ToString() ?? "";
+}
+<div class="container search-offset-top" style="margin-top: 100px; margin-bottom: 50px"> 
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8 col-md-10 col-12 position-relative">
+            
+            <form asp-controller="Game" asp-action="Index" method="get" asp-route-term="">
+                <div class="input-group search-input-custom">
+                    <span class="input-group-text search-icon-custom">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text"
+                           id="search-input"
+                           name="SearchTerm"
+                           class="form-control search-field-custom"
+                           placeholder="Search..."
+                           value="@searchTerm">
+                </div>
+            </form>
+            
+            <div id="search-suggestions" class="suggestions-popup"></div>
+        </div>
+    </div>
+
+    <div class="game-grid" style="min-height: 60vh">
+        @foreach (var game in Model)
+        {
+            <div class="game-card">
+                <a asp-controller="Game" asp-action="Detail" asp-route-slug="@game.Slug" class="text-decoration-none text-white">
+                    <img src="@game.BgImageUrl" alt="@game.Title" class="game-thumbnail"/>
+                    <div class="game-info">
+                        <h6 class="fw-semibold mb-1">@game.Title</h6>
+                        <p class="small text-muted mb-2">@game.ShortDescription</p>
+                        <p class="price mb-0">
+                            @if (game.Price == 0 || game.Price == null) { <span class="text-success">Free</span> }
+                            else { <span>@game.Price?.ToString("C")</span> }
+                        </p>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+    <hr style="margin-top: 25px; margin-bottom: 50px"/>
+</div>
+@* Script to enhance *@
+<script>
+    
+$(document).ready(function()
+{
+    const $searchInput = $('#search-input');
+    const $suggestions = $('#search-suggestions');
+    let timer;
+
+    // Hàm gọi AJAX sau khi người dùng ngừng gõ một chút (debounce)
+    function fetchSuggestions(searchTerm) 
+    {
+        console.log("Fetching suggestions");
+        $.ajax({
+            url: '@Url.Action("SuggestGames", "Game")', 
+            type: 'GET',
+            data: { term: searchTerm },
+            success: function(html) 
+            {
+                if (html.trim() !== "") 
+                {
+                    $suggestions.html(html).slideDown(150) // Cập nhật nội dung và hiển thị popup
+                    $('.game-title').each(function() {
+                        const originalText = $(this).attr('data-original-title');
+                        $(this).html(highlight(originalText, searchTerm)); // Dùng searchTerm mới nhất từ JS
+                    });
+
+                    // Cập nhật link "View all results"
+                    $('#view-all-results-link').attr('href', `/Game/Index?SearchTerm=${encodeURIComponent(searchTerm)}`);
+                }
+                else $suggestions.slideUp(150);
+            },
+            error: function() 
+            {
+                $suggestions.html('<div class="p-3 text-danger">Lỗi khi tải kết quả.</div>').slideDown(150);
+            }
+        });
+    }
+
+    // Lắng nghe sự kiện người dùng nhập liệu (input)
+    $searchInput.on('input', function()
+    {
+        const searchTerm = $(this).val().trim();
+        
+        // Xóa timer trước đó để tránh gọi nhiều lần
+        clearTimeout(timer);
+
+        if (searchTerm.length > 0) 
+        { 
+            // Đợi 250ms sau khi ngừng gõ để gọi AJAX
+            timer = setTimeout(function() {
+                fetchSuggestions(searchTerm);
+            }, 200);
+        } else $suggestions.slideUp(150);
+    });
+    
+    // Xử lý khi người dùng click ra ngoài popup để ẩn nó
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#search-form, #search-suggestions').length) {
+            $suggestions.slideUp(150);
+        }
+    });
+    
+    // Xử lý khi bấm phím ESC để ẩn popup
+    $(document).on('keydown', function(e) {
+        if (e.key === "Escape") {
+            $suggestions.slideUp(150);
+            $searchInput.blur(); // Mất focus khỏi input
+        }
+    });
+
+    // Lưu ý: Hàm này dùng để highlight, đã được định nghĩa trong Partial View.
+    // Nếu bạn muốn dùng nó ở đây, hãy định nghĩa lại bên ngoài khối document.ready.
+});
+</script>
