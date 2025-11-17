@@ -79,7 +79,7 @@ public class DbUtils
             ShortDescription = "Where peace once lived, monsters now rule",
             DetailedDescription =
                 "Enter Bedoso Monster, a tense third-person shooter where you will face the nameless horrors lurking in the deserted town of Bedoso. After a mysterious event, this once peaceful town is now plunged into darkness and taken over by hideous monsters of unknown origin.",
-            TittleImageUrl = "/Image/Logo/BedosoMonsterTitleWhite.png",
+            TitleImageUrl = "/Image/Logo/BedosoMonsterTitleWhite.png",
             BgImageUrl = "/Image/ArtworkGame/BedosoMonsterBG.jpg",
             SteamUrl = "https://store.steampowered.com/app/bedoso-monster",
             ItchioUrl = "https://powstudio.itch.io/bedoso-monster",
@@ -91,7 +91,7 @@ public class DbUtils
         {
             Title = "Pictureal",
             Slug = "pictureal",
-            TittleImageUrl = "/Image/Logo/PicturealGameTittle.png",
+            TitleImageUrl = "/Image/Logo/PicturealGameTittle.png",
             DetailedDescription =
                 "Tựa game giải đố phiêu lưu góc nhìn thứ nhất. Trải nhiệm câu chuyện sử dụng các điển tích trong tôn giáo, cùng với cơ chế thú vị chụp ảnh, đặt lại vật thể trong ảnh ra môi  trường theo đúng góc nhìn của ảnh",
             ShortDescription = "Phiêu lưu trong thế giới siêu thực",
@@ -104,7 +104,7 @@ public class DbUtils
         {
             Title = "Horror Serum",
             Slug = "horrorserum",
-            TittleImageUrl = "/Image/Logo/HorrorSerumTitle.png",
+            TitleImageUrl = "/Image/Logo/HorrorSerumTitle.png",
             ShortDescription = "It promised power. It delivered torment.",
             BgImageUrl = "/Image/ArtworkGame/HorrorSerumArtwork.jpg",
             ItchioUrl = "https://powstudio.itch.io/horrorserum",
@@ -117,7 +117,7 @@ public class DbUtils
         {
             Title = "Bad Of Greenthorn",
             Slug = "bad-of-greenthorn",
-            TittleImageUrl = "/Image/Logo/BadOfGreenThornTitleWhite.png",
+            TitleImageUrl = "/Image/Logo/BadOfGreenThornTitleWhite.png",
             ShortDescription = "A fallen mage. A cursed land. One last hope.", //Strike down darkness. Save the kingdom.
             BgImageUrl = "/Image/ArtworkGame/BadOfGreenThorn capture.jpg",
             ItchioUrl = "https://powstudio.itch.io/bad-of-greenthorn",

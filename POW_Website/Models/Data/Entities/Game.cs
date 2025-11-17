@@ -10,7 +10,7 @@ public class Game
     [Column(TypeName = "ntext")]
     public string? Title { get; set; }
     public string? Slug { get; set; } = string.Empty;
-    public string? TittleImageUrl { get; set; } = string.Empty;
+    public string? TitleImageUrl { get; set; } = string.Empty;
     public string? BgImageUrl { get; set; } = string.Empty;
     public string? ShortDescription { get; set; } = string.Empty;
     public string? DetailedDescription { get; set; } = string.Empty;
@@ -23,6 +23,7 @@ public class Game
     [Column(TypeName = "money")]
     public decimal? Price { get; set; }
     public float? DiscountPercent { get; set; }
+    public DateTime? ReleaseDate { get; set; }
 }
 //[Table("TableName")],
 //[Key] -> Primary Key (PK)

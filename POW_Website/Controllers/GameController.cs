@@ -112,7 +112,7 @@ public class GameController : Controller
 
         game.Game.Title = gameCat.Game.Title;
         game.Game.Slug = gameCat.Game.Slug;
-        game.Game.TittleImageUrl = gameCat.Game.TittleImageUrl;
+        game.Game.TitleImageUrl = gameCat.Game.TitleImageUrl;
         game.Game.ShortDescription = gameCat.Game.ShortDescription;
         game.Game.DetailedDescription = gameCat.Game.DetailedDescription;
         game.Game.BgImageUrl = gameCat.Game.BgImageUrl;

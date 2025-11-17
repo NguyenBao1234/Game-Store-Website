@@ -13,6 +13,7 @@ public class GameStoreDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<GameSpotlight>  GameSpotlight { get; set; }
     public DbSet<Category> Category { get; set; }
     public DbSet<GameCategory> GameCategory { get; set; }
+    public DbSet<Rate> Rate { get; set; }
     public DbSet<Order> Order { get; set; }
     public DbSet<OrderItem> OrderItem { get; set; }
     public DbSet<UserOrder> UserOrder { get; set; }
