@@ -29,9 +29,17 @@ public class DbUtils
         dbCtx.SaveChanges();
         Console.WriteLine("Inserted " + inModel.ToString());
     }
-
+    
 
     //Hardcode to insert into db_____________________________________
+    public static void ChangeGameReleasedDateHardCode()
+    {
+        using var dbCtx = new GameStoreDbContext();
+        var gameList = dbCtx.Game.ToList();
+        foreach (var game in gameList) game.ReleaseDate = DateTime.Now;
+        int number_rows = dbCtx.SaveChanges();
+        Console.WriteLine("Inserted " + number_rows + "game ReleasedDate");
+    }
     public static void HardCodeInsertGameCate()
     {
         using var dbCtx = new GameStoreDbContext();

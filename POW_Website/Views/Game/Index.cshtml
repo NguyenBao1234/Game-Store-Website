@@ -1,3 +1,4 @@
+@using POWStudio.Models.Enum
 <style>
     body {
         background-color: #121212;
@@ -45,11 +46,14 @@
         box-shadow: 0 0 0px 1000px #212121 inset !important;
     }
 </style>
-<script src="~/lib/jquery/dist/jquery.min.js"></script> 
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 @{
     // Lấy giá trị SearchTerm từ ViewData
     string searchTerm = ViewData["CurrentSearchTerm"]?.ToString() ?? "";
+
+    string sortOption = ViewData["SortOption"]?.ToString() ?? "All";
+    bool sortAscending = ViewData["SortAscending"] as bool? ?? true;
+
 }
 <div class="container search-offset-top" style="margin-top: 100px; margin-bottom: 50px"> 
     <div class="row justify-content-center mb-5">
@@ -62,18 +66,68 @@
                     </span>
                     <input type="text"
                            id="search-input"
-                           name="SearchTerm"
+                           name="inSearchTerm"
                            class="form-control search-field-custom"
                            placeholder="Search..."
                            value="@searchTerm">
                 </div>
             </form>
-            
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <form asp-controller="Game" asp-action="Index" method="get" id="sort-form" class="d-flex align-items-center">
+                    <input type="hidden" name="inSearchTerm" value="@searchTerm" />
+                    <input type="hidden" name="MinPrice" value="@ViewData["MinPrice"]" />
+                    <input type="hidden" name="MaxPrice" value="@ViewData["MaxPrice"]" />
+                    @foreach (var catId in (ViewData["SelectedCategories"] as List<int> ?? new List<int>()))
+                    {
+                        <input type="hidden" name="CategoryIds" value="@catId" />
+                    }
+
+                    <input type="hidden" id="sort-by-input" name="inSortBy" value="@sortOption" />
+                    <input type="hidden" id="is-ascending-input" name="inSortAscending" value="@sortAscending.ToString()" />
+                    
+                    <div class="dropdown me-2">
+                        <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Show: @sortOption
+                        </button>
+                        <ul class="dropdown-menu">
+                            @foreach (var option in Enum.GetValues(typeof(GameSortOption)))
+                            {
+                                Console.WriteLine("Ten option: "+ option.ToString());
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0)" onclick="selectSortOption('@option.ToString()')">
+                                        @option.ToString()
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary @(sortAscending ? "active" : "")" onclick="setSortDirection(true)">
+                            <i class="bi bi-arrow-up"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary @(!sortAscending ? "active" : "")" onclick="setSortDirection(false)">
+                            <i class="bi bi-arrow-down"></i>
+                        </button>
+                    </div>
+
+                </form>
+                </div>
             <div id="search-suggestions" class="suggestions-popup"></div>
         </div>
     </div>
 
     <div class="game-grid" style="min-height: 60vh">
+        <li class="nav-item dropdown">
+            <a class="nav-link text-white dropdown-toggle" href="#" id="IdentityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="IdentityDropdown">
+                <a class="dropdown-item text-white" asp-controller="Account" asp-action="Login">Login</a>
+                <a class="dropdown-item text-white" asp-controller="Account" asp-action="Register">Register</a>
+            </ul>
+        </li>
         @foreach (var game in Model)
         {
             <div class="game-card">
@@ -83,8 +137,14 @@
                         <h6 class="fw-semibold mb-1">@game.Title</h6>
                         <p class="small text-muted mb-2">@game.ShortDescription</p>
                         <p class="price mb-0">
-                            @if (game.Price == 0 || game.Price == null) { <span class="text-success">Free</span> }
-                            else { <span>@game.Price?.ToString("C")</span> }
+                            @if (game.Price == 0 || game.Price == null)
+                            {
+                                <span class="text-success">Free</span>
+                            }
+                            else
+                            {
+                                <span>@game.Price?.ToString("C")</span>
+                            }
                         </p>
                     </div>
                 </a>
@@ -132,7 +192,7 @@ $(document).ready(function()
         });
     }
 
-    // Lắng nghe sự kiện người dùng nhập liệu (input)
+    // bind input event
     $searchInput.on('input', function()
     {
         const searchTerm = $(this).val().trim();
@@ -163,8 +223,20 @@ $(document).ready(function()
             $searchInput.blur(); // Mất focus khỏi input
         }
     });
-
-    // Lưu ý: Hàm này dùng để highlight, đã được định nghĩa trong Partial View.
-    // Nếu bạn muốn dùng nó ở đây, hãy định nghĩa lại bên ngoài khối document.ready.
+    
 });
 </script>
+
+@section Scripts {
+    <script>
+        function selectSortOption(sortOption) {
+            document.getElementById('sort-by-input').value = sortOption;
+            document.getElementById('sort-form').submit(); // submit if change filter
+        }
+
+        function setSortDirection(isAscending) {
+            document.getElementById('is-ascending-input').value = isAscending.toString();
+            document.getElementById('sort-form').submit(); 
+        }
+    </script>
+}

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using POWStudio.Models;
+using POWStudio.Models.Enum;
 using POWStudio.Services;
 using POWStudio.Utils;
 
@@ -20,13 +21,24 @@ public class GameController : Controller
     }
     [Route("/Games")]
     [HttpGet]
-    public IActionResult Index(string SearchTerm)
+    public IActionResult Index(string inSearchTerm, List<int> inCategoryIds, decimal? inMinPrice, decimal? inMaxPrice, GameSortOption inSortOption, bool inSortAscending = true)
     {
-        List<Game> games;
-        if (string.IsNullOrEmpty(SearchTerm)) games = _gameService.GetAll();
-        else games = _gameService.GetGamesByTerm(SearchTerm, 0, true);
-        ViewData["CurrentSearchTerm"] = SearchTerm;
-        return View(games);
+        IQueryable<Game> games;
+        var gameCategoryTable = mDbContext.GameCategory
+            .Include(g => g.Game)
+            .Include(c => c.Category);
+        var categories = mDbContext.Category.ToList();
+        
+        
+        if (string.IsNullOrEmpty(inSearchTerm)) games = _gameService.GetAll();
+        else games = _gameService.GetGamesByTerm(inSearchTerm, 0, true);
+        var sortedGames = _gameService.GetGamesBySortOption(games, inSortOption, inSortAscending);
+        
+        ViewData["CurrentSearchTerm"] = inSearchTerm;
+        ViewData["SelectedCategories"] =  categories;
+        ViewData["SortOption"] = inSortOption;
+        ViewData["SortAscending"] = inSortAscending;
+        return View(sortedGames.ToList());
     }
     
     [HttpGet]

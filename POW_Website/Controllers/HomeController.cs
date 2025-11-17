@@ -55,7 +55,7 @@ public class HomeController : Controller
         try
         {
             //var models = mDbContext.GameCategory.Include(g => g.Game).Include(g => g.Category).ToList();
-            var games = _gameService.GetAll();
+            var games = _gameService.GetAll().ToList();
             if (games.Count == 0) ViewBag.Message = "No data in GameCategory.";
             return View(games);
         }
