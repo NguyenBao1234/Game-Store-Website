@@ -7,7 +7,7 @@ namespace POWStudio.Models;
 public class Game
 {
     public int Id { get; set; }// key naming convention auto
-    [Column(TypeName = "ntext")]
+    [Column(TypeName = "nvarchar(250)")]
     public string? Title { get; set; }
     public string? Slug { get; set; } = string.Empty;
     public string? TitleImageUrl { get; set; } = string.Empty;

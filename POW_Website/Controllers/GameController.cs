@@ -34,9 +34,10 @@ public class GameController : Controller
         else games = _gameService.GetGamesByTerm(inSearchTerm, 0, true);
         var sortedGames = _gameService.GetGamesBySortOption(games, inSortOption, inSortAscending);
         
+        Console.WriteLine("In Param Sort Option: " + inSortOption.ToString());
         ViewData["CurrentSearchTerm"] = inSearchTerm;
         ViewData["SelectedCategories"] =  categories;
-        ViewData["SortOption"] = inSortOption;
+        ViewData["SortOption"] = inSortOption.ToString();
         ViewData["SortAscending"] = inSortAscending;
         return View(sortedGames.ToList());
     }
