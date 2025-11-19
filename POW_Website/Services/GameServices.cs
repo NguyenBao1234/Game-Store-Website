@@ -66,9 +66,32 @@ public class GameService : IGameService
         if (inGetAll) sortGameQuery = sortGameQuery.Take(inLimitAmount);
         return sortGameQuery;
     }
+
+    public IQueryable<Game> GetGamesByCategory(IQueryable<Game> inGameQuery, List<int> inCategoryIds)
+    {
+        if (inCategoryIds == null || inCategoryIds.Count == 0) return inGameQuery;
+        
+        var selectedCategoriesQuery = mDBContext.GameCategory.Where(gc => inCategoryIds.Contains(gc.CategoryId));
+        var result = from g in inGameQuery join gc in selectedCategoriesQuery on g.Id equals gc.GameId
+            select g;
+
+        return result.Distinct();
+    }
+
+    public IQueryable<Game> GetGamesByPriceRange(IQueryable<Game> inGamesQuery, decimal? min, decimal? max)
+    {
+        if (min == 0) inGamesQuery = inGamesQuery.Where(g => (g.Price == null) || (g.Price >= min && g.Price <= max));
+        else inGamesQuery = inGamesQuery.Where(g => g.Price != null && g.Price >= min && g.Price <= max);
+
+        return inGamesQuery;
+    }
     public IQueryable<Game> GetAll()
     {
         return mDBContext.Game;
     }
-    
+
+    public IQueryable<Category> GetAllCategories()
+    {
+        return mDBContext.Category;
+    }
 }

@@ -21,25 +21,33 @@ public class GameController : Controller
     }
     [Route("/Games")]
     [HttpGet]
-    public IActionResult Index(string inSearchTerm, List<int> inCategoryIds, decimal? inMinPrice, decimal? inMaxPrice, GameSortOption inSortOption, bool inSortAscending = true)
+    public IActionResult Index(string inSearchTerm, List<string> inCategoryNames, decimal? inMinPrice, decimal? inMaxPrice, GameSortOption inSortOption, bool inSortAscending = true)
     {
         IQueryable<Game> games;
-        var gameCategoryTable = mDbContext.GameCategory
-            .Include(g => g.Game)
-            .Include(c => c.Category);
-        var categories = mDbContext.Category.ToList();
+
+        var categoryObjs = _gameService.GetAllCategories().ToList();
+        List<string> categories = new List<string>();
+        foreach (var category in categoryObjs) categories.Add(category.Name);
         
+        List<int>SelectCategoryIds = new List<int>();
+        foreach (var category in categoryObjs)
+            if (inCategoryNames.Contains(category.Name))  SelectCategoryIds.Add(category.Id);
+        
+        ViewData["AllCategories"] = categories;
         
         if (string.IsNullOrEmpty(inSearchTerm)) games = _gameService.GetAll();
         else games = _gameService.GetGamesByTerm(inSearchTerm, 0, true);
         var sortedGames = _gameService.GetGamesBySortOption(games, inSortOption, inSortAscending);
-        
-        Console.WriteLine("In Param Sort Option: " + inSortOption.ToString());
+        var priceRangeGames = _gameService.GetGamesByPriceRange(sortedGames, inMinPrice??0, inMaxPrice??999999);
+        var gameByFilter = _gameService.GetGamesByCategory(priceRangeGames,SelectCategoryIds);
+
         ViewData["CurrentSearchTerm"] = inSearchTerm;
-        ViewData["SelectedCategories"] =  categories;
-        ViewData["SortOption"] = inSortOption.ToString();
+        ViewData["SelectedCategories"] =  inCategoryNames;
+        ViewData["SortOption"] = inSortOption;
         ViewData["SortAscending"] = inSortAscending;
-        return View(sortedGames.ToList());
+        ViewData["MinPrice"] = inMinPrice;
+        ViewData["MaxPrice"] = inMaxPrice;
+        return View(gameByFilter.ToList());
     }
     
     [HttpGet]
