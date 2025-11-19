@@ -9,10 +9,13 @@ public class Rate
     public bool bRecomended { get; set; }
     public string? Comment { get; set; }
     public DateTime Date { get; set; }
+    public int? LikeAmount { get; set; }
+    public int? DislikeAmount { get; set; }
+    public int? FunnyAmount { get; set; }
+    
     public int GameId { get; set; }
     [StringLength(450)]
     public required string UserId { get; set; }
-    
     
     //Navigation properties for FK
     [ForeignKey("GameId")]
