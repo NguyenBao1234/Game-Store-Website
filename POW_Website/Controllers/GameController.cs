@@ -19,6 +19,7 @@ public class GameController : Controller
         _gameService = gameService;
         mDbContext = mDbContextContext;
     }
+
     [Route("/Games")]
     [HttpGet]
     public IActionResult Index(string inSearchTerm, List<string> inCategoryNames, decimal? inMinPrice, decimal? inMaxPrice, GameSortOption inSortOption, bool inSortAscending = true)
@@ -80,26 +81,51 @@ public class GameController : Controller
     [Route("/Admin/AddGame")]
     public IActionResult AddGame()
     {
-        var categories = mDbContext.Category.ToList();
-        ViewBag.Categories = new SelectList(categories, "Id", "Name");
-        return View();
+        // Lay danh sach the loai de hien thi o dropdown
+        var categories = mDbContext.Category.Select(c => new SelectListItem
+        {
+            Value = c.Id.ToString(),
+            Text = c.Name
+        }).ToList();
+        // ViewBag.Categories = new SelectList(categories, "Id", "Name");
+        ViewBag.Categories = categories;
+        return View(new GameCategory());
     }
 
     [HttpPost]
     [Route("/Admin/AddGame")]
-    public IActionResult AddGame(GameCategory gameCat)
+    public IActionResult AddGame(GameCategory gameCat, List<int> CategoryIds)
     {
+        // Lay danh sach the loai de hien thi o dropdown vi ViewBag khong luu giu duoc giua cac lan post
+        var categories = mDbContext.Category.Select(c => new SelectListItem
+        {
+            Value = c.Id.ToString(),
+            Text = c.Name
+        }).ToList();
+        ViewBag.Categories = categories;
+
         if (!ModelState.IsValid)
         {
             ModelState.Values.ToList().ForEach(v =>
             {
                 v.Errors.ToList().ForEach(e => Console.WriteLine(e.ErrorMessage));
             });
+
             return View(gameCat);
         }
 
-        // DbUtils.InsertModel(gameCat.Game);
-        DbUtils.InsertModel(gameCat);
+        DbUtils.InsertModel(gameCat.Game);
+
+        foreach (var catId in CategoryIds)
+        {
+            var gc = new GameCategory
+            {
+                GameId = gameCat.Game.Id,
+                CategoryId = catId
+            };
+            DbUtils.InsertModel(gc);
+        }
+
         return View(new GameCategory());
     }
 
@@ -112,15 +138,29 @@ public class GameController : Controller
             .Include(g => g.Game)
             .Include(c => c.Category)
             .FirstOrDefault(gc => gc.GameId == id);
-        var categories = mDbContext.Category.ToList();
-        Console.WriteLine("game cate: "+gameCat);
-        ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
+        var selectedCats = mDbContext.GameCategory
+            .Where(gc => gc.GameId == id)
+            .Select(gc => gc.CategoryId)
+            .ToList();
+
+        ViewBag.SelectedCategories = selectedCats;
+
+        var categories = mDbContext.Category.Select(c => new SelectListItem
+        {
+            Value = c.Id.ToString(),
+            Text = c.Name
+        }).ToList();
+        Console.WriteLine("game cate: " + gameCat);
+        ViewBag.Categories = categories;
+        // ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
         return View(gameCat);
     }
 
     [HttpPost]
     [Route("/Admin/EditGame/{id}")]
-    public IActionResult EditGame(int id, GameCategory gameCat)
+    public IActionResult EditGame(int id, GameCategory gameCat, List<int> CategoryIds)
     {
         if (!ModelState.IsValid)
         {
@@ -129,7 +169,7 @@ public class GameController : Controller
 
         var game = mDbContext.GameCategory
             .Include(g => g.Game)
-            .FirstOrDefault(gc => gc.GameId == id);
+            .FirstOrDefault(gc => gc.Game.Id == id);
 
         game.Game.Title = gameCat.Game.Title;
         game.Game.Slug = gameCat.Game.Slug;
@@ -145,9 +185,25 @@ public class GameController : Controller
         game.Game.FabUrl = gameCat.Game.FabUrl;
         game.Game.Price = gameCat.Game.Price;
         game.Game.DiscountPercent = gameCat.Game.DiscountPercent;
-        
-        game.CategoryId = gameCat.CategoryId;
-        
+        game.Game.ReleaseDate = gameCat.Game.ReleaseDate;
+
+        mDbContext.SaveChanges();
+
+        // game.CategoryId = gameCat.CategoryId;
+
+        //Xoa het the loai cua game
+        var oldCat = mDbContext.GameCategory.Where(gc => gc.GameId == id).ToList();
+        mDbContext.GameCategory.RemoveRange(oldCat);
+
+        foreach (var item in CategoryIds)
+        {
+            mDbContext.GameCategory.Add(new GameCategory
+            {
+                GameId = id,
+                CategoryId = item
+            });
+        }
+
         mDbContext.SaveChanges();
 
         return RedirectToAction("Admin", "Home");
