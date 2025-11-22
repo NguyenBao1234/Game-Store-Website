@@ -2,38 +2,66 @@
 
 @{
     ViewBag.Title = "- Edit Game";
+    var selectedCategories = ViewBag.SelectedCategories as List<int>;
 }
 <div class="container py-5" style="max-width: 800px; margin-top: 100px">
-<h1 class="text-warning fw-bold mb-5 text-center">
-    <i class="bi bi-pencil-square me-2"></i> Chỉnh Sửa Game
-</h1>
-<form asp-controller="Game" asp-action="EditGame" method="post">
-    <input type="hidden" asp-for="GameId"/>
-    <h3 class="text-warning border-bottom border-warning pb-2 mb-4">Thông tin cơ bản</h3>
-    <div class="row g-3 mb-4">
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input asp-for="Game.Title" type="text" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="Tên Game"/>
-                <label asp-for="Game.Title" class="text-secondary">Tên Game</label>
+    <h1 class="text-warning fw-bold mb-5 text-center">
+        <i class="bi bi-pencil-square me-2"></i> Chỉnh Sửa Game
+    </h1>
+    <form asp-controller="Game" asp-action="EditGame" method="post">
+        <input type="hidden" asp-for="GameId"/>
+        <h3 class="text-warning border-bottom border-warning pb-2 mb-4">Thông tin cơ bản</h3>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Game.Title" type="text"
+                           class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="Tên Game"/>
+                    <label asp-for="Game.Title" class="text-secondary">Tên Game</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CategoryId" class="form-label text-secondary d-block">Danh mục</label>
+                @* <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select bg-dark text-light rounded-0 border-secondary"></select> *@
+                <select name="CategoryIds" id="example-multi-select" data-placeholder="Select options"
+                        multiple="multiple" data-multi-select>
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        bool isSelected = (selectedCategories != null && selectedCategories.Contains(int.Parse(category.Value)));
+                        if (isSelected)
+                        {
+                            <option value="@category.Value" selected="">@category.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@category.Value">@category.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Game.Slug" type="text"
+                           class="form-control bg-dark text-light rounded-0 border-secondary"
+                           placeholder="Slug (URL thân thiện)"/>
+                    <label asp-for="Game.Slug" class="text-secondary">Slug (URL thân thiện)</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Game.TitleImageUrl"
+                           class="form-control bg-dark text-light rounded-0 border-secondary"
+                           placeholder="URL ảnh tiêu đề"/>
+                    <label asp-for="Game.TitleImageUrl" class="text-secondary">URL Ảnh Tiêu Đề</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Game.ReleaseDate" class="form-control bg-dark text-light rounded-0 border-secondary"
+                           placeholder="Ngày ra mắt"/>
+                    <label asp-for="Game.ReleaseDate" class="text-secondary">Ngày ra mắt</label>
+                </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <label asp-for="CategoryId" class="form-label text-secondary d-block">Danh mục</label>
-            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select bg-dark text-light rounded-0 border-secondary"></select>
-        </div>
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input asp-for="Game.Slug" type="text" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="Slug (URL thân thiện)"/>
-                <label asp-for="Game.Slug" class="text-secondary">Slug (URL thân thiện)</label>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input asp-for="Game.TitleImageUrl" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="URL ảnh tiêu đề"/>
-                <label asp-for="Game.TitleImageUrl" class="text-secondary">URL Ảnh Tiêu Đề</label>
-            </div>
-        </div>
-    </div>
 
     <h3 class="text-warning border-bottom border-warning pb-2 mb-4 mt-5">Mô tả & Hình ảnh</h3>
     <div class="row g-3 mb-4">

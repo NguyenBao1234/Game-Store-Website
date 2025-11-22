@@ -22,7 +22,14 @@
             </div>
             <div class="col-md-6">
                 <label asp-for="CategoryId" class="form-label text-secondary d-block">Danh mục</label>
-                <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select bg-dark text-light rounded-0 border-secondary"></select>
+                @* <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select bg-dark text-light rounded-0 border-secondary"></select> *@
+                <select name="CategoryIds" id="example-multi-select" data-placeholder="Select options"
+                        multiple="multiple" data-multi-select>
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option value="@category.Value">@category.Text</option>
+                    }
+                </select>
             </div>
             <div class="col-md-6">
                 <div class="form-floating">
@@ -34,6 +41,13 @@
                 <div class="form-floating">
                     <input asp-for="Game.TitleImageUrl" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="URL ảnh tiêu đề"/>
                     <label asp-for="Game.TitleImageUrl" class="text-secondary">URL Ảnh Tiêu Đề</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input asp-for="Game.ReleaseDate" class="form-control bg-dark text-light rounded-0 border-secondary"
+                           placeholder="Ngày ra mắt"/>
+                    <label asp-for="Game.ReleaseDate" class="text-secondary">Ngày ra mắt</label>
                 </div>
             </div>
         </div>
