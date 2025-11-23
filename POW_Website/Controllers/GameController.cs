@@ -73,7 +73,8 @@ public class GameController : Controller
         {
             return NotFound();
         }
-
+        
+        ViewBag.Screenshots = _gameService.GetScreenshotUrls(game.Id);
         return View("Detail", game); // trỏ tới Views/Game/Detail.cshtml
     }
 

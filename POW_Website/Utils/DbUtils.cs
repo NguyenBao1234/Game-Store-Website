@@ -30,8 +30,14 @@ public class DbUtils
         Console.WriteLine("Inserted " + inModel.ToString());
     }
     
-
     //Hardcode to insert into db_____________________________________
+    public static void HardcodeInsertGameScreenshot()
+    {
+        using var dbCtx = new GameStoreDbContext();
+        dbCtx.AddRange(gameScreenshotList);
+        int number_rows = dbCtx.SaveChanges();
+        Console.WriteLine("Inserted " + number_rows + "game screenshot");
+    }
     public static void ChangeGameReleasedDateHardCode()
     {
         using var dbCtx = new GameStoreDbContext();
@@ -61,7 +67,39 @@ public class DbUtils
         int number_rows = dbCtx.SaveChanges();
         Console.WriteLine("Inserted " + number_rows + " category data");
     }
-
+    //hard code data
+    private static List<GameScreenshot> gameScreenshotList =
+    [
+        new GameScreenshot {GameId = 1, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzY1MDY0MC8yMTcyMzU4Ni5qcGc=/original/uBTTFI.jpg"},
+        new GameScreenshot {GameId = 1, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzY1MDY0MC8yMTcyOTA5Ny5wbmc=/347x500/vgeJiL.png"},
+        new GameScreenshot {GameId = 1, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzY1MDY0MC8yMTcyOTEyMC5qcGc=/original/j3SMAV.jpg"},
+        
+        new GameScreenshot {GameId = 2, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzkyNzM0NC8yMzUyOTMxNS5qcGc=/original/sTyw65.jpg"},
+        new GameScreenshot {GameId = 2, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzkyNzM0NC8yMzUyOTMxNi5qcGc=/original/Di1Ffj.jpg"},
+        new GameScreenshot {GameId = 2, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzkyNzM0NC8yNDA5OTg4NC5qcGc=/original/KhXqgQ.jpg"},
+        new GameScreenshot {GameId = 2, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzkyNzM0NC8yNDA5OTg3My5qcGc=/original/kXCf6I.jpg"},
+        
+        new GameScreenshot {GameId = 3, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjE3OTE1NC8xMzMxMjIyNS5qcGc=/original/HLQtIG.jpg"},
+        new GameScreenshot {GameId = 3, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjE3OTE1NC8xMzM4Mzk4OC5qcGc=/original/oBE%2F1v.jpg"},
+        new GameScreenshot {GameId = 3, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjE3OTE1NC8xMzM4Mzk4Ni5qcGc=/original/425yjX.jpg"},
+        new GameScreenshot {GameId = 3, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjE3OTE1NC8xMzM4Mzk5MC5qcGc=/original/L9jsuN.jpg"},
+        new GameScreenshot {GameId = 3, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjE3OTE1NC8xMzM4Mzk4OS5qcGc=/original/QRqq2F.jpg"},
+        new GameScreenshot {GameId = 3, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjE3OTE1NC8xMzM4MzkxNC5qcGc=/original/yOb98J.jpg"},
+        
+        new GameScreenshot {GameId = 4, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjEzMjIzNS8xMjU2NTYzNS5qcGc=/original/UuI0Oo.jpg"},
+        new GameScreenshot {GameId = 4, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjEzMjIzNS8xMjU2NTYxNC5qcGc=/original/v7JQyb.jpg"},
+        new GameScreenshot {GameId = 4, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjEzMjIzNS8xMjU2NTYxOS5qcGc=/original/S0wk3a.jpg"},
+        new GameScreenshot {GameId = 4, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjEzMjIzNS8xMjU2NTYyNi5qcGc=/original/Qd8nIh.jpg"},
+        new GameScreenshot {GameId = 4, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMjEzMjIzNS8xMjU4NTE5NS5qcGc=/original/fbaY8c.jpg"},
+        
+        new GameScreenshot {GameId = 5, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzY4NTA3Ni8yMTkyNjU1NC5qcGc=/original/TnucwP.jpg"},
+        new GameScreenshot {GameId = 5, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzY4NTA3Ni8yMTkyNjU1NS5qcGc=/original/ShFruB.jpg"},
+        new GameScreenshot {GameId = 5, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzY4NTA3Ni8yMTkyNjU2MC5qcGc=/original/mhO%2F%2Fe.jpg"},
+        
+        new GameScreenshot {GameId = 6, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzQ3MjEyNi8yMDcxNTQ1NS5qcGc=/original/t%2BppUG.jpg"},
+        new GameScreenshot {GameId = 6, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzQ3MjEyNi8yMDcxNTI4Ny5qcGc=/original/OTYTLV.jpg"}
+        
+    ];
     private static List<GameCategory> gameCateList =
     [
         new GameCategory { CategoryId = 2, GameId = 2 },
