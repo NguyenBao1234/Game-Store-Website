@@ -10,6 +10,7 @@ public class GameStoreDbContext : IdentityDbContext<ApplicationUser>
     public GameStoreDbContext(){}
     //Table Definition:
     public DbSet<Game> Game { get; set; }
+    public DbSet<GameScreenshot> GameScreenshot { get; set; }
     public DbSet<GameSpotlight>  GameSpotlight { get; set; }
     public DbSet<Category> Category { get; set; }
     public DbSet<GameCategory> GameCategory { get; set; }
@@ -39,5 +40,6 @@ public class GameStoreDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<IdentityUserToken<string>>(b => b.ToTable("UserToken"));
         
         builder.Entity<GameCategory>().HasIndex(gc => new { gc.GameId, gc.CategoryId }).IsUnique();
+        builder.Entity<GameScreenshot>().HasIndex(gc => new { gc.GameId, SreeenshotUrl = gc.ScreenshotUrl }).IsUnique();
     }
 }

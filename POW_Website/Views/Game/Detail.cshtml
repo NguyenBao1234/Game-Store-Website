@@ -1,6 +1,10 @@
 @model POWStudio.Models.Game
 @{
-    ViewData["Title"] = "- "+@Model.Title;
+    ViewData["Title"] = "- " + @Model.Title;
+    var screenshots = ViewBag.Screenshots;
+    if (screenshots == null) screenshots = new List<string>(); //esure not null
+    bool bOwned = false;
+    decimal gamePrice = @Model.Price ?? 0.00m;
 }
 <div class="position-relative overflow-hidden">
     <div class="content-card" style="background-image: url('@Model.BgImageUrl')">
@@ -15,32 +19,74 @@
             <div class="d-flex gap-3 mt-3">
                 @if (!string.IsNullOrEmpty(Model.ItchioUrl))
                 {
-                    <a href="@Model.ItchioUrl" target="_blank" style="display: flex;  align-items: center; padding: 0 10px;">
+                    <a href="@Model.ItchioUrl" target="_blank" class="store-link">
                         <img src="https://static.itch.io/images/logo-white-new.svg"
-                             alt="Itch.io" style="height: 30px; filter: brightness(0.8);"/>
+                             alt="Itch.io" class="store-icon itch-icon" />
                     </a>
                 }
 
                 @if (!string.IsNullOrEmpty(Model.EpicUrl))
                 {
-                    <a href="@Model.EpicUrl" target="_blank" style="display: flex;  align-items: center; padding: 0 10px;">
+                    <a href="@Model.EpicUrl" target="_blank" class="store-link">
                         <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Epic_Games_Store_logo_2023_horizontal_white.svg"
-                             alt="Epic Games" style="height: 40px; filter: brightness(0.8);"/>
+                             alt="Epic Games" class="store-icon epic-icon" />
                     </a>
                 }
 
                 @if (!string.IsNullOrEmpty(Model.SteamUrl))
                 {
-                    <a href="@Model.SteamUrl" target="_blank" style="display: flex;  align-items: center; padding: 0 10px;">
+                    <a href="@Model.SteamUrl" target="_blank" class="store-link">
                         <img src="https://store.cloudflare.steamstatic.com/public/shared/images/header/logo_steam.svg?t=962016"
-                             alt="Steam" style="height: 40px;"/>
+                             alt="Steam" class="store-icon steam-icon" />
                     </a>
                 }
                 @if (!string.IsNullOrEmpty(Model.FabUrl))
                 {
-                    <a href="@Model.FabUrl" target="_blank" style="display: flex;  align-items: center; padding: 0 10px;">
+                    <a href="@Model.FabUrl" target="_blank" class="store-link">
                         <img src="https://static.fab.com/static/builds/web/dist/frontend/assets/images/common/logo/e1e12dc6142410b391ce48e416261ad7-v1.svg"
-                             style="filter: brightness(0.8)"/>
+                             alt="Fab" class="store-icon fab-icon" />
+                    </a>
+                }
+            </div>
+
+            <div class="action-price-container mt-4 mb-4">
+
+                <div class="price-display me-4">
+                    @if (gamePrice == 0.00m)
+                    {
+                        <span class="price-label">Giá:</span>
+                        <span class="price-value">FREE</span>
+                    }
+                    else
+                    {
+                        <span class="price-label">Price:</span>
+                        <span class="price-value"> @Model.Price?.ToString("C") </span>
+                    }
+                </div>
+
+                @if (bOwned)
+                {
+                    <a>
+                        <button class="action-button yellow-button" onclick="playGame(@Model.Id)">
+                            <i class="bi bi-controller me-2"></i> PLAY NOW
+                        </button>
+                    </a>
+                }
+
+                else if (gamePrice == 0.00m)
+                {
+                    <a>
+                        <button class="action-button yellow-button" onclick="addToLibrary(@Model.Id)">
+                            <i class="bi bi-plus-circle me-2"></i> ADD TO LIBRARY
+                        </button>
+                    </a>
+                }
+                else
+                {
+                    <a>
+                        <button class="action-button yellow-button" onclick="addToCart(@Model.Id)">
+                            <i class="bi bi-cart-fill me-2"></i> ADD TO CART
+                        </button>
                     </a>
                 }
             </div>
@@ -75,3 +121,263 @@
         </div>
     }
 </div>
+
+@if (screenshots.Count > 0)
+{
+    <div class="container my-5">
+
+        <div id="gameThumbnailCarousel" class="carousel slide thumbnail-carousel" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="d-flex justify-content-start align-items-center">
+                        @for (int i = 0; i < screenshots.Count; i++)
+                        {
+                            string imagePath = screenshots[i];
+                            <img src="@imagePath" 
+                                 class="d-block thumbnail-image" 
+                                 alt="Screenshot @(i + 1)" 
+                                 data-bs-toggle="modal" 
+                                 data-bs-target="#imageModal" 
+                                 data-index="@i">
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#gameThumbnailCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#gameThumbnailCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        
+        
+    </div>
+}
+
+<style>
+.thumbnail-carousel .carousel-inner {
+    overflow-x: auto; 
+    overflow-y: hidden; 
+    white-space: nowrap; 
+    height: 120px; 
+    display: block; 
+}
+
+.thumbnail-carousel .carousel-item {
+    display: inline-block;
+    width: auto;
+}
+
+.thumbnail-image {
+    width: 200px; 
+    height: 100px; 
+    object-fit: cover; 
+    margin-right: 8px; 
+    cursor: pointer; 
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+    border-radius: 4px;
+    user-select: none;
+}
+
+.thumbnail-image:hover {
+    border-color: #ffffff;
+}
+
+/* Modal */
+#imageModal .modal-content {
+    background-color: #000;
+    border: none;
+}
+
+#imageModal .modal-dialog {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+}
+
+#imageModal .modal-body {
+    background-color: #000;
+    text-align: center;
+}
+
+#imageModal .carousel-item img {
+    height: 90vh; 
+    width: 100%;
+    object-fit: contain;
+    margin-top: 5vh; 
+    display: block;
+    user-select: none;
+}
+
+#imageModal .btn-close {
+    filter: invert(1);
+    opacity: 1;
+}
+
+.action-button {
+     font-weight: bold;
+     padding: 10px 25px;
+     border-radius: 8px; /* Bo góc nhẹ */
+ }
+
+/* Đảm bảo Icon có kích thước phù hợp */
+.action-button i {
+    font-size: 1.2em;
+    vertical-align: middle;
+}
+/* Container chứa Giá và Nút */
+.action-price-container {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Khoảng cách giữa giá và nút */
+    padding: 15px 25px; /* Đệm xung quanh */
+    background-color: rgba(0, 0, 0, 0.4); /* Nền mờ nhẹ nhàng */
+    border-radius: 8px; /* Bo góc */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Viền mờ */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Phần hiển thị Giá */
+.price-display {
+    text-align: left;
+    min-width: 150px; /* Đảm bảo đủ không gian cho giá tiền */
+}
+
+.price-label {
+    display: block;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.price-value {
+    font-family: 'Josefin Sans', sans-serif; /* Giữ font đặc biệt nếu bạn có */
+    font-size: 2.2em; /* Giá to và rõ ràng hơn */
+    font-weight: bold;
+    color: #ffffff;
+    line-height: 1;
+}
+
+
+/* Nút Hành Động Chính */
+.action-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+
+.yellow-button {
+    background-color: #ffc107; /* Màu vàng cam cho Add to Cart */
+    color: #333;
+}
+.yellow-button:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
+
+/* Cải thiện liên kết cửa hàng cho nhất quán hơn */
+.store-link {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s;
+}
+.store-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.store-icon {
+    height: 30px; /* Kích thước đồng nhất */
+    filter: brightness(1);
+}
+
+</style>
+
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-fullscreen-md-down">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 3"></button>
+
+                <div id="fullImageCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#fullImageCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#fullImageCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+const fullImages = @Html.Raw(Json.Serialize(screenshots));// convert img url C# (ViewBag) into JavaScript
+
+document.addEventListener('DOMContentLoaded', function () 
+{
+    if (fullImages.length === 0) return; 
+
+    const imageModal = document.getElementById('imageModal');
+    const fullImageCarousel = document.getElementById('fullImageCarousel');
+    const fullImageCarouselInner = fullImageCarousel.querySelector('.carousel-inner');
+
+    // 1. register click callback on all thumbnail ele
+    document.querySelectorAll('.thumbnail-image').forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            const startIndex = parseInt(this.getAttribute('data-index'));
+
+            // 2. Xây dựng nội dung carousel ảnh lớn trong Modal
+            let carouselHTML = '';
+            fullImages.forEach((src, index) => {
+                const activeClass = index === startIndex ? 'active' : '';
+                carouselHTML += `
+                    <div class="carousel-item ${activeClass}">
+                        <img src="${src}" class="d-block" alt="Full Screenshot ${index + 1}">
+                    </div>
+                `;
+            });
+
+            fullImageCarouselInner.innerHTML = carouselHTML;
+
+            // Mở Modal và chuyển đến ảnh đã chọn (Sử dụng Bootstrap JS)
+            let modal = bootstrap.Modal.getInstance(imageModal);
+            if (!modal) modal = new bootstrap.Modal(imageModal);
+
+            modal.show();
+            
+            // Khởi tạo hoặc lấy instance của Carousel và chuyển đến ảnh đã chọn
+            const bsCarousel = bootstrap.Carousel.getInstance(fullImageCarousel);
+            if (bsCarousel) bsCarousel.to(startIndex); 
+            else new bootstrap.Carousel(fullImageCarousel).to(startIndex);
+        });
+    });
+});
+</script>

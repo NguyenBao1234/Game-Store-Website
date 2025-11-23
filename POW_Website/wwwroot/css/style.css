@@ -99,6 +99,13 @@ body.fade-in-active {
     z-index: 1;
 }
 
+/* Disable box shadow*/
+ .btn.btn-outline-light:focus,
+ .btn.btn-outline-light:active {
+     outline: none !important;
+     box-shadow: none !important;
+ }
+
 .button 
 {
     margin-bottom: 1vh;

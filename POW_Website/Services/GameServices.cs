@@ -94,4 +94,14 @@ public class GameService : IGameService
     {
         return mDBContext.Category;
     }
+
+    public List<string> GetScreenshotUrls(int inGameId)
+    {
+        return mDBContext.GameScreenshot.Where(g => g.GameId == inGameId).Select(gs=>gs.ScreenshotUrl).ToList();
+    }
+
+    public IQueryable<Rate> GetRates(int inGameId)
+    {
+        return mDBContext.Rate.Where(r => r.GameId == inGameId);
+    }
 }

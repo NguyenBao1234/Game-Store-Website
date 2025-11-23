@@ -65,5 +65,5 @@ app.MapGet("/healthz", () => Results.Ok("Healthy"));
 //DbUtils.HardCodeInsertCategory();
 //DbUtils.HardCodeInsertGameCate();
 //DbUtils.ChangeGameReleasedDateHardCode();
-
+// DbUtils.HardcodeInsertGameScreenshot();
 app.Run();
