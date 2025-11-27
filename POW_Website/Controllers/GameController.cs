@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using POWStudio.Models;
 using POWStudio.Models.Enum;
+using POWStudio.Models.ViewModels;
 using POWStudio.Services;
 using POWStudio.Utils;
 
@@ -73,9 +74,73 @@ public class GameController : Controller
         {
             return NotFound();
         }
-        
+
+        var rates = _gameService.GetRates(game.Id).ToList();
+        int PositiveAmout = 0;
+        int  NegativeAmout = 0;
+        foreach (var rate in rates)
+        {
+            if (rate.bRecomended) PositiveAmout++;
+            else NegativeAmout++;
+        }
+        var sumRate = PositiveAmout + NegativeAmout; 
+        double score = sumRate == 0 ? 0 : (double)PositiveAmout / sumRate;
+        JudgedRating judgedRating;
+        if (sumRate >= 500)
+        {
+            if (score >= 0.95) judgedRating = JudgedRating.OverwhelminglyPositive;
+            else if (score >= 0.80) judgedRating = JudgedRating.VeryPositive;
+            else if (score >= 0.70) judgedRating = JudgedRating.MostlyPositive;
+            else if (score >= 0.40) judgedRating = JudgedRating.Mixed;
+            else if (score >= 0.20) judgedRating = JudgedRating.MostlyNegative;
+            else if (score >= 0.05) judgedRating = JudgedRating.VeryNegative;
+            else judgedRating = JudgedRating.OverwhelminglyNegative;
+        }
+        else if (sumRate >= 50)
+        {
+            if (score >= 0.95) judgedRating = JudgedRating.VeryPositive;
+            else if (score >= 0.80) judgedRating = JudgedRating.VeryPositive;
+            else if (score >= 0.70) judgedRating = JudgedRating.MostlyPositive;
+            else if (score >= 0.40) judgedRating = JudgedRating.Mixed;
+            else if (score >= 0.20) judgedRating = JudgedRating.MostlyNegative;
+            else judgedRating = JudgedRating.VeryNegative;
+        }
+        else if (sumRate == 0) judgedRating = JudgedRating.None;
+        else 
+        {
+            if (score >= 0.80) judgedRating = JudgedRating.Positive;
+            else if (score >= 0.40) judgedRating = JudgedRating.Mixed;
+            else judgedRating = JudgedRating.Negative;
+        }
+
+        var judgedRatingString = judgedRating.ToString();
+        switch (judgedRating)
+        {
+            case JudgedRating.OverwhelminglyNegative:
+                judgedRatingString = "Overwhelmingly Negative";
+                break;
+            case JudgedRating.VeryNegative:
+                judgedRatingString = "Very Negative";
+                break;
+            case JudgedRating.MostlyNegative:
+                judgedRatingString = "Mostly Negative";
+                break;
+            case JudgedRating.MostlyPositive:
+                judgedRatingString = "Mostly Positive";
+                break;
+            case JudgedRating.VeryPositive:
+                judgedRatingString = "Very Positive";
+                break;
+            case JudgedRating.OverwhelminglyPositive:
+                judgedRatingString = "Overwhelmingly Positive";
+                break;
+            default:
+                break;
+        }
+        ViewBag.JudgedRating = (int)judgedRating;
+        ViewBag.JudgedRatingString = judgedRatingString;
         ViewBag.Screenshots = _gameService.GetScreenshotUrls(game.Id);
-        return View("Detail", game); // trỏ tới Views/Game/Detail.cshtml
+        return View("Detail", new GameDetailModel{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
     }
 
     [HttpGet]

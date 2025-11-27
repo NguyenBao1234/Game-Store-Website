@@ -228,6 +228,55 @@ namespace POWStudio.Migrations
                     b.ToTable("User", (string)null);
                 });
 
+            modelBuilder.Entity("POWStudio.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Cart");
+                });
+
+            modelBuilder.Entity("POWStudio.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("CartId", "GameId")
+                        .IsUnique();
+
+                    b.ToTable("CartItem");
+                });
+
             modelBuilder.Entity("POWStudio.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -565,6 +614,34 @@ namespace POWStudio.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("POWStudio.Models.Cart", b =>
+                {
+                    b.HasOne("POWStudio.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("POWStudio.Models.CartItem", b =>
+                {
+                    b.HasOne("POWStudio.Models.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POWStudio.Models.Cart", "Cart")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Game");
                 });
 
             modelBuilder.Entity("POWStudio.Models.GameCategory", b =>

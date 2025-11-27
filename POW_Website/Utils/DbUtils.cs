@@ -67,7 +67,25 @@ public class DbUtils
         int number_rows = dbCtx.SaveChanges();
         Console.WriteLine("Inserted " + number_rows + " category data");
     }
+
+    public static void HardcodeInsertRating()
+    {
+        using var dbCtx = new GameStoreDbContext();
+        dbCtx.AddRange(gameCateList);
+        int number_rows = dbCtx.SaveChanges();
+        Console.WriteLine("Inserted " + number_rows + "rating data");
+    }
     //hard code data
+    // private static List<Rate> gameRatingList =
+    // [
+    //     new Rate
+    //     {
+    //         bRecomended = true,
+    //         GameId = 2,
+    //         UserId = "d019fc0b-e2ba-4a97-985a-3c8646456e57",
+    //         Date = DateTime.Now,
+    //     }
+    // ];
     private static List<GameScreenshot> gameScreenshotList =
     [
         new GameScreenshot {GameId = 1, ScreenshotUrl = "https://img.itch.zone/aW1hZ2UvMzY1MDY0MC8yMTcyMzU4Ni5qcGc=/original/uBTTFI.jpg"},

@@ -1,48 +1,50 @@
-@model POWStudio.Models.Game
+@model POWStudio.Models.ViewModels.GameDetailModel
 @{
-    ViewData["Title"] = "- " + @Model.Title;
+    ViewData["Title"] = "- " + @Model.Game.Title;
     var screenshots = ViewBag.Screenshots;
     if (screenshots == null) screenshots = new List<string>(); //esure not null
+    int judgedRating = ViewBag.JudgedRating;
+    string judgedRatingString = ViewBag.JudgedRatingString;
     bool bOwned = false;
-    decimal gamePrice = @Model.Price ?? 0.00m;
+    decimal gamePrice = @Model.Game.Price ?? 0.00m;
 }
 <div class="position-relative overflow-hidden">
-    <div class="content-card" style="background-image: url('@Model.BgImageUrl')">
+    <div class="content-card" style="background-image: url('@Model.Game.BgImageUrl')">
         <div class="center-content-wrapper">
 
             <div>
-                <img style="object-fit: cover;  width: 100%" src="@Model.TitleImageUrl"
+                <img style="object-fit: cover;  width: 100%" src="@Model.Game.TitleImageUrl"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                <h1 style="display: none;font-size: 5em; font-weight: bold">@Model.Title</h1>
+                <h1 style="display: none;font-size: 5em; font-weight: bold">@Model.Game.Title</h1>
             </div>
 
             <div class="d-flex gap-3 mt-3">
-                @if (!string.IsNullOrEmpty(Model.ItchioUrl))
+                @if (!string.IsNullOrEmpty(@Model.Game.ItchioUrl))
                 {
-                    <a href="@Model.ItchioUrl" target="_blank" class="store-link">
+                    <a href="@Model.Game.ItchioUrl" target="_blank" class="store-link">
                         <img src="https://static.itch.io/images/logo-white-new.svg"
                              alt="Itch.io" class="store-icon itch-icon" />
                     </a>
                 }
 
-                @if (!string.IsNullOrEmpty(Model.EpicUrl))
+                @if (!string.IsNullOrEmpty(Model.Game.EpicUrl))
                 {
-                    <a href="@Model.EpicUrl" target="_blank" class="store-link">
+                    <a href="@Model.Game.EpicUrl" target="_blank" class="store-link">
                         <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Epic_Games_Store_logo_2023_horizontal_white.svg"
                              alt="Epic Games" class="store-icon epic-icon" />
                     </a>
                 }
 
-                @if (!string.IsNullOrEmpty(Model.SteamUrl))
+                @if (!string.IsNullOrEmpty(Model.Game.SteamUrl))
                 {
-                    <a href="@Model.SteamUrl" target="_blank" class="store-link">
+                    <a href="@Model.Game.SteamUrl" target="_blank" class="store-link">
                         <img src="https://store.cloudflare.steamstatic.com/public/shared/images/header/logo_steam.svg?t=962016"
                              alt="Steam" class="store-icon steam-icon" />
                     </a>
                 }
-                @if (!string.IsNullOrEmpty(Model.FabUrl))
+                @if (!string.IsNullOrEmpty(Model.Game.FabUrl))
                 {
-                    <a href="@Model.FabUrl" target="_blank" class="store-link">
+                    <a href="@Model.Game.FabUrl" target="_blank" class="store-link">
                         <img src="https://static.fab.com/static/builds/web/dist/frontend/assets/images/common/logo/e1e12dc6142410b391ce48e416261ad7-v1.svg"
                              alt="Fab" class="store-icon fab-icon" />
                     </a>
@@ -60,14 +62,14 @@
                     else
                     {
                         <span class="price-label">Price:</span>
-                        <span class="price-value"> @Model.Price?.ToString("C") </span>
+                        <span class="price-value"> @Model.Game.Price?.ToString("C") </span>
                     }
                 </div>
 
                 @if (bOwned)
                 {
                     <a>
-                        <button class="action-button yellow-button" onclick="playGame(@Model.Id)">
+                        <button class="action-button yellow-button" onclick="playGame(@Model.Game.Id)">
                             <i class="bi bi-controller me-2"></i> PLAY NOW
                         </button>
                     </a>
@@ -76,7 +78,7 @@
                 else if (gamePrice == 0.00m)
                 {
                     <a>
-                        <button class="action-button yellow-button" onclick="addToLibrary(@Model.Id)">
+                        <button class="action-button yellow-button" onclick="addToLibrary(@Model.Game.Id)">
                             <i class="bi bi-plus-circle me-2"></i> ADD TO LIBRARY
                         </button>
                     </a>
@@ -84,8 +86,7 @@
                 else
                 {
                     <a>
-                        <button class="action-button yellow-button" onclick="addToCart(@Model.Id)">
-                            <i class="bi bi-cart-fill me-2"></i> ADD TO CART
+                        <button class="action-button yellow-button" onclick="BuyNow(@Model.Game.Id)">BUY NOW
                         </button>
                     </a>
                 }
@@ -99,16 +100,16 @@
     </a>
 </div>
 <div id = "nextSection" class="centered-text-container">
-    <h2>@Model.ShortDescription</h2>
-    <p>@Model.DetailedDescription</p>
+    <h2>@Model.Game.ShortDescription</h2>
+    <p>@Model.Game.DetailedDescription</p>
 </div>
 
 <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-    @if (@Model.bPublic)
+    @if (@Model.Game.bPublic)
     {
         <div style="width: 73vw; aspect-ratio: 16 / 9;">
             <iframe
-                src="@Model.TrailerUrl"
+                src="@Model.Game.TrailerUrl"
                 allowfullscreen
                 style="width: 100%; height: 100%; border: none; display: block; margin: auto;">
             </iframe>
@@ -153,11 +154,25 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-        
-        
     </div>
 }
+@{
+    int rating = ViewBag.JudgedRating;
+    string ratingText = ViewBag.JudgedRatingString;
 
+    // Sử dụng class màu sắc đã định nghĩa
+    string colorClass = rating switch
+    {
+        0    => "text-secondary",
+        1    => "text-danger-emphasis",      // Rất tệ
+        2    => "text-danger",             // Tệ
+        3    => "text-warning",            // Khá tệ
+        4    => "text-secondary",          // Mixed
+        5    => "text-info",               // Khá tốt
+        6    => "text-primary",            // Tốt
+        >= 7 => "text-success",            // Rất tốt
+    };
+}
 <style>
 .thumbnail-carousel .carousel-inner {
     overflow-x: auto; 

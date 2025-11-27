@@ -20,6 +20,8 @@ public class GameStoreDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UserOrder> UserOrder { get; set; }
     public DbSet<Wishlist> Wishlist { get; set; }
     public DbSet<WishlistItem> WishlistItem { get; set; }
+    public DbSet<Cart> Cart { get; set; }
+    public DbSet<CartItem> CartItem { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -41,5 +43,6 @@ public class GameStoreDbContext : IdentityDbContext<ApplicationUser>
         
         builder.Entity<GameCategory>().HasIndex(gc => new { gc.GameId, gc.CategoryId }).IsUnique();
         builder.Entity<GameScreenshot>().HasIndex(gc => new { gc.GameId, SreeenshotUrl = gc.ScreenshotUrl }).IsUnique();
+        builder.Entity<CartItem>().HasIndex(ci => new { ci.CartId, ci.GameId }).IsUnique();
     }
 }

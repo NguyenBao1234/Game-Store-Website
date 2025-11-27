@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using POWStudio.Models;
 using POWStudio.Models.Enum;
 
@@ -102,6 +103,6 @@ public class GameService : IGameService
 
     public IQueryable<Rate> GetRates(int inGameId)
     {
-        return mDBContext.Rate.Where(r => r.GameId == inGameId);
+        return mDBContext.Rate.Where(r => r.GameId == inGameId).Include(r=>r.User);
     }
 }
