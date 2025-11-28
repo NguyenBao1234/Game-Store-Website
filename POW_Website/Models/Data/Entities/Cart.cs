@@ -13,5 +13,5 @@ public class Cart
     
     
     [ForeignKey("UserId")]
-    public required ApplicationUser User { get; set; }
+    public ApplicationUser? User { get; set; }
 }

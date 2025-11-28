@@ -15,5 +15,5 @@ public class Wishlist
     
     [Required]
     [ForeignKey("UserId")]
-    public required ApplicationUser User { get; set; }
+    public ApplicationUser? User { get; set; }
 }
