@@ -296,3 +296,33 @@ body.fade-in-active {
     font-weight: 600;
     color: #ccc;
 }
+
+
+.action-button i {
+    font-size: 1.2em;
+    vertical-align: middle;
+}
+.action-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+
+.yellow-button {
+    background-color: #ffc107; /* Màu vàng cam cho Add to Cart */
+    color: #333;
+}
+.yellow-button:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}

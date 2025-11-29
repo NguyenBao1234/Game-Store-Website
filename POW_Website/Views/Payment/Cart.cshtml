@@ -1,0 +1,212 @@
+@model List<CartItem>
+
+@{
+    ViewData["Title"] = "- Cart";
+    var TotalPrice = ViewBag.TotalPrice;
+    var TotalDiscount = ViewBag.TotalDiscount;
+    var SubTotal = ViewBag.SubTotal;
+}
+<div class="cart-page-container">
+
+    <div class="cart-items-list">
+        <h2>My Cart</h2>
+        @foreach (var cartItem in Model)
+        {
+            var game = cartItem.Game;
+            <div class="cart-item-card">
+                <div class="item-details">
+                    <div class="item-image" style="background-image: url('@game.BgImageUrl');">
+                    </div>
+
+                    <div class="item-info">
+                        <a asp-controller="Game" asp-action="Detail"asp-route-slug="@game.Slug" class="item-title">
+                            @game.Title
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="item-action-price-section">
+                    
+                    <div class="item-price-section">
+                        @if (game.DiscountPercent > 0)
+                        {
+                            <span class="discount-percent"> -@game.DiscountPercent% </span>
+
+                            <span class="original-price">
+                                @game.Price?.ToString("C")
+                            </span>
+                        }
+
+                        <span class="final-price">@((game.Price * (1 - (decimal)(game.DiscountPercent ?? 0) / 100))?.ToString("C")) </span>
+                    </div>
+                    
+
+                    <form asp-controller="Payment" asp-action="Remove" method="post" style="display: contents">
+                        <input type="hidden" name="cartItemId" value="@cartItem.Id" />
+                        <button type="submit" class="remove-button">Remove</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="order-summary">
+        <h3>Game Summary</h3>
+
+        <div class="summary-line">
+            <span>Price</span>
+            <span>@TotalPrice.ToString("C")</span> 
+        </div>
+
+        <div class="summary-line discount">
+            <span>Discount</span>
+            <span>@TotalDiscount.ToString("C")</span>
+        </div>
+
+        <div class="summary-line taxes">
+            <span>Taxes</span>
+            <span>Calculated at Checkout</span>
+        </div>
+
+        <div class="subtotal-section">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-value">@SubTotal.ToString("C")</span>
+        </div>
+
+        <button class="action-button yellow-button" style="width: 100% ; justify-content: center">
+            Checkout
+        </button>
+    </div>
+</div>
+
+<style>.cart-page-container {
+
+        max-width: 65vw;
+        margin: auto;
+        margin-top: 100px;
+        padding: 40px 20px;
+
+        display: flex;
+        justify-content: space-between;
+        color: #ffffff;
+    }
+    
+    .cart-items-list {
+        flex-grow: 1;
+        margin-right: 15px;
+    }
+
+    .cart-item-card {
+        margin: 20px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 20px 0;
+        border-bottom: 1px solid #333;
+        background-color: #242424;
+        border-radius: 4px;
+    }
+
+    .item-details {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .item-image {
+        width: 120px;
+        height: 150px;
+        background-size: cover;
+        background-position: center;
+        margin-right: 20px;
+        border-radius: 4px;
+        margin-left: 20px;
+    }
+
+    .item-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #ffffff;
+        text-decoration: none;
+    }
+    
+    .item-title:hover {
+        text-decoration: underline;
+        color: #ffffff;
+    }
+    .item-action-price-section {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column; /* Xếp giá và nút xoá theo chiều dọc */
+        align-items: flex-end; /* Căn phải các thành phần bên trong */
+        min-width: 150px; /* Đảm bảo đủ không gian cho giá */
+        margin-right:  25px;
+        height: 150px;
+    }
+
+    .item-price-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px; /* Khoảng cách với nút Remove */
+    }
+    .discount-percent {
+        background-color: #ffa90a; /* Màu xanh nổi bật */
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.8em;
+        margin-right: 10px;
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #b0b0b0;
+        margin-right: 10px;
+        font-size: 0.9em;
+    }
+
+    .final-price {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+
+    .order-summary {
+        width: 300px;
+        padding: 20px;
+        border-radius: 6px;
+    }
+
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-size: 0.95em;
+    }
+
+    .subtotal-section {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 15px;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        border-top: 1px solid #333;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    .remove-button {
+        background: none;
+        border: none;
+        color: #ffffff; 
+        cursor: pointer;
+        padding: 0;
+        font-size: 0.9em;
+        text-transform: none;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+    .remove-button:hover {
+        opacity: 1;
+        text-decoration: underline; /* Thêm gạch chân khi hover */
+    }
+</style>

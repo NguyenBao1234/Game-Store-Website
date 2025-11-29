@@ -13,7 +13,7 @@ public class CartItem
     public int GameId { get; set; }
     
     //Navigation properties for FK
-    [ForeignKey("OrderId")]
+    [ForeignKey("CartId")]
     public Cart? Cart { get; set; }
     
     [ForeignKey("GameId")]

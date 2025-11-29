@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +15,10 @@ public class GameController : Controller
 {
     private readonly IGameService _gameService;
     private readonly GameStoreDbContext mDbContext;
-
-    public GameController(IGameService gameService, GameStoreDbContext mDbContextContext)
+    private readonly UserManager<ApplicationUser> mUserManager;
+    public GameController(UserManager<ApplicationUser> userManager, IGameService gameService, GameStoreDbContext mDbContextContext)
     {
+        mUserManager = userManager;
         _gameService = gameService;
         mDbContext = mDbContextContext;
     }
@@ -137,9 +139,12 @@ public class GameController : Controller
             default:
                 break;
         }
+        var userId = mUserManager.GetUserId(User);
         ViewBag.JudgedRating = (int)judgedRating;
         ViewBag.JudgedRatingString = judgedRatingString;
         ViewBag.Screenshots = _gameService.GetScreenshotUrls(game.Id);
+        ViewBag.UserId = userId;
+        ViewBag.bGameInCart = userId != null && _gameService.IsGameInCart(game.Id,userId);
         return View("Detail", new GameDetailModel{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
     }
 
@@ -312,6 +317,6 @@ public class GameController : Controller
         DbUtils.InsertModel(category);
         return View();
     }
-    
-    
+
+
 }

@@ -7,6 +7,7 @@
     string judgedRatingString = ViewBag.JudgedRatingString;
     bool bOwned = false;
     decimal gamePrice = @Model.Game.Price ?? 0.00m;
+    bool bGameInCart = ViewBag.bGameInCart;
 }
 <div class="position-relative overflow-hidden">
     <div class="content-card" style="background-image: url('@Model.Game.BgImageUrl')">
@@ -89,6 +90,25 @@
                         <button class="action-button yellow-button" onclick="BuyNow(@Model.Game.Id)">BUY NOW
                         </button>
                     </a>
+                    @if (bGameInCart)
+                    {
+                        <a asp-controller="Payment" asp-action="Cart">
+                            <button class="sub-button cart-in" >
+                                <i class="bi bi-cart-check-fill"></i> 
+                            </button>
+                        </a>
+
+                    }
+                    else
+                    {
+                        <form asp-controller="Payment" asp-action="AddToCart" method="post" style="display:contents;">
+                            <input type="hidden" name="gameId" value="@Model.Game.Id" />
+
+                            <button class="sub-button cart-out">
+                                <i class="bi bi-cart-fill"></i>
+                            </button>
+                        </form>
+                    }
                 }
             </div>
         </div>
@@ -156,6 +176,7 @@
         </div>
     </div>
 }
+
 @{
     int rating = ViewBag.JudgedRating;
     string ratingText = ViewBag.JudgedRatingString;
@@ -234,17 +255,6 @@
     opacity: 1;
 }
 
-.action-button {
-     font-weight: bold;
-     padding: 10px 25px;
-     border-radius: 8px; /* Bo góc nhẹ */
- }
-
-/* Đảm bảo Icon có kích thước phù hợp */
-.action-button i {
-    font-size: 1.2em;
-    vertical-align: middle;
-}
 /* Container chứa Giá và Nút */
 .action-price-container {
     display: flex;
@@ -272,40 +282,53 @@
 }
 
 .price-value {
-    font-family: 'Josefin Sans', sans-serif; /* Giữ font đặc biệt nếu bạn có */
+    font-family: 'Josefin Sans', sans-serif; 
     font-size: 2.2em; /* Giá to và rõ ràng hơn */
     font-weight: bold;
     color: #ffffff;
     line-height: 1;
 }
 
+/* Đảm bảo Icon có kích thước phù hợp */
 
-/* Nút Hành Động Chính */
-.action-button {
-    padding: 12px 25px;
-    font-size: 1.1em;
-    font-weight: 600;
-    text-transform: uppercase;
+/* Nút Giỏ hàng nhỏ (Add to Cart / View Cart) */
+.add-to-cart-button {
+    background-color: #333; /* Màu mặc định khi CHƯA có trong giỏ */
+    color: white;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sub-button {
+    /* Đặt kích thước để nó nhỏ và vuông hơn */
+    padding: 12px;
+    width: 50px; 
+    height: 50px;
+    font-size: 1.2em; 
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
-}
+    justify-content: center;
 
-
-.yellow-button {
-    background-color: #ffc107; /* Màu vàng cam cho Add to Cart */
-    color: #333;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff; 
 }
-.yellow-button:hover {
-    background-color: #e0a800;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+.sub-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px); /* Hiệu ứng bay lên nhẹ */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Tạo bóng nhẹ */
 }
-
 /* Cải thiện liên kết cửa hàng cho nhất quán hơn */
 .store-link {
     display: flex;
@@ -395,4 +418,6 @@ document.addEventListener('DOMContentLoaded', function ()
         });
     });
 });
+
+
 </script>

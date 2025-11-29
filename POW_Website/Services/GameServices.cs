@@ -22,7 +22,12 @@ public class GameService : IGameService
     {
         return mDBContext.Game.FirstOrDefault(g => g.Slug == slug);
     }
-    
+
+    public Game? GetGameById(int gameId)
+    {
+        return mDBContext.Game.FirstOrDefault(g => g.Id == gameId);
+    }
+
     public IQueryable<Game> GetGamesByTerm(string term, int inLimitAmount = 4, bool inGetAll = false)
     {
         if (string.IsNullOrEmpty(term))
@@ -104,5 +109,37 @@ public class GameService : IGameService
     public IQueryable<Rate> GetRates(int inGameId)
     {
         return mDBContext.Rate.Where(r => r.GameId == inGameId).Include(r=>r.User);
+    }
+
+    public int GetCartId(string inUserId)
+    {
+        var cart = mDBContext.Cart.FirstOrDefault(c => c.UserId == inUserId);
+        if (cart != null) return cart.Id;
+        cart = new Cart
+        {
+            UserId = inUserId
+        };
+        
+        mDBContext.Cart.Add(cart);
+        mDBContext.SaveChanges();
+
+        return cart.Id;
+    }
+    public bool IsGameInCart(int inGameId, string inUserId)
+    {
+        var cartId = GetCartId(inUserId);
+        return mDBContext.CartItem.Any(ci=>ci.GameId == inGameId && ci.CartId == cartId);
+    }
+
+    public IQueryable<CartItem> GetCartItems(string inUserId)
+    {
+        var cartId = GetCartId(inUserId);
+        return mDBContext.CartItem.Where(ci=> ci.CartId == cartId).Include(ci=>ci.Game);
+    }
+
+    public void AddToCart(int gameId, int inCartId)
+    {
+        mDBContext.CartItem.Add(new CartItem {GameId = gameId, CartId = inCartId});
+        mDBContext.SaveChanges();
     }
 }

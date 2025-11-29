@@ -6,6 +6,7 @@ namespace POWStudio.Services;
 public interface IGameService
 {
     Game? GetBySlug(string slug);
+    Game? GetGameById(int gameId);
     public IQueryable<Game> GetGamesByTerm(string term, int inLimitAmount = 4, bool inGetAll = false);
     IQueryable<Game> GetAll();
     IQueryable<Category> GetAllCategories();
@@ -14,4 +15,10 @@ public interface IGameService
     IQueryable <Game> GetGamesByPriceRange(IQueryable<Game> inGamesQuery, decimal? min, decimal? max);
     List<string> GetScreenshotUrls(int inGameId);
     public IQueryable<Rate> GetRates(int inGameId);
+    public int GetCartId(string inUserId);
+    public bool IsGameInCart(int inGameId, string inUserId);
+    public IQueryable<CartItem> GetCartItems(string inUserId);
+
+    void AddToCart(int gameId, int inCartId);
+
 }
