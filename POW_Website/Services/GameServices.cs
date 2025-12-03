@@ -139,7 +139,44 @@ public class GameService : IGameService
 
     public void AddToCart(int gameId, int inCartId)
     {
+        var bGameExist = mDBContext.CartItem.Any(ci => ci.GameId == gameId && ci.CartId == inCartId);
+        if (bGameExist) return;
         mDBContext.CartItem.Add(new CartItem {GameId = gameId, CartId = inCartId});
+        mDBContext.SaveChanges();
+    }
+
+    public int GetWishlistId(string inUserId)
+    {
+        var wishlist = mDBContext.Wishlist.FirstOrDefault(w => w.UserId == inUserId);
+        if (wishlist != null) return wishlist.Id;
+        wishlist = new Wishlist
+        {
+            UserId = inUserId
+        };
+        
+        mDBContext.Wishlist.Add(wishlist);
+        mDBContext.SaveChanges();
+
+        return wishlist.Id;
+    }
+
+    public bool IsGameInWishlist(int inGameId, string inUserId)
+    {
+        var wishlistId = GetWishlistId(inUserId);
+        return mDBContext.WishlistItem.Any(wi=>wi.GameId == inGameId && wi.WishlistId == wishlistId);
+    }
+
+    public IQueryable<WishlistItem> GetWishlistItems(string inUserId)
+    {
+        var wishlistId = GetWishlistId(inUserId);
+        return mDBContext.WishlistItem.Where(wi => wi.WishlistId == wishlistId).Include(wi=>wi.Game);
+    }
+
+    public void AddToWishlist(int gameId, int inWishlistId)
+    {
+        var bGameInWishlist = mDBContext.WishlistItem.Any(wi => wi.GameId == gameId && wi.WishlistId == inWishlistId);
+        if (bGameInWishlist) return;
+        mDBContext.WishlistItem.Add(new WishlistItem{GameId = gameId, WishlistId = inWishlistId});
         mDBContext.SaveChanges();
     }
 }

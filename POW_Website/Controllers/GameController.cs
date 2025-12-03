@@ -51,6 +51,7 @@ public class GameController : Controller
         ViewData["SortAscending"] = inSortAscending;
         ViewData["MinPrice"] = inMinPrice;
         ViewData["MaxPrice"] = inMaxPrice;
+        ViewBag.UserId =  mUserManager.GetUserId(User);
         return View(gameByFilter.ToList());
     }
     
@@ -145,6 +146,7 @@ public class GameController : Controller
         ViewBag.Screenshots = _gameService.GetScreenshotUrls(game.Id);
         ViewBag.UserId = userId;
         ViewBag.bGameInCart = userId != null && _gameService.IsGameInCart(game.Id,userId);
+        ViewBag.bGameInWishlist = userId != null && _gameService.IsGameInWishlist(game.Id,userId);
         return View("Detail", new GameDetailModel{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
     }
 
@@ -317,6 +319,54 @@ public class GameController : Controller
         DbUtils.InsertModel(category);
         return View();
     }
+    
 
+    public IActionResult Wishlist()
+    {
+        var userId = mUserManager.GetUserId(User);
+        var wishlist = _gameService.GetWishlistItems(userId).ToList();
+        ViewBag.UserId = userId;
+        return View(wishlist);
+    }
 
+    public IActionResult RemoveWishlist(int wishItemId)
+    {
+        var wishlistItem = mDbContext.WishlistItem.FirstOrDefault(wi=> wi.Id== wishItemId);
+        if (wishlistItem != null)
+        {
+            mDbContext.WishlistItem.Remove(wishlistItem);
+            var sum = mDbContext.SaveChanges();
+        }
+        return RedirectToAction("Wishlist");
+    }
+
+    public IActionResult AddToWishlistFromDetail(int gameId)
+    {
+        
+        var gameSlug = _gameService.GetGameById(gameId).Slug;
+        var userId = mUserManager.GetUserId(User);
+        var cartId = _gameService.GetCartId(userId);
+        _gameService.AddToWishlist(gameId, cartId);
+
+        return RedirectToAction("Detail", "Game", new { slug = gameSlug });
+    }    
+    public IActionResult AddToWishlistFromSearch(int gameId)
+    {
+        var gameSlug = _gameService.GetGameById(gameId).Slug;
+        var userId = mUserManager.GetUserId(User);
+        var cartId = _gameService.GetCartId(userId);
+        _gameService.AddToWishlist(gameId, cartId);
+
+        return RedirectToAction("Index");
+    }
+    public IActionResult RemoveWishlistFromSearch(int wishItemId)
+    {
+        var wishlistItem = mDbContext.WishlistItem.FirstOrDefault(wi=> wi.Id== wishItemId);
+        if (wishlistItem != null)
+        {
+            mDbContext.WishlistItem.Remove(wishlistItem);
+            var sum = mDbContext.SaveChanges();
+        }
+        return RedirectToAction("Index");
+    }
 }

@@ -1,0 +1,181 @@
+@using POWStudio.Utils
+@{
+    var userId = ViewBag.UserId;
+    
+}
+
+<div class="wishlist-page-container">
+
+    <div>
+        <h2>Wishlist</h2>
+        @foreach (var wishlistItem in Model)
+        {
+            var game = wishlistItem.Game;
+            <div class="cart-item-card">
+                <div class="item-details">
+                    <div class="item-image" style="background-image: url('@game.BgImageUrl');">
+                    </div>
+
+                    <div class="item-info">
+                        <a asp-controller="Game" asp-action="Detail"asp-route-slug="@game.Slug" class="item-title">
+                            @game.Title
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="item-action-price-section">
+                    
+                    <div class="item-price-section">
+                        @if (game.DiscountPercent > 0)
+                        {
+                            <span class="discount-percent"> -@game.DiscountPercent% </span>
+
+                            <span class="original-price">
+                                @game.Price?.ToString("C")
+                            </span>
+                        }
+
+                        <span class="final-price">@((game.Price * (1 - (decimal)(game.DiscountPercent ?? 0) / 100))?.ToString("C")) </span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        @{
+                            var cartId = DbUtils.GetCartId(userId);
+                            var bInCart = DbUtils.IsGameInCart(game.Id, cartId);
+                            Console.WriteLine("Game in cart ? : "+bInCart);
+                        }
+
+                        <form asp-controller="Game" asp-action="RemoveWishlist" method="post" style="display: contents">
+                            <input type="hidden" name="wishItemId" value="@wishlistItem.Id"/>
+                            <button type="submit" class="remove-button">Remove</button>
+                        </form>
+                        
+                        @if (!bInCart)
+                        {
+                            <form asp-controller="Payment" asp-action="AddToCartFromWishlist" method="post" style="display: contents">
+                                <input type="hidden" name="gameId" value="@wishlistItem.Game.Id"/>
+                                <button type="submit" class="sub-button" style="height: 30px; width: auto">
+                                    <i class="bi bi-cart-plus-fill"></i>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="Payment" asp-action="Cart" method="post" style="display: contents">
+                                <button type="submit" class="sub-button" style="height: 30px; width: auto">
+                                    <i class="bi bi-cart-check-fill"></i>
+                                </button>
+                            </form>
+                        }
+
+                    </div>
+                    
+                </div>
+            </div>
+        }
+    </div>
+    
+</div>
+
+<style>.wishlist-page-container {
+
+        max-width: 65vw;
+        margin: auto;
+        margin-top: 100px;
+        padding: 40px 20px;
+        
+        justify-content: space-between;
+        color: #ffffff;
+    }
+
+    .cart-item-card {
+        margin: 20px;
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 20px 0;
+        border-bottom: 1px solid #333;
+        background-color: #242424;
+        border-radius: 4px;
+    }
+
+    .item-details {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .item-image {
+        width: 120px;
+        height: 150px;
+        background-size: cover;
+        background-position: center;
+        margin-right: 20px;
+        border-radius: 4px;
+        margin-left: 20px;
+    }
+
+    .item-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #ffffff;
+        text-decoration: none;
+    }
+    
+    .item-title:hover {
+        text-decoration: underline;
+        color: #ffffff;
+    }
+    .item-action-price-section {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column; /* Xếp giá và nút xoá theo chiều dọc */
+        align-items: flex-end; /* Căn phải các thành phần bên trong */
+        min-width: 150px; /* Đảm bảo đủ không gian cho giá */
+        margin-right:  25px;
+        height: 150px;
+    }
+
+    .item-price-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px; /* Khoảng cách với nút Remove */
+    }
+    .discount-percent {
+        background-color: #ffa90a; /* Màu xanh nổi bật */
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.8em;
+        margin-right: 10px;
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #b0b0b0;
+        margin-right: 10px;
+        font-size: 0.9em;
+    }
+
+    .final-price {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+    
+    .remove-button {
+        background: none;
+        border: none;
+        color: #ffffff; 
+        cursor: pointer;
+        padding: 0;
+        font-size: 0.9em;
+        text-transform: none;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+    .remove-button:hover {
+        opacity: 1;
+        text-decoration: underline; /* Thêm gạch chân khi hover */
+    }
+</style>

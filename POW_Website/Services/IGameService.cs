@@ -20,5 +20,10 @@ public interface IGameService
     public IQueryable<CartItem> GetCartItems(string inUserId);
 
     void AddToCart(int gameId, int inCartId);
+    
+    public int GetWishlistId(string inUserId);
+    public bool IsGameInWishlist(int inGameId, string inUserId);
+    public IQueryable<WishlistItem> GetWishlistItems(string inUserId);
+    void AddToWishlist(int gameId, int inWishlistId);
 
 }

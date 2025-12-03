@@ -269,6 +269,7 @@ body.fade-in-active {
 }
 
 .game-card {
+    position: relative;
     background: #1a1a1a;
     border-radius: 8px;
     overflow: hidden;
@@ -325,4 +326,54 @@ body.fade-in-active {
     background-color: #e0a800;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
+
+.sub-button {
+    padding: 12px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+.sub-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px); /* Hiệu ứng bay lên nhẹ */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Tạo bóng nhẹ */
+}
+.game-card:hover .wishlist-btn {
+    opacity: 1; /* HIỆN NÚT */
+}
+.wishlist-btn {
+    position: absolute;
+    top: 10px; 
+    right: 10px; 
+    z-index: 10;
+
+    /* Tùy chỉnh giao diện nút */
+    background-color: rgba(0, 0, 0, 0.4); 
+    color: white;
+    border: 1px solid white;
+    border-radius: 50%; 
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0; /* Ẩn nút ban đầu */
+    transition: opacity 0.3s ease;
+}
+
+.wishlist-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8); /* Thay đổi màu khi di chuột */
 }

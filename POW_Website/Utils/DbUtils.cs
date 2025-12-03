@@ -29,7 +29,47 @@ public class DbUtils
         dbCtx.SaveChanges();
         Console.WriteLine("Inserted " + inModel.ToString());
     }
-    
+
+    public static int GetWishlistId(string inUserId)
+    {
+        using var dbCtx = new GameStoreDbContext();
+        var wishlist = dbCtx.Wishlist.FirstOrDefault(w => w.UserId == inUserId);
+        if (wishlist != null) return wishlist.Id;
+        wishlist = new Wishlist
+        {
+            UserId = inUserId
+        };
+        
+        dbCtx.Wishlist.Add(wishlist);
+        dbCtx.SaveChanges();
+
+        return wishlist.Id;
+    }
+    public static int GetCartId(string inUserId)
+    {
+        using var dbCtx = new GameStoreDbContext();
+        var cart = dbCtx.Cart.FirstOrDefault(c => c.UserId == inUserId);
+        if (cart != null) return cart.Id;
+        cart = new Cart
+        {
+            UserId = inUserId
+        };
+        
+        dbCtx.Cart.Add(cart);
+        dbCtx.SaveChanges();
+
+        return cart.Id;
+    }
+    public static bool IsGameInWishlist(int gameId, int wishlistId)
+    {
+        using var dbCtx = new GameStoreDbContext();
+        return dbCtx.WishlistItem.Any(wi=>wi.GameId == gameId && wi.WishlistId == wishlistId);
+    }
+    public static bool IsGameInCart(int inGameId, int cartId)
+    {
+        using var dbCtx = new GameStoreDbContext();
+        return dbCtx.CartItem.Any(ci=>ci.GameId == inGameId && ci.CartId == cartId);
+    }
     //Hardcode to insert into db_____________________________________
     public static void HardcodeInsertGameScreenshot()
     {
