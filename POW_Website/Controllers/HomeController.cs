@@ -27,9 +27,15 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var games = _gameService.GetAll();
+        // TẠM THỜI: không gọi DB nữa
+        // var games = _gameService.GetAll();
+
+        // Trả về danh sách game rỗng (đúng kiểu model mà View đang cần)
+        var games = new List<Game>();
+
         return View(games);
     }
+
 
     [Route("/About")]
     public IActionResult AboutPow()

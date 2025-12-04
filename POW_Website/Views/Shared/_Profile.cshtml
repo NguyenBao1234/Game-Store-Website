@@ -1,0 +1,264 @@
+@* Views/Shared/_Profile.cshtml *@
+
+<style>
+/* Khối layout chính của trang tài khoản */
+.epic-profile-wrapper {
+    display: flex;
+    max-width: 1180px;
+    margin: 40px auto;
+    background: #0f1116;
+    color: #e5e7eb;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #1f2933;
+}
+
+/* Cột bên trái */
+.epic-sidebar {
+    width: 250px;
+    background: #14161c;
+    padding: 22px 18px;
+    border-right: 1px solid #1f2933;
+}
+
+.epic-sidebar-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #9ca3af;
+    margin-bottom: 10px;
+}
+
+.epic-sidebar-title.mt {
+    margin-top: 24px;
+}
+
+.epic-sidebar-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.epic-sidebar-menu li {
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #cbd5f5;
+}
+
+.epic-sidebar-menu li:hover {
+    background: #1f2430;
+}
+
+.epic-sidebar-menu li.active {
+    background: #2563eb;
+    color: #fff;
+}
+
+/* Nội dung bên phải */
+.epic-profile-content {
+    flex: 1;
+    padding: 30px 36px 34px;
+}
+
+.epic-page-title {
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+
+.epic-page-subtitle {
+    color: #9ca3af;
+    margin-bottom: 22px;
+    font-size: 14px;
+}
+
+/* Thẻ card */
+.epic-card {
+    background: #151923;
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+    border: 1px solid #222733;
+}
+
+.epic-card-title {
+    font-size: 17px;
+    margin: 0 0 14px;
+}
+
+.epic-desc {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+/* Hàng thông tin */
+.epic-info-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.epic-info-row label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #9ca3af;
+    margin-bottom: 3px;
+}
+
+.epic-readonly {
+    font-size: 14px;
+    color: #f9fafb;
+    word-break: break-all;
+}
+
+.epic-editable {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.epic-input-column {
+    flex: 1;
+}
+
+/* Ô input */
+.epic-info-row input,
+.epic-input-group input {
+    width: 100%;
+    background: #0f1117;
+    border: 1px solid #2a2f3a;
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: #f9fafb;
+    font-size: 14px;
+}
+
+.epic-info-row input:disabled,
+.epic-input-group input:disabled {
+    color: #e5e7eb;
+}
+
+/* Nút chỉnh sửa nhỏ bên phải */
+.epic-edit-btn {
+    border: none;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #2563eb;
+    color: #fff;
+}
+
+.epic-edit-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Lưới thông tin cá nhân 2 cột */
+.epic-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.epic-input-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #9ca3af;
+}
+</style>
+
+<div class="epic-profile-wrapper">
+    <!-- Cột menu bên trái -->
+    <aside class="epic-sidebar">
+        <h3 class="epic-sidebar-title">Account</h3>
+        <ul class="epic-sidebar-menu">
+            <li class="active">Settings</li>
+            <li>Linked accounts</li>
+            <li>Communication preferences</li>
+            <li>Password &amp; security</li>
+            <li>EULA history</li>
+        </ul>
+
+        <h3 class="epic-sidebar-title mt">Payment &amp; rewards</h3>
+        <ul class="epic-sidebar-menu">
+            <li>Payment settings</li>
+            <li>Transactions</li>
+            <li>Subscriptions</li>
+            <li>In-game currency</li>
+            <li>Epic rewards</li>
+            <li>Redeem code</li>
+        </ul>
+    </aside>
+
+    <!-- Nội dung chi tiết tài khoản -->
+    <main class="epic-profile-content">
+        <h1 class="epic-page-title">Settings</h1>
+        <p class="epic-page-subtitle">Manage your account details.</p>
+
+        <!-- Thông tin tài khoản -->
+        <section class="epic-card">
+            <h2 class="epic-card-title">Account information</h2>
+
+            <div class="epic-info-row">
+                <label>Account ID</label>
+                <span class="epic-readonly">31b19683111645b89c83ef93481891d6</span>
+            </div>
+
+            <div class="epic-info-row epic-editable">
+                <div class="epic-input-column">
+                    <label>Display name</label>
+                    <input type="text" value="Hoangduong" disabled />
+                </div>
+                <button class="epic-edit-btn" type="button">✎</button>
+            </div>
+
+            <div class="epic-info-row epic-editable">
+                <div class="epic-input-column">
+                    <label>Email address</label>
+                    <input type="text" value="hoangduong@gmail.com" disabled />
+                </div>
+                <button class="epic-edit-btn" type="button">✎</button>
+            </div>
+        </section>
+
+        <!-- Thông tin cá nhân -->
+        <section class="epic-card">
+            <h2 class="epic-card-title">Personal details</h2>
+            <p class="epic-desc">
+                These personal details are private and will not be displayed to other users.
+            </p>
+
+            <div class="epic-grid-2">
+                <div class="epic-input-group">
+                    <label>First name</label>
+                    <input type="text" value="Nguyen" disabled />
+                </div>
+                <div class="epic-input-group">
+                    <label>Last name</label>
+                    <input type="text" value="Player" disabled />
+                </div>
+                <div class="epic-input-group">
+                    <label>Country</label>
+                    <input type="text" value="Vietnam" disabled />
+                </div>
+                <div class="epic-input-group">
+                    <label>Phone</label>
+                    <input type="text" value="0123 456 789" disabled />
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
