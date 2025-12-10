@@ -42,6 +42,8 @@
                         @{
                             var cartId = DbUtils.GetCartId(userId);
                             var bInCart = DbUtils.IsGameInCart(game.Id, cartId);
+                            var libId = DbUtils.GetLibraryId(userId);
+                            var bInLib = DbUtils.IsGameInLibrary(game.Id, libId);
                             Console.WriteLine("Game in cart ? : "+bInCart);
                         }
 
@@ -49,23 +51,25 @@
                             <input type="hidden" name="wishItemId" value="@wishlistItem.Id"/>
                             <button type="submit" class="remove-button">Remove</button>
                         </form>
-                        
-                        @if (!bInCart)
+                        @if (!bInLib)
                         {
-                            <form asp-controller="Payment" asp-action="AddToCartFromWishlist" method="post" style="display: contents">
-                                <input type="hidden" name="gameId" value="@wishlistItem.Game.Id"/>
-                                <button type="submit" class="sub-button" style="height: 30px; width: auto">
-                                    <i class="bi bi-cart-plus-fill"></i>
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-controller="Payment" asp-action="Cart" method="post" style="display: contents">
-                                <button type="submit" class="sub-button" style="height: 30px; width: auto">
-                                    <i class="bi bi-cart-check-fill"></i>
-                                </button>
-                            </form>
+                            if (!bInCart)
+                            {
+                                <form asp-controller="Payment" asp-action="AddToCartFromWishlist" method="post" style="display: contents">
+                                    <input type="hidden" name="gameId" value="@wishlistItem.Game.Id"/>
+                                    <button type="submit" class="sub-button" style="height: 30px; width: auto">
+                                        <i class="bi bi-cart-plus-fill"></i>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="Payment" asp-action="Cart" method="post" style="display: contents">
+                                    <button type="submit" class="sub-button" style="height: 30px; width: auto">
+                                        <i class="bi bi-cart-check-fill"></i>
+                                    </button>
+                                </form>
+                            }
                         }
 
                     </div>

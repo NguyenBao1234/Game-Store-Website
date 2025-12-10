@@ -1,22 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
 
 namespace POWStudio.Models;
 
-public class UserOrder
+public class UserLibrary
 {
     [Key]
     public int Id { get; set; }
     
-    public int OrderId { get; set; }
-    
     [StringLength(450)]
     public required string UserId { get; set; }
     
-    //Navigation properties for FK
-    [ForeignKey("OrderId")]
-    public Order? Order { get; set; }
     
     [ForeignKey("UserId")]
     public ApplicationUser User { get; set; }

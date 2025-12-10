@@ -36,6 +36,10 @@ body.fade-in-active {
     opacity: 1;
     transition: opacity 1s ease-in-out;
 }
+img {
+    user-select: none;
+    -webkit-user-drag: none;
+}
 .content {
     position: absolute;
     top: 50%;
@@ -315,6 +319,7 @@ body.fade-in-active {
     letter-spacing: 0.5px;
     display: flex;
     align-items: center;
+    text-decoration: none;
 }
 
 
@@ -376,4 +381,264 @@ body.fade-in-active {
 
 .wishlist-btn:hover {
     background-color: rgba(0, 0, 0, 0.8); /* Thay đổi màu khi di chuột */
+}
+
+.discount-percent {
+    background-color: #ffa90a; /* Màu xanh nổi bật */
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    margin-right: 10px;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #b0b0b0;
+    margin-right: 10px;
+    font-size: 0.9em;
+}
+.original-game-price {
+    text-decoration: line-through;
+    font-size: 14px;
+    color: #999;
+}
+
+.final-price {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+.item-action-price-section {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column; /* Xếp giá và nút xoá theo chiều dọc */
+    align-items: flex-end; /* Căn phải các thành phần bên trong */
+    min-width: 150px; /* Đảm bảo đủ không gian cho giá */
+    margin-right:  25px;
+    height: 150px;
+}
+/*Payment*/
+/* Ẩn Modal mặc định và tạo lớp phủ mờ */
+.payment-modal {
+    display: none; /* Ban đầu ẩn đi */
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75); /* Nền tối đậm hơn */
+    overflow: auto;
+}
+
+/* Nội dung Modal (cửa sổ thanh toán) */
+.payment-modal-content {
+    background-color: #121212; /* Màu nền rất tối */
+    color: #cccccc; /* Màu chữ nhạt */
+    margin: 3% auto; /* Đặt gần phía trên hơn */
+    width: 95%;
+    max-width: 1100px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: flex; /* Dùng flexbox để căn giữa nội dung */
+    flex-direction: column;
+}
+
+/* Nút đóng (X) */
+.close-payment {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: #aaa;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+}
+.close-payment:hover {
+    color: white;
+}
+
+/* --- Bố cục chính (Chia 2 cột) --- */
+.checkout-container {
+    display: flex;
+    min-height: 80vh;
+}
+
+/* Cột Thanh toán (Bên trái) */
+.checkout-section {
+    flex: 2; /* Chiếm khoảng 60% */
+    padding: 40px 60px;
+    background-color: #1a1a1a;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.section-title {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+.progress-bar {
+    height: 4px;
+    background-color: #ffa90a; /* Màu xanh lá/xanh dương tùy ý */
+    width: 30%; /* Chỉ phần đầu đã hoàn thành */
+    margin-bottom: 40px;
+}
+.subsection-title {
+    color: #999;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-top: 40px;
+    margin-bottom: 15px;
+}
+
+/* Lựa chọn Thanh toán */
+.payment-option {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    background-color: #2a2a2a;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.payment-option:has(input:checked) {
+    background-color: #333333;
+    border-color: #ffa90a; /* Viền sáng khi được chọn */
+}
+.payment-option input[type="radio"] {
+    margin-right: 15px;
+    /* Có thể ẩn radio button mặc định và tự tạo kiểu */
+}
+.option-text {
+    color: white;
+    font-weight: 500;
+}
+
+/* Cột Tóm tắt Đơn hàng (Bên phải) */
+.summary-section {
+    flex: 1; /* Chiếm khoảng 40% */
+    padding: 40px;
+    background-color: #121212;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+.summary-title {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+/* Thông tin sản phẩm */
+.product-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+.product-image-placeholder {
+    width: 60px;
+    height: 80px;
+    background-color: #333;
+    margin-right: 15px;
+    background-size: cover;
+    background-position: center;
+}
+.item-image {
+    width: 120px;
+    height: 150px;
+    background-size: cover;
+    background-position: center;
+    margin-right: 20px;
+    border-radius: 4px;
+    margin-left: 20px;
+}
+.product-details .game-name {
+    color: white;
+    font-weight: bold;
+    margin: 0;
+}
+.product-details .game-price {
+    color: #999;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Chi tiết giá */
+.price-breakdown p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+.price-breakdown hr {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 15px 0;
+}
+.price-breakdown .total {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+/* Mã Creator Code */
+.creator-code {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.creator-code input {
+    flex-grow: 1;
+    padding: 10px;
+    background-color: #222;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px 0 0 4px;
+}
+.creator-code input::placeholder {
+    color: #777;
+}
+.info-icon {
+    padding: 10px;
+    background-color: #222;
+    border: 1px solid #444;
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+/* Điều khoản */
+.need-help a, .terms-text a {
+    color: #007bff;
+    text-decoration: none;
+}
+.terms-text {
+    font-size: 12px;
+    color: #777;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* Nút ĐẶT HÀNG (PLACE ORDER) */
+.place-order-button {
+    width: 100%;
+    padding: 15px;
+    background-color: rgba(255, 169, 10, 0.62); /* Màu xám nhạt như trong ảnh */
+    color: black;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.place-order-button:hover {
+    background-color: #ffa90a;
 }

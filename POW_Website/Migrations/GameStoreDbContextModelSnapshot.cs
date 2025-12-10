@@ -262,14 +262,9 @@ namespace POWStudio.Migrations
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("OrderId");
 
                     b.HasIndex("CartId", "GameId")
                         .IsUnique();
@@ -411,6 +406,30 @@ namespace POWStudio.Migrations
                     b.ToTable("GameSpotlight");
                 });
 
+            modelBuilder.Entity("POWStudio.Models.LibraryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("LibraryId", "GameId")
+                        .IsUnique();
+
+                    b.ToTable("LibraryItem");
+                });
+
             modelBuilder.Entity("POWStudio.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -422,13 +441,10 @@ namespace POWStudio.Migrations
                     b.Property<decimal?>("DiscountAmount")
                         .HasColumnType("money");
 
-                    b.Property<decimal?>("FinalPrice")
-                        .HasColumnType("money");
-
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("Price")
+                    b.Property<decimal>("Price")
                         .HasColumnType("money");
 
                     b.HasKey("Id");
@@ -454,7 +470,8 @@ namespace POWStudio.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId", "GameId")
+                        .IsUnique();
 
                     b.ToTable("OrderItem");
                 });
@@ -502,7 +519,7 @@ namespace POWStudio.Migrations
                     b.ToTable("Rate");
                 });
 
-            modelBuilder.Entity("POWStudio.Models.UserOrder", b =>
+            modelBuilder.Entity("POWStudio.Models.UserLibrary", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -516,6 +533,31 @@ namespace POWStudio.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserLibrary");
+                });
+
+            modelBuilder.Entity("POWStudio.Models.UserOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("UserId");
 
@@ -560,7 +602,8 @@ namespace POWStudio.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.HasIndex("WishlistId");
+                    b.HasIndex("WishlistId", "GameId")
+                        .IsUnique();
 
                     b.ToTable("WishlistItem");
                 });
@@ -629,15 +672,17 @@ namespace POWStudio.Migrations
 
             modelBuilder.Entity("POWStudio.Models.CartItem", b =>
                 {
+                    b.HasOne("POWStudio.Models.Cart", "Cart")
+                        .WithMany()
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("POWStudio.Models.Game", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("POWStudio.Models.Cart", "Cart")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
 
                     b.Navigation("Cart");
 
@@ -685,6 +730,25 @@ namespace POWStudio.Migrations
                     b.Navigation("Game");
                 });
 
+            modelBuilder.Entity("POWStudio.Models.LibraryItem", b =>
+                {
+                    b.HasOne("POWStudio.Models.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POWStudio.Models.UserLibrary", "UserLibrary")
+                        .WithMany()
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("UserLibrary");
+                });
+
             modelBuilder.Entity("POWStudio.Models.OrderItem", b =>
                 {
                     b.HasOne("POWStudio.Models.Game", "Game")
@@ -723,13 +787,32 @@ namespace POWStudio.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("POWStudio.Models.UserOrder", b =>
+            modelBuilder.Entity("POWStudio.Models.UserLibrary", b =>
                 {
                     b.HasOne("POWStudio.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("POWStudio.Models.UserOrder", b =>
+                {
+                    b.HasOne("POWStudio.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POWStudio.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("User");
                 });

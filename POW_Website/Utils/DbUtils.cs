@@ -70,6 +70,26 @@ public class DbUtils
         using var dbCtx = new GameStoreDbContext();
         return dbCtx.CartItem.Any(ci=>ci.GameId == inGameId && ci.CartId == cartId);
     }
+    public static int GetLibraryId(string inUserId)
+    {
+        using var dbCtx = new GameStoreDbContext();
+        var library = dbCtx.UserLibrary.FirstOrDefault(l =>l.UserId == inUserId);
+        if (library != null) return library.Id;
+        library = new UserLibrary()
+        {
+            UserId = inUserId
+        };
+        
+        dbCtx.UserLibrary.Add(library);
+        dbCtx.SaveChanges();
+
+        return library.Id;
+    }
+    public static bool IsGameInLibrary(int inGameId, int libraryId)
+    {
+        using var dbCtx = new GameStoreDbContext();
+        return dbCtx.LibraryItem.Any(l=>l.GameId == inGameId && l.LibraryId == libraryId);
+    }
     //Hardcode to insert into db_____________________________________
     public static void HardcodeInsertGameScreenshot()
     {

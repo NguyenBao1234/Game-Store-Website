@@ -76,6 +76,37 @@ public class PaymentController : Controller
 
         return RedirectToAction("Wishlist", "Game");
     }
-    
+
+    public IActionResult PlaceOrder(List<int> gameIds )
+    {
+        var games = mDbContext.Game.Where(g => gameIds.Contains(g.Id)).ToList();
+        decimal price = 0;
+        decimal? totalDiscount = 0;
+        decimal finalPrice = 0;
+        foreach (var g in games)
+        {
+            decimal? discount = g.Price * (decimal?)(g.DiscountPercent ?? 0) / 100m;
+
+            price += g.Price??0;
+            totalDiscount += discount;
+        }
+        
+        var userId = mUserManager.GetUserId(User);
+        var cartId = _gameService.GetCartId(userId);
+        var libId = _gameService.GetLibraryId(userId);
+        var orderId = _gameService.AddNewOrder(userId, price, totalDiscount);
+        foreach (var gameId in gameIds)
+        {
+            _gameService.RemoveCartItem(gameId, cartId);
+            _gameService.AddLibraryItem(gameId, libId);
+            _gameService.AddOrderItem(gameId, orderId);
+        }
+        return RedirectToAction("OrderSuccess");
+    }
+
+    public IActionResult OrderSuccess()
+    {
+        return View();
+    }
 }
     

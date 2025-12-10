@@ -145,6 +145,17 @@ public class GameService : IGameService
         mDBContext.SaveChanges();
     }
 
+    public void RemoveCartItem(int inGameId, int inCartId)
+    {
+        var cartItem = mDBContext.CartItem.FirstOrDefault(c => c.CartId ==  inCartId && c.GameId == inGameId);
+
+        if (cartItem != null)
+        {
+            mDBContext.CartItem.Remove(cartItem);
+            mDBContext.SaveChanges();
+        }
+    }
+
     public int GetWishlistId(string inUserId)
     {
         var wishlist = mDBContext.Wishlist.FirstOrDefault(w => w.UserId == inUserId);
@@ -177,6 +188,69 @@ public class GameService : IGameService
         var bGameInWishlist = mDBContext.WishlistItem.Any(wi => wi.GameId == gameId && wi.WishlistId == inWishlistId);
         if (bGameInWishlist) return;
         mDBContext.WishlistItem.Add(new WishlistItem{GameId = gameId, WishlistId = inWishlistId});
+        mDBContext.SaveChanges();
+    }
+
+    public int GetLibraryId(string inUserId)
+    {
+        var uLibrary = mDBContext.UserLibrary.FirstOrDefault(l => l.UserId == inUserId);
+        if (uLibrary != null) return uLibrary.Id;
+        uLibrary = new UserLibrary
+        {
+            UserId = inUserId
+        };
+        mDBContext.UserLibrary.Add(uLibrary);
+        mDBContext.SaveChanges();
+        
+        return uLibrary.Id;
+    }
+
+    public bool IsGameInLibrary(int inGameId, string inUserId)
+    {
+        var LibID = GetLibraryId(inUserId);
+        return mDBContext.LibraryItem.Any(li => li.GameId == inGameId && li.LibraryId == LibID);
+    }
+
+    public void AddLibraryItem(int gameId, int inLibraryId)
+    {
+        var bExist = mDBContext.LibraryItem.Any(li => li.GameId == gameId && li.LibraryId == inLibraryId);
+        if (bExist) return;
+        
+        var LibItem = new LibraryItem
+        {
+            GameId = gameId,
+            LibraryId = inLibraryId
+        };
+        mDBContext.LibraryItem.Add(LibItem);
+        mDBContext.SaveChanges();
+    }
+
+    public int AddNewOrder(string inUserId, decimal price, decimal? discountAmount)
+    {
+        var order = new Order
+        {
+            OrderDate = DateTime.Now,
+            Price = price,
+            DiscountAmount = discountAmount
+        };
+        mDBContext.Order.Add(order);
+        mDBContext.SaveChanges();
+        var userOrder = new UserOrder
+        {
+            OrderId = order.Id,
+            UserId = inUserId
+        };
+
+        mDBContext.UserOrder.Add(userOrder);
+        mDBContext.SaveChanges();
+        return order.Id;
+    }
+
+    public void AddOrderItem(int gameId, int inOrderId)
+    {
+        var bExist = mDBContext.OrderItem.Any(li => li.GameId == gameId && li.OrderId == inOrderId);
+        if (bExist) return;
+        mDBContext.OrderItem.Add(new OrderItem {GameId = gameId, OrderId = inOrderId});
         mDBContext.SaveChanges();
     }
 }

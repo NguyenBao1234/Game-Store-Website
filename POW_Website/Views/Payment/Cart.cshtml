@@ -5,6 +5,7 @@
     var TotalPrice = ViewBag.TotalPrice;
     var TotalDiscount = ViewBag.TotalDiscount;
     var SubTotal = ViewBag.SubTotal;
+    List<int> idList = new List<int>();
 }
 <div class="cart-page-container">
 
@@ -13,6 +14,7 @@
         @foreach (var cartItem in Model)
         {
             var game = cartItem.Game;
+            idList.Add(game.Id);
             <div class="cart-item-card">
                 <div class="item-details">
                     <div class="item-image" style="background-image: url('@game.BgImageUrl');">
@@ -73,9 +75,9 @@
             <span class="subtotal-value">@SubTotal.ToString("C")</span>
         </div>
 
-        <button class="action-button yellow-button" style="width: 100% ; justify-content: center">
+        <a asp-controller="Payment" asp-action="PlaceOrder" asp-route-gameIds="@idList" class="action-button yellow-button" style="width: 100% ; justify-content: center">
             Checkout
-        </button>
+        </a>
     </div>
 </div>
 
@@ -112,16 +114,6 @@
         align-items: flex-start;
     }
 
-    .item-image {
-        width: 120px;
-        height: 150px;
-        background-size: cover;
-        background-position: center;
-        margin-right: 20px;
-        border-radius: 4px;
-        margin-left: 20px;
-    }
-
     .item-title {
         font-size: 1.1em;
         font-weight: bold;
@@ -133,41 +125,14 @@
         text-decoration: underline;
         color: #ffffff;
     }
-    .item-action-price-section {
-        display: flex;
-        justify-content: space-between;
-        flex-direction: column; /* Xếp giá và nút xoá theo chiều dọc */
-        align-items: flex-end; /* Căn phải các thành phần bên trong */
-        min-width: 150px; /* Đảm bảo đủ không gian cho giá */
-        margin-right:  25px;
-        height: 150px;
-    }
+
 
     .item-price-section {
         display: flex;
         align-items: center;
         margin-bottom: 10px; /* Khoảng cách với nút Remove */
     }
-    .discount-percent {
-        background-color: #ffa90a; /* Màu xanh nổi bật */
-        color: white;
-        padding: 2px 5px;
-        border-radius: 3px;
-        font-size: 0.8em;
-        margin-right: 10px;
-    }
 
-    .original-price {
-        text-decoration: line-through;
-        color: #b0b0b0;
-        margin-right: 10px;
-        font-size: 0.9em;
-    }
-
-    .final-price {
-        font-weight: bold;
-        font-size: 1.1em;
-    }
 
 
     .order-summary {

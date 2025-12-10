@@ -5,11 +5,15 @@
     if (screenshots == null) screenshots = new List<string>(); //esure not null
     int judgedRating = ViewBag.JudgedRating;
     string judgedRatingString = ViewBag.JudgedRatingString;
-    bool bOwned = false;
+    bool bOwned = ViewBag.bOwned;
     decimal gamePrice = @Model.Game.Price ?? 0.00m;
+    decimal discountPrice = gamePrice * (decimal)((Model.Game.DiscountPercent ?? 0 )/ 100);
+    decimal finalPrice = gamePrice - discountPrice;
     bool bGameInCart = ViewBag.bGameInCart;
     bool bGameInWishlist = ViewBag.bGameInWishlist;
+    
 }
+
 <div class="position-relative overflow-hidden">
     <div class="content-card" style="background-image: url('@Model.Game.BgImageUrl')">
         <div class="center-content-wrapper">
@@ -64,7 +68,18 @@
                     else
                     {
                         <span class="price-label">Price:</span>
-                        <span class="price-value"> @Model.Game.Price?.ToString("C") </span>
+                        <div class="item-price-section">
+                            @if (Model.Game.DiscountPercent > 0)
+                            {
+                                <span class="discount-percent"> -@Model.Game.DiscountPercent% </span>
+
+                                <span class="original-price">
+                                    @Model.Game.Price?.ToString("C")
+                                </span>
+                            }
+
+                            <span class="final-price">@((Model.Game.Price * (1 - (decimal)(Model.Game.DiscountPercent ?? 0) / 100))?.ToString("C")) </span>
+                        </div>
                     }
                 </div>
 
@@ -88,7 +103,7 @@
                 else
                 {
                     <a>
-                        <button class="action-button yellow-button" onclick="BuyNow(@Model.Game.Id)">BUY NOW
+                        <button class="action-button yellow-button" onclick="showCheckoutPopup(@Model.Game.Id)">BUY NOW
                         </button>
                     </a>
                     @if (bGameInWishlist)
@@ -131,7 +146,7 @@
                 }
             </div>
         </div>
-
+        
     </div>
     
     <a class="scrollCaretButton" style="bottom: 10px; z-index: 3;" onclick="smoothScrollTo(document.getElementById('nextSection'))">
@@ -371,6 +386,81 @@
     </div>
 </div>
 
+<div id="paymentModal" class="payment-modal">
+    <div class="payment-modal-content">
+        
+        <span class="close-payment" onclick="closeCheckoutPopup()">&times;</span>
+        
+        <div class="checkout-container">
+            
+            <div class="checkout-section">
+                
+                <h2 class="section-title">CHECKOUT</h2>
+                <div class="progress-bar"></div>
+                
+                <h3 class="subsection-title">OTHER PAYMENT METHODS</h3>
+                
+                <label class="payment-option">
+                    <input type="radio" name="payment_method" value="credit_card" checked>
+                    <span class="option-text">Credit Card / Debit Card</span>
+                </label>
+                
+                <label class="payment-option">
+                    <input type="radio" name="payment_method" value="paypal">
+                    <span class="option-text">PayPal</span>
+                </label>
+            </div>
+
+            <div class="summary-section">
+                <h3 class="summary-title">ORDER SUMMARY</h3>
+                
+                <div class="product-info">
+                    <div class="product-image-placeholder" style="background-image: url(@Model.Game.BgImageUrl)"></div>
+                    <div class="product-details">
+                        <p class="game-name">@Model.Game.Title</p>
+                        <div class="item-price-section">
+                            @if (Model.Game.DiscountPercent > 0)
+                            {
+                                <span class="discount-percent"> -@Model.Game.DiscountPercent% </span>
+
+                                <span class="original-game-price">
+                                    @Model.Game.Price?.ToString("C")
+                                </span>
+                            }
+
+                            <span class="game-price">@((Model.Game.Price * (1 - (decimal)(Model.Game.DiscountPercent ?? 0) / 100))?.ToString("C")) </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price-breakdown">
+                    <p><span>Price</span> <span>@gamePrice.ToString("C")</span></p>
+                    <p><span>Sale Discount</span> <span>@discountPrice.ToString("C")</span></p>
+                    <p><span>VAT Included (10%)</span> <span>@((finalPrice * 1/11).ToString("C"))</span></p>
+                    <hr>
+                    <p class="total"><span>Total</span> <span>@finalPrice.ToString("C")</span></p>
+                </div>
+                
+                <div class="creator-code">
+                    <input type="text" placeholder="Enter creator code">
+                    <span class="info-icon">?</span>
+                </div>
+
+                <p class="need-help">Need Help? <a href="#">Contact Us</a></p>
+                
+                <div class="terms-text">
+                    <p>You are purchasing a digital license for this product. For full terms, see <a href="#">purchase policy</a>.</p>
+                    <p>By selecting Place Order below, you certify that you are over 18 and an authorized user of this payment method, and agree to the <a href="#">End User License Agreement</a>.</p>
+                </div>
+                @{
+                    List<int> games = [Model.Game.Id]; 
+                }
+                <a asp-controller="Payment" asp-action="PlaceOrder" asp-route-gameIds="@games" class="action-button yellow-button" style="width: 100% ; justify-content: center">PLACE ORDER</a>
+            </div>
+        </div>
+        
+    </div>
+</div>
 
 <script>
 
@@ -416,5 +506,25 @@ document.addEventListener('DOMContentLoaded', function ()
     });
 });
 
+// Popup thanh toan
+var modal = document.getElementById("paymentModal");
 
+function showCheckoutPopup(gameId) {
+    // Nếu bạn cần lấy thông tin gameId để hiển thị trong modal:
+    // console.log("Đang mở thanh toán cho Game ID:", gameId); 
+
+    modal.style.display = "block";
+}
+
+function closeCheckoutPopup() {
+    modal.style.display = "none";
+}
+
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
 </script>
+

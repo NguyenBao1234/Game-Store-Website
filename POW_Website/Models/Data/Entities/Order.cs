@@ -11,12 +11,9 @@ public class Order
     public DateTime OrderDate { get; set; }
     
     [Column(TypeName = "money")]
-    public decimal? Price { get; set; }
+    public decimal Price { get; set; }
     
     [Column(TypeName = "money")]
     public decimal? DiscountAmount {get; set;}
-    
-    [Column(TypeName = "money")]
-    public decimal? FinalPrice {get; set;}
 
 }

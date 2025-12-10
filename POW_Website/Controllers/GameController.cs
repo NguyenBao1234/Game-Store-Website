@@ -147,6 +147,7 @@ public class GameController : Controller
         ViewBag.UserId = userId;
         ViewBag.bGameInCart = userId != null && _gameService.IsGameInCart(game.Id,userId);
         ViewBag.bGameInWishlist = userId != null && _gameService.IsGameInWishlist(game.Id,userId);
+        ViewBag.bOwned = _gameService.IsGameInLibrary(game.Id, userId);
         return View("Detail", new GameDetailModel{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
     }
 
