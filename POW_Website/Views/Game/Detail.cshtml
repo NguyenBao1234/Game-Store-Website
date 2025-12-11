@@ -453,9 +453,22 @@
                     <p>By selecting Place Order below, you certify that you are over 18 and an authorized user of this payment method, and agree to the <a href="#">End User License Agreement</a>.</p>
                 </div>
                 @{
-                    List<int> games = [Model.Game.Id]; 
+                    List<int> games = [Model.Game.Id];
+                    foreach (var game in games)
+                    {
+                        Console.WriteLine("ID: "+ game);
+                    }
                 }
-                <a asp-controller="Payment" asp-action="PlaceOrder" asp-route-gameIds="@games" class="action-button yellow-button" style="width: 100% ; justify-content: center">PLACE ORDER</a>
+                <form asp-controller="Payment" asp-action="PlaceOrder" method="post" style="display:contents;" >
+                    @for (int i = 0; i < games.Count; i++)
+                    {
+                        <input type="hidden" name="gameIds" value="@games[i]" />
+                    }
+
+                    <button type="submit" class="action-button yellow-button" style="width:100%; justify-content: center">
+                        PLACE ORDER
+                    </button>
+                </form>
             </div>
         </div>
         
@@ -510,7 +523,6 @@ document.addEventListener('DOMContentLoaded', function ()
 var modal = document.getElementById("paymentModal");
 
 function showCheckoutPopup(gameId) {
-    // Nếu bạn cần lấy thông tin gameId để hiển thị trong modal:
     // console.log("Đang mở thanh toán cho Game ID:", gameId); 
 
     modal.style.display = "block";

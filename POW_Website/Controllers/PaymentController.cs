@@ -10,10 +10,12 @@ public class PaymentController : Controller
     private readonly IGameService _gameService;
     private readonly GameStoreDbContext mDbContext;
     private readonly UserManager<ApplicationUser> mUserManager;
+    private readonly ILogger<PaymentController> _logger;
 
     public PaymentController(UserManager<ApplicationUser> userManager, IGameService gameService,
-        GameStoreDbContext mDbContextContext)
+        GameStoreDbContext mDbContextContext,ILogger<PaymentController> logger)
     {
+        _logger = logger;
         mUserManager = userManager;
         _gameService = gameService;
         mDbContext = mDbContextContext;
@@ -76,9 +78,10 @@ public class PaymentController : Controller
 
         return RedirectToAction("Wishlist", "Game");
     }
-
+    [HttpPost] 
     public IActionResult PlaceOrder(List<int> gameIds )
     {
+        _logger.LogInformation("Received gameIds: {GameIds}", string.Join(", ", gameIds));
         var games = mDbContext.Game.Where(g => gameIds.Contains(g.Id)).ToList();
         decimal price = 0;
         decimal? totalDiscount = 0;
