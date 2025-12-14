@@ -1,0 +1,124 @@
+@model POWStudio.Models.ViewModels.OrderUVM
+
+@{
+    ViewData["Title"] = "Order List";
+}
+
+<div class="container py-4" style="margin-top: 100px">
+    <h2 class="mb-4 text-white">OrderList</h2>
+    <div class="d-flex text-secondary fw-bold small text-uppercase py-2 px-4">
+        <div style="width: 50px"></div>
+        <div class="d-flex align-items-center" style="width: 250px;">
+            <span>Date</span>
+        </div>
+
+        <div class="flex-grow-1 px-4">
+            <span>Description</span>
+        </div>
+        
+        <span class="fs-5 me-4 text-white text-end" style="width: 120px; text-align: right;" >Price</span>
+    </div>
+    <div class="card bg-dark text-white border-secondary">
+        <ul class="list-group list-group-flush">
+            @foreach (var orderItem in Model.OrderListItemVms)
+            {
+                // Sử dụng OrderId làm ID duy nhất cho mỗi Collapse
+                var collapseId = $"collapse-{orderItem.OrderId}"; 
+                var targetSelector = $"#{collapseId}";
+
+                // Summary line
+                <li class="list-group-item bg-dark border-secondary p-0">
+                    <button class="d-flex align-items-center w-100 btn text-white py-3 px-4 border-0" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="@targetSelector" 
+                            aria-expanded="false" 
+                            aria-controls="@collapseId">
+    
+                        <div class="d-flex align-items-center" style="width: 250px;">
+                            <i class="bi bi-chevron-down me-3"></i> 
+                            <span class="fw-bold">@orderItem.OrderDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+
+                        <div class="flex-grow-1 text-start px-4"> 
+                            <div class="mb-1">
+                                <span >@orderItem.MainName</span> 
+                                <span class="fw-bold">@orderItem.SubName</span>
+                            </div>
+                        </div>
+ 
+                        <span class="fs-5 me-4 text-white text-end" style="width: 120px; text-align: right;" >@orderItem.FinalPrice.ToString("C"))</span>
+
+    
+                    </button>
+
+                    <div class="collapse" id="@collapseId">
+                        <div class="card-body bg-secondary bg-opacity-10 py-3 px-5 border-top border-secondary">
+                            
+                            <div class="row mb-3">
+                                <div class="col-4 text-secondary">Order ID</div>
+                                <div class="col-8 fw-bold text-secondary text-end">@("ID" + orderItem.OrderId)</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                @foreach (var game in orderItem.Games)
+                                {
+                                    <div class="row mb-1">
+                                        <div class="col-8 text-white">@game.Name</div>
+                                        <div class="col-4 text-white text-end">@game.Price.ToString("C")</div>
+                                    </div>
+                                }
+                            </div>
+
+                            <hr class="border-5">
+                            
+                            <div class="row mb-3">
+                                <div class="col-8 text-white ">Sale Discount</div>
+                                <div class="col-4 text-white text-end">- @orderItem.DiscountAmount?.ToString("C")</div>
+                            </div>
+                            
+                            <div class="row fs-5 fw-bold pt-2 border-top border-secondary">
+                                <div class="col-8 text-white">Total</div>
+                                <div class="col-4 text-white text-end">@orderItem.FinalPrice.ToString("C"))</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<div>
+    @if (Model.Page > 1)
+    {
+        <a asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page - 1)">Previous</a>
+    }
+
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        <a asp-controller="Admin" asp-action="Order" asp-route-page="@i">@i</a>
+    }
+
+    @if (Model.Page < Model.TotalPages)
+    {
+        <a asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page + 1)">Next</a>
+    }
+</div>
+@section Scripts {
+    <script>
+        document.querySelectorAll('.btn[data-bs-toggle="collapse"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('bi-chevron-down')) {
+                    icon.classList.remove('bi-chevron-down');
+                    icon.classList.add('bi-chevron-up');
+                } else {
+                    icon.classList.remove('bi-chevron-up');
+                    icon.classList.add('bi-chevron-down');
+                }
+            });
+        });
+    </script>
+}
+<div class="vh-100" style="background-color: #000; color: #eee;">
+</div>

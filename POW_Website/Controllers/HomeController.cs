@@ -49,27 +49,7 @@ public class HomeController : Controller
         return View();
     }
 
-    [Route("/Admin")]
-    public IActionResult Admin()
-    {
-        try
-        {
-            //var models = mDbContext.GameCategory.Include(g => g.Game).Include(g => g.Category).ToList();
-            var games = _gameService.GetAll().ToList();
-            if (games.Count == 0) ViewBag.Message = "No data in GameCategory.";
-            return View(games);
-        }
-        catch (SqlException sqlEx)
-        {
-            _logger.LogError(sqlEx, "Cannot connect to SQL Server in Admin()");
-            return RedirectToAction("Error", new { message = "Cannot connect to database. Check connection string and SQL Server service." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error in Admin()");
-            return RedirectToAction("Error", new { message = "Unhandled error." });
-        }
-    }
+    
 
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

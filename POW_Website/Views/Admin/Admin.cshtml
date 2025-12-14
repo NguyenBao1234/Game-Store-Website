@@ -7,13 +7,13 @@
 
     <div class="text-center mb-5">
         <h1 class="text-white fw-bold mb-2" style="font-size: 2.5rem;">
-            <i class="bi bi-person-workspace me-2 text-warning"></i> Trang Quản Lý Game
+            <i class="bi bi-person-workspace me-2 text-warning"></i> ADMIN MANAGER
         </h1>
     </div>
 
     <div class="p-4 rounded-0" style="background-color: #1a1a1a; border: 1px solid #333;">
         
-        <h3 class="text-white mb-3">Danh sách Game hiện tại</h3>
+        <h3 class="text-white mb-3">Game List</h3>
         
         <table class="table table-dark table-hover table-bordered border-secondary" style="width: 100%;">
             <thead>
@@ -21,8 +21,8 @@
                     <th scope="col" style="width: 5%;">ID</th>
                     <th scope="col" style="width: 40%;">Tên Game</th>
                     @* <th scope="col" style="width: 25%;">Danh mục</th> *@
-                    <th scope="col" style="width: 15%;" class="text-center">Sửa</th>
-                    <th scope="col" style="width: 15%;" class="text-center">Xóa</th>
+                    <th scope="col" style="width: 15%;" class="text-center">Edit</th>
+                    <th scope="col" style="width: 15%;" class="text-center">Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,15 +34,15 @@
                         
                         <td class="text-center">
                             <a class="btn btn-sm btn-outline-warning rounded-0 px-3" 
-                               asp-controller="Game" asp-action="EditGame" asp-route-id="@game.Id">
-                                Sửa
+                               asp-controller="Admin" asp-action="EditGame" asp-route-id="@game.Id">
+                                Edit
                             </a>
                         </td>
                         
                         <td class="text-center">
                             <a class="btn btn-sm btn-outline-danger rounded-0 px-3" 
-                               asp-controller="Game" asp-action="DeleteGame" asp-route-id="@game.Id">
-                                Xóa
+                               asp-controller="Admin" asp-action="DeleteGame" asp-route-id="@game.Id">
+                                Delete
                             </a>
                         </td>
                     </tr>
@@ -54,13 +54,18 @@
     <div class="mt-4 p-3 d-flex justify-content-end gap-3 rounded-0" style="background-color: #1a1a1a; border: 1px solid #333;">
         
         <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
-           asp-controller="Game" asp-action="AddGame">
-            <i class="bi bi-plus-circle me-1"></i> Thêm Game Mới
+           asp-controller="Admin" asp-action="Order">
+            <i class="bi bi-bag"></i> Order
+        </a>
+        
+        <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
+           asp-controller="Admin" asp-action="AddGame">
+            <i class="bi bi-plus-circle me-1"></i> Add New Game
         </a>
         
         <a class="btn btn-secondary btn-lg rounded-0 fw-bold" 
-           asp-controller="Game" asp-action="AddCategory">
-            <i class="bi bi-tags me-1"></i> Thêm Thể Loại
+           asp-controller="Admin" asp-action="AddCategory">
+            <i class="bi bi-tags me-1"></i> Add Category
         </a>
         
     </div>

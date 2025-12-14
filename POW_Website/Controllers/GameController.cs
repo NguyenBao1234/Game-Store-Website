@@ -151,177 +151,6 @@ public class GameController : Controller
         return View("Detail", new GameDetailModel{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
     }
 
-    [HttpGet]
-    [Route("/Admin/AddGame")]
-    public IActionResult AddGame()
-    {
-        // Lay danh sach the loai de hien thi o dropdown
-        var categories = mDbContext.Category.Select(c => new SelectListItem
-        {
-            Value = c.Id.ToString(),
-            Text = c.Name
-        }).ToList();
-        // ViewBag.Categories = new SelectList(categories, "Id", "Name");
-        ViewBag.Categories = categories;
-        return View(new GameCategory());
-    }
-
-    [HttpPost]
-    [Route("/Admin/AddGame")]
-    public IActionResult AddGame(GameCategory gameCat, List<int> CategoryIds)
-    {
-        // Lay danh sach the loai de hien thi o dropdown vi ViewBag khong luu giu duoc giua cac lan post
-        var categories = mDbContext.Category.Select(c => new SelectListItem
-        {
-            Value = c.Id.ToString(),
-            Text = c.Name
-        }).ToList();
-        ViewBag.Categories = categories;
-
-        if (!ModelState.IsValid)
-        {
-            ModelState.Values.ToList().ForEach(v =>
-            {
-                v.Errors.ToList().ForEach(e => Console.WriteLine(e.ErrorMessage));
-            });
-
-            return View(gameCat);
-        }
-
-        DbUtils.InsertModel(gameCat.Game);
-
-        foreach (var catId in CategoryIds)
-        {
-            var gc = new GameCategory
-            {
-                GameId = gameCat.Game.Id,
-                CategoryId = catId
-            };
-            DbUtils.InsertModel(gc);
-        }
-
-        return View(new GameCategory());
-    }
-
-    [HttpGet]
-    [Route("/Admin/EditGame/{id}")]
-    public IActionResult EditGame(int id)
-    {
-        //var gameCat = mDbContext.GameCategory.FirstOrDefault(gc => gc.GameId == id);
-        var gameCat = mDbContext.GameCategory
-            .Include(g => g.Game)
-            .Include(c => c.Category)
-            .FirstOrDefault(gc => gc.GameId == id);
-
-        var selectedCats = mDbContext.GameCategory
-            .Where(gc => gc.GameId == id)
-            .Select(gc => gc.CategoryId)
-            .ToList();
-
-        ViewBag.SelectedCategories = selectedCats;
-
-        var categories = mDbContext.Category.Select(c => new SelectListItem
-        {
-            Value = c.Id.ToString(),
-            Text = c.Name
-        }).ToList();
-        Console.WriteLine("game cate: " + gameCat);
-        ViewBag.Categories = categories;
-        // ViewBag.Categories = new SelectList(categories, "Id", "Name");
-
-        return View(gameCat);
-    }
-
-    [HttpPost]
-    [Route("/Admin/EditGame/{id}")]
-    public IActionResult EditGame(int id, GameCategory gameCat, List<int> CategoryIds)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(gameCat);
-        }
-
-        var game = mDbContext.GameCategory
-            .Include(g => g.Game)
-            .FirstOrDefault(gc => gc.Game.Id == id);
-
-        game.Game.Title = gameCat.Game.Title;
-        game.Game.Slug = gameCat.Game.Slug;
-        game.Game.TitleImageUrl = gameCat.Game.TitleImageUrl;
-        game.Game.ShortDescription = gameCat.Game.ShortDescription;
-        game.Game.DetailedDescription = gameCat.Game.DetailedDescription;
-        game.Game.BgImageUrl = gameCat.Game.BgImageUrl;
-        game.Game.bPublic = gameCat.Game.bPublic;
-        game.Game.TrailerUrl = gameCat.Game.TrailerUrl;
-        game.Game.ItchioUrl = gameCat.Game.ItchioUrl;
-        game.Game.EpicUrl = gameCat.Game.EpicUrl;
-        game.Game.SteamUrl = gameCat.Game.SteamUrl;
-        game.Game.FabUrl = gameCat.Game.FabUrl;
-        game.Game.Price = gameCat.Game.Price;
-        game.Game.DiscountPercent = gameCat.Game.DiscountPercent;
-        game.Game.ReleaseDate = gameCat.Game.ReleaseDate;
-
-        mDbContext.SaveChanges();
-
-        // game.CategoryId = gameCat.CategoryId;
-
-        //Xoa het the loai cua game
-        var oldCat = mDbContext.GameCategory.Where(gc => gc.GameId == id).ToList();
-        mDbContext.GameCategory.RemoveRange(oldCat);
-
-        foreach (var item in CategoryIds)
-        {
-            mDbContext.GameCategory.Add(new GameCategory
-            {
-                GameId = id,
-                CategoryId = item
-            });
-        }
-
-        mDbContext.SaveChanges();
-
-        return RedirectToAction("Admin", "Home");
-    }
-
-    [HttpGet]
-    [Route("/Admin/DeleteGame/{id}")]
-    public IActionResult DeleteGame(int id)
-    {
-        var model = mDbContext.Game.Find(id);
-        return View(model);
-    }
-
-    [HttpPost]
-    [Route("/Admin/DeleteGame/{id}")]
-    public IActionResult DeleteGame(int id, Game game)
-    {
-        game = mDbContext.Game.Find(id);
-        mDbContext.Game.Remove(game);
-        mDbContext.SaveChanges();
-        return RedirectToAction("Admin", "Home");
-    }
-
-    [HttpGet]
-    [Route("/Admin/AddCategory")]
-    public IActionResult AddCategory()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    [Route("/Admin/AddCategory")]
-    public IActionResult AddCategory(Category category)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(category);
-        }
-
-        DbUtils.InsertModel(category);
-        return View();
-    }
-    
-
     public IActionResult Wishlist()
     {
         var userId = mUserManager.GetUserId(User);
@@ -369,5 +198,51 @@ public class GameController : Controller
             var sum = mDbContext.SaveChanges();
         }
         return RedirectToAction("Index");
+    }
+
+    public IActionResult Order(int page = 1, int pageSize = 10)
+    {
+        var orders = mDbContext.Order.OrderByDescending(o => o.OrderDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        var total = mDbContext.Order.Count();
+
+        var orderList = new List<OrderUListItemVM>();
+        foreach (var order in orders)
+        {
+            var itemsInOrder = mDbContext.OrderItem
+                .Where(x => x.OrderId == order.Id)
+                .Select(x => new GameInOrderVM
+                {
+                    Name = x.Game.Title,
+                    Price = x.Game.Price??0,
+                })
+                .ToList();
+
+            var mainName = itemsInOrder[0].Name;
+            var subName = itemsInOrder.Count == 1 ? "" : $"and {itemsInOrder.Count - 1} more";
+
+            orderList.Add(new OrderUListItemVM
+            {
+                OrderId = order.Id,
+                OriginalPrice = order.Price,
+                DiscountAmount = order.DiscountAmount,
+                MainName = mainName,
+                SubName = subName,
+                OrderDate = order.OrderDate,
+                Games = itemsInOrder,
+            });
+        }
+
+        var orderVM = new OrderUVM
+        {
+            Total = total,
+            Page = page,
+            PageSize = pageSize,
+            OrderListItemVms = orderList
+        };
+
+        return View(orderVM);
     }
 }
