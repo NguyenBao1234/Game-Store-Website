@@ -1,0 +1,43 @@
+@{
+    ViewBag.Title = "title";
+}
+
+<h3 class="sidebar-title">Account</h3>
+<ul class="sidebar-menu">
+    <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")">
+        <a asp-controller="Account" asp-action="Profile" class="menu-item-button">Profile</a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "LinkedAccounts" ? "active" : "")">
+        <a asp-controller="Account" asp-action="LinkedAccounts" class="menu-item-button">Linked accounts</a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Security" ? "active" : "")">
+        <a asp-controller="Account" asp-action="Security" class="menu-item-button">Password &amp; Security</a>
+    </li>
+</ul>
+
+<h3 class="sidebar-title mt">Payment</h3>
+<ul class="sidebar-menu">
+    <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "PaymentSettings" ? "active" : "")">
+        <a asp-controller="Account" asp-action="PaymentSettings" class="menu-item-button">Payment settings</a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Transactions" ? "active" : "")">
+        <a asp-controller="Account" asp-action="Order" class="menu-item-button">Transactions</a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "RedeemCode" ? "active" : "")">
+        <a asp-controller="Account" asp-action="RedeemCode" class="menu-item-button">Redeem code</a>
+    </li>
+</ul>
+
+<style>
+    .menu-item-button {
+        color: #a6a6a6; /* Màu chữ mặc định */
+        text-decoration: none; /* Bỏ gạch chân */
+        background-color: transparent; /* Nền trong suốt mặc định */
+        transition: background-color 0.2s, color 0.2s; /* Hiệu ứng chuyển đổi mượt mà */
+    }
+
+    /* Hiệu ứng khi di chuột (hover) */
+    .menu-item-button:hover {
+        color: #ffffff; /* Thay đổi màu chữ khi di chuột (tùy chọn) */
+    }
+</style>

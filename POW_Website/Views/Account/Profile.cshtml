@@ -1,0 +1,137 @@
+@{
+    ViewBag.Title = "Profile";
+    Layout = "_SettingLayout";
+}
+
+
+<h1 class="page-title">Settings</h1>
+<p class="page-subtitle">Manage your account details.</p>
+
+<!-- Thông tin tài khoản -->
+<section class="card">
+    <h2 class="card-title">Account information</h2>
+
+    <div class="info-row">
+        <label>Account ID</label>
+        <span class="readonly">@ViewBag.UserId</span>
+    </div>
+
+    <div class="info-row editable">
+        <div class="input-column">
+            <label>Display name</label>
+            <input type="text" value="@ViewBag.DisplayName" disabled id="display-name-input"/>
+        </div>
+        <button class="edit-btn" type="button">✎</button>
+    </div>
+
+    <div class="info-row editable">
+        <div class="input-column">
+            <label>Email address</label>
+            <input type="text" value="@ViewBag.Email" disabled />
+        </div>
+        <button class="edit-btn" type="button">✎</button>
+    </div>
+</section>
+
+<!-- Thông tin cá nhân -->
+<section class="card">
+    <h2 class="card-title">Personal details</h2>
+    <p class="desc">
+        These personal details are private and will not be displayed to other users.
+    </p>
+
+    <div class="grid-2">
+        <div class="input-group">
+            <label>First name</label>
+            <input type="text" value="Nguyen" disabled />
+        </div>
+        <div class="input-group">
+            <label>Last name</label>
+            <input type="text" value="Player" disabled />
+        </div>
+        <div class="input-group">
+            <label>Country</label>
+            <input type="text" value="Vietnam" disabled />
+        </div>
+        <div class="input-group">
+            <label>Phone</label>
+            <input type="text" value="" disabled />
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Lấy các phần tử cần thiết
+        const editButton = document.querySelector('.info-row.editable .edit-btn');
+        const modal = document.getElementById('update-display-name-modal');
+        const closeButton = modal.querySelector('.close-btn');
+        const cancelButton = document.getElementById('cancel-change');
+        const continueButton = document.getElementById('continue-change');
+        const newNameInput = document.getElementById('new-display-name');
+        
+        editButton.addEventListener('click', function() {
+            modal.style.display = 'flex'; // Hiện popup
+        });
+
+        //close popup
+        function closeModal() {
+            modal.style.display = 'none'; // Ẩn popup
+
+            newNameInput.value = '';
+
+            continueButton.disabled = true;
+        }
+
+        // 4.Bind close popup event
+        closeButton.addEventListener('click', closeModal);
+        cancelButton.addEventListener('click', closeModal);
+
+        // Kiểm tra điều kiện để kích hoạt nút Continue
+        function checkFormValidity() {
+            const isNameValid = newNameInput.value.trim().length >= 3;
+            continueButton.disabled = !isNameValid;
+        }
+
+        newNameInput.addEventListener('input', checkFormValidity);
+
+        // 6. Xử lý khi bấm Continue (ví dụ)
+        continueButton.addEventListener('click', async function() {
+            if (continueButton.disabled) return;
+
+            const newName = newNameInput.value.trim();
+
+            const formData = new FormData();
+            formData.append('newDisplayName', newName);
+
+            try {
+                const response = await fetch('/Account/UpdateDisplayName', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('failed');
+                }
+
+                const result = await response.json();
+                console.log('Updated:', result.displayName);
+
+                document.getElementById('display-name-input').value = result.displayName;
+                document.getElementById('current-name-value').innerText = result.displayName;
+                
+                closeModal();
+            }
+            catch (e) {
+                console.error('Update Failed', e);
+            }
+        });
+
+        // Đóng popup khi bấm ra ngoài (Optional)
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    });
+</script>

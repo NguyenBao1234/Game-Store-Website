@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Order List";
+    Layout = "_SettingLayout";
 }
 
 <div class="container py-4" style="margin-top: 100px">
@@ -88,37 +89,61 @@
         </ul>
     </div>
 </div>
-<div>
-    @if (Model.Page > 1)
-    {
-        <a asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page - 1)">Previous</a>
-    }
 
-    @for (int i = 1; i <= Model.TotalPages; i++)
-    {
-        <a asp-controller="Admin" asp-action="Order" asp-route-page="@i">@i</a>
-    }
+<nav aria-label="Order Pagination">
+    <ul class="pagination justify-content-end mb-4">
+        
+        @if (Model.Page > 1)
+        {
+            <li class="page-item">
+                <a class="page-link bg-dark text-light border-secondary" 
+                   asp-controller="Account" asp-action="Order" asp-route-page="@(Model.Page - 1)" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+        }
+        
+        @if (Model.TotalPages > 1)
+        {
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    @{
+                        // Xác định các lớp màu cho trạng thái Active/Inactive
+                        string linkClasses = (i == Model.Page) 
+                            ? "bg-warning text-dark border-warning" // Màu Active (ví dụ: xanh dương sáng)
+                            : "bg-dark text-light border-secondary"; // Màu Inactive (Dark Theme)
+                    }
+                    <a class="page-link @linkClasses" asp-controller="Account" asp-action="Order" asp-route-page="@i">@i</a>
+                </li>
+            }
+        }
 
-    @if (Model.Page < Model.TotalPages)
-    {
-        <a asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page + 1)">Next</a>
-    }
-</div>
-@section Scripts {
-    <script>
-        document.querySelectorAll('.btn[data-bs-toggle="collapse"]').forEach(button => {
-            button.addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('bi-chevron-down')) {
-                    icon.classList.remove('bi-chevron-down');
-                    icon.classList.add('bi-chevron-up');
-                } else {
-                    icon.classList.remove('bi-chevron-up');
-                    icon.classList.add('bi-chevron-down');
-                }
-            });
+        @if (Model.Page < Model.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link bg-dark text-light border-secondary" 
+                   asp-controller="Account" asp-action="Order" asp-route-page="@(Model.Page + 1)" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
+
+<script>
+    document.querySelectorAll('.btn[data-bs-toggle="collapse"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('bi-chevron-down')) {
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-up');
+            } else {
+                icon.classList.remove('bi-chevron-up');
+                icon.classList.add('bi-chevron-down');
+            }
         });
-    </script>
-}
-<div class="vh-100" style="background-color: #000; color: #eee;">
-</div>
+    });
+</script>

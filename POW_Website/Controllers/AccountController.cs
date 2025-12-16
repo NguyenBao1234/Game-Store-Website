@@ -11,11 +11,13 @@ public class AccountController : Controller
 
     private readonly UserManager<ApplicationUser> mUserManager;
     private readonly SignInManager<ApplicationUser> mSignInManager;
+    private readonly GameStoreDbContext mDbContext;
 
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) //inject
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, GameStoreDbContext dbContext) //inject
     {
         mUserManager = userManager;
         mSignInManager = signInManager;
+        mDbContext = dbContext;
     }
     //LOGIN ______________________-
     [HttpGet]
@@ -197,5 +199,102 @@ public class AccountController : Controller
 
         return View(model);
     }
+    public IActionResult Profile()
+    {
+        var userId = mUserManager.GetUserId(User);
+        var displayName = mDbContext.Users.FirstOrDefault(u => u.Id == userId)?.DisplayName;
+        var emai = mDbContext.Users.FirstOrDefault(u => u.Id == userId)?.Email;
+        ViewBag.DisplayName = displayName;
+        ViewBag.UserId = userId;
+        ViewBag.Email = emai;
+        return View();
+    }
     
+    [HttpPost]
+    public async Task<IActionResult> UpdateDisplayName( string newDisplayName)
+    {
+        if (string.IsNullOrWhiteSpace(newDisplayName) || newDisplayName.Length < 3)
+            return BadRequest("Invalid display name");
+
+        var userId = mUserManager.GetUserId(User);
+        var user = await mUserManager.FindByIdAsync(userId);
+        
+        Console.WriteLine(newDisplayName);
+
+        if (user == null) return NotFound();
+
+        user.DisplayName = newDisplayName;
+        await mUserManager.UpdateAsync(user);
+
+        return Ok(new { success = true, displayName = user.DisplayName });
+    }
+
+    public IActionResult LinkedAccounts()
+    {
+        return View();
+    }
+
+    public IActionResult Security()
+    {
+        return View();
+    }
+
+    public IActionResult PaymentSettings()
+    {
+        return View();
+    }
+
+    public IActionResult Order(int page = 1, int pageSize = 10)
+    {
+        var orders = mDbContext.Order.OrderByDescending(o => o.OrderDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        var total = mDbContext.Order.Count();
+
+        var orderList = new List<OrderUListItemVM>();
+        foreach (var order in orders)
+        {
+            var itemsInOrder = mDbContext.OrderItem
+                .Where(x => x.OrderId == order.Id)
+                .Select(x => new GameInOrderVM
+                {
+                    Name = x.Game.Title,
+                    Price = x.Game.Price??0,
+                })
+                .ToList();
+            var userOrder = mDbContext.UserOrder.FirstOrDefault(uo=>uo.OrderId == order.Id);
+            var user = mDbContext.Users.FirstOrDefault(u=>u.Id == userOrder.UserId);
+            var userDisplayName = user.DisplayName;
+            var userEmail = user.Email;
+            var mainName = itemsInOrder[0].Name;
+            var subName = itemsInOrder.Count == 1 ? "" : $"and {itemsInOrder.Count - 1} more";
+
+            orderList.Add(new OrderUListItemVM
+            {
+                OrderId = order.Id,
+                OriginalPrice = order.Price,
+                DiscountAmount = order.DiscountAmount,
+                MainName = mainName,
+                SubName = subName,
+                OrderDate = order.OrderDate,
+                Games = itemsInOrder,
+            });
+        }
+
+        var orderVM = new OrderUVM
+        {
+            Total = total,
+            Page = page,
+            PageSize = pageSize,
+            OrderListItemVms = orderList
+        };
+
+        return View(orderVM);
+    }
+
+    public IActionResult RedeemCode()
+    {
+        return View();
+    }
 }
