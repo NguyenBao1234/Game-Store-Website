@@ -229,11 +229,6 @@ public class AccountController : Controller
         return Ok(new { success = true, displayName = user.DisplayName });
     }
 
-    public IActionResult LinkedAccounts()
-    {
-        return View();
-    }
-
     public IActionResult Security()
     {
         return View();
@@ -292,9 +287,18 @@ public class AccountController : Controller
 
         return View(orderVM);
     }
-
+    [HttpGet]
     public IActionResult RedeemCode()
     {
         return View();
+    }
+    [HttpPost]
+    public IActionResult RedeemCode(RedeemVM model)
+    {
+        if (ModelState.IsValid)
+        {
+            ModelState.AddModelError("RedeemCode", "Code does not exist..");
+        }
+        return View(model);
     }
 }

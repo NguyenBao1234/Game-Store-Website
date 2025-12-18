@@ -322,6 +322,10 @@ img {
     text-decoration: none;
 }
 
+.autosize {
+    display: inline-flex;
+    width: auto;
+}
 
 .yellow-button {
     background-color: #ffc107; /* Màu vàng cam cho Add to Cart */
@@ -331,6 +335,14 @@ img {
     background-color: #e0a800;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
+.yellow-button-normal {
+    background-color: #ffc107; /* Màu vàng cam cho Add to Cart */
+    color: #333;
+}
+.yellow-button-normal:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
 }
 
 .sub-button {

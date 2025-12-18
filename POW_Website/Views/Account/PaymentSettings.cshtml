@@ -3,4 +3,227 @@
     Layout = "_SettingLayout";
 }
 
-<h2>title</h2>
+<h2>Your payment methods</h2>
+<p class="page-subtitle">
+    By saving your payment information, this payment method will be set as the default for all purchases made using your Epic Games Account on PC and mobile, including purchases on the Epic Games Store, in Fortnite, Rocket League, and Fall Guys.
+</p>
+<style>
+    /* CSS Giao diện Dark Mode */
+
+    .payment-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .payment-item {
+        background-color: #1a1a1c;
+        border: 1px solid #333;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        transition: border-color 0.3s;
+    }
+
+    /* Khi item được mở (active) */
+    .payment-item.active {
+        border-color: #ffa90a; /* Viền xanh khi chọn */
+    }
+
+    .payment-header {
+        padding: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 14px;
+        text-transform: capitalize;
+    }
+
+    .payment-header i {
+        margin-right: 15px;
+        font-size: 20px;
+    }
+
+    .payment-content {
+        display: none; /* Mặc định ẩn nội dung */
+        padding: 0 20px 20px 20px;
+        border-top: 1px solid #222;
+    }
+
+    .payment-item.active .payment-content {
+        display: block; /* Hiện khi có class active */
+    }
+
+    /* Form styling */
+    .card-details-label {
+        font-size: 10px;
+        color: #888;
+        margin: 15px 0 10px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .grid-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-size: 12px;
+        color: #ccc;
+        margin-bottom: 5px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        background-color: #252527;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: white;
+        box-sizing: border-box;
+    }
+
+    .info-text {
+        font-size: 12px;
+        color: #aaa;
+        line-height: 1.5;
+        margin: 20px 0;
+    }
+
+    .button-group {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .btn-add {
+        background-color: #333; /* Màu xám khi chưa đủ điều kiện */
+        color: #777;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: not-allowed;
+        font-weight: bold;
+    }
+
+    .btn-paypal {
+        background-color: #ffa90a;
+        color: white;
+        border: none;
+        padding: 10px 40px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        font-style: italic;
+        font-size: 18px;
+    }
+
+    .btn-cancel {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+    }
+</style>
+
+<div class="payment-container">
+    
+    <div class="payment-item">
+        <div class="payment-header">
+            <span>💳 Credit Card / Debit Card</span>
+        </div>
+        <div class="payment-content">
+            <div class="card-details-label">Card Details</div>
+            
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Card number *</label>
+                    <input type="text" placeholder="0000 0000 0000 0000">
+                </div>
+                <div class="input-group">
+                    <label>Name on card *</label>
+                    <input type="text" placeholder="Name on card">
+                </div>
+            </div>
+
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Expires *</label>
+                    <input type="text" placeholder="MM/YY">
+                </div>
+                <div class="input-group">
+                    <label>CVV *</label>
+                    <input type="text" placeholder="CVV">
+                </div>
+            </div>
+
+            <p class="info-text">
+                By saving your payment information, this payment method will be set as the default... 
+                <a href="#" style="color: #ffa90a;">Learn more</a>.
+            </p>
+
+            <div class="button-group">
+                <button  class="btn-add">Add payment method</button>
+                <button class="btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-item">
+        <div class="payment-header">
+            <span>🅿️ PayPal</span>
+        </div>
+        <div class="payment-content">
+            <p class="info-text">
+                By saving your payment information, this payment method will be set as the default...
+            </p>
+            <div class="button-group">
+                <a href="https://www.paypal.com" target="_blank" class="btn-paypal" style="text-decoration: none">PayPal</a>
+                <button class="btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Lấy tất cả các mục thanh toán
+    const paymentItems = document.querySelectorAll('.payment-item');
+
+    paymentItems.forEach(item => {
+        const header = item.querySelector('.payment-header');
+        
+        header.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            // close other
+            paymentItems.forEach(i => i.classList.remove('active'));
+
+            //open
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        });
+    });
+    const cancelButtons = document.querySelectorAll('.btn-cancel');
+
+    cancelButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // e.stopPropagation() để ngăn sự kiện click lan lên thẻ Header (nếu có)
+            e.stopPropagation();
+
+            // Tìm thẻ .payment-item cha gần nhất và xóa class 'active'
+            const parentItem = btn.closest('.payment-item');
+            if (parentItem) {
+                parentItem.classList.remove('active');
+            }
+        });
+    });
+</script>

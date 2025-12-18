@@ -1,6 +1,55 @@
+@model POWStudio.Models.ViewModels.RedeemVM
 @{
     ViewBag.Title = "Redeem Code";
     Layout = "_SettingLayout";
 }
 
-<h2>title</h2>
+<h2>Redeem code</h2>
+<p class="page-subtitle">Enter your product code to redeem it. Here's an example of a product code: K5XSH-CTLEQ-Q5RF6-U7YD9 or K5XSHCTLEQQ5RF6U7Y</p>
+<form asp-controller="Account" asp-action="RedeemCode" method="post">
+    <div class="redeem-wrapper">
+        <div class="info-row">
+            <label asp-for="RedeemCode">Enter your code</label>
+            <input asp-for="RedeemCode" placeholder="K5XSH-CTLEQ-Q5RF6-U7YD9" />
+            <span asp-validation-for="RedeemCode" class="text-danger"></span>
+        </div>
+        <button type="submit" class="redeem-btn">Redeem code</button>
+    </div>
+</form>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<style>
+
+    .redeem-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; 
+        gap: 15px;
+    }
+
+
+    .redeem-wrapper .info-row {
+        width: 400px;     /* Độ dài mong muốn của ô input */
+        max-width: 100%;  /* Để vẫn hiển thị tốt trên điện thoại */
+    }
+
+
+    .redeem-btn {
+        background-color: #ffa90a; 
+        color: #000;            
+        border: none;
+        border-radius: 12px;
+        padding: 12px 25px;   
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: auto;           
+    }
+
+    .redeem-btn:hover {
+        background-color: rgba(255, 169, 10, 0.62);
+    }
+</style>
+
