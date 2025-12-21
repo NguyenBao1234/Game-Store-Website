@@ -13,7 +13,7 @@
             <input asp-for="RedeemCode" placeholder="K5XSH-CTLEQ-Q5RF6-U7YD9" />
             <span asp-validation-for="RedeemCode" class="text-danger"></span>
         </div>
-        <button type="submit" class="redeem-btn">Redeem code</button>
+        <button type="submit" class="normal-yellow-btn">Redeem code</button>
     </div>
 </form>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -34,22 +34,6 @@
         width: 400px;     /* Độ dài mong muốn của ô input */
         max-width: 100%;  /* Để vẫn hiển thị tốt trên điện thoại */
     }
-
-
-    .redeem-btn {
-        background-color: #ffa90a; 
-        color: #000;            
-        border: none;
-        border-radius: 12px;
-        padding: 12px 25px;   
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        width: auto;           
-    }
-
-    .redeem-btn:hover {
-        background-color: rgba(255, 169, 10, 0.62);
-    }
+    
 </style>
 

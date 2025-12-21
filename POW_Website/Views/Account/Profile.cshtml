@@ -21,7 +21,7 @@
             <label>Display name</label>
             <input type="text" value="@ViewBag.DisplayName" disabled id="display-name-input"/>
         </div>
-        <button class="edit-btn" type="button">✎</button>
+        <button class="edit-btn" type="button" id="change-name-btn">✎</button>
     </div>
 
     <div class="info-row editable">
@@ -29,7 +29,7 @@
             <label>Email address</label>
             <input type="text" value="@ViewBag.Email" disabled />
         </div>
-        <button class="edit-btn" type="button">✎</button>
+        <button class="edit-btn" disabled><i class="bi bi-check"></i></button>
     </div>
 </section>
 
@@ -63,37 +63,38 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // 1. Lấy các phần tử cần thiết
-        const editButton = document.querySelector('.info-row.editable .edit-btn');
-        const modal = document.getElementById('update-display-name-modal');
-        const closeButton = modal.querySelector('.close-btn');
-        const cancelButton = document.getElementById('cancel-change');
-        const continueButton = document.getElementById('continue-change');
+        const changeNameModal = document.getElementById('update-display-name-modal');
+        const closeNameBtn = changeNameModal.querySelector('.close-btn');
+        const cancelNameBtn = document.getElementById('cancel-change-name');
+        const editNameButton = document.getElementById('change-name-btn');
+        const continueButton = document.getElementById('continue-change-name');
         const newNameInput = document.getElementById('new-display-name');
-        
-        editButton.addEventListener('click', function() {
-            modal.style.display = 'flex'; // Hiện popup
+
+        editNameButton.addEventListener('click', function() {
+            changeNameModal.style.display = 'flex';
+            changeNameModal.style.index = 3;
         });
-
-        //close popup
+        
         function closeModal() {
-            modal.style.display = 'none'; // Ẩn popup
-
+            changeNameModal.style.display = 'none';
+            changeNameModal.style.index = 0;
+            
             newNameInput.value = '';
-
+            
             continueButton.disabled = true;
         }
 
         // 4.Bind close popup event
-        closeButton.addEventListener('click', closeModal);
-        cancelButton.addEventListener('click', closeModal);
+        closeNameBtn.addEventListener('click', closeModal);
+        cancelNameBtn.addEventListener('click', closeModal);
 
         // Kiểm tra điều kiện để kích hoạt nút Continue
-        function checkFormValidity() {
+        function checkNameValidity() {
             const isNameValid = newNameInput.value.trim().length >= 3;
             continueButton.disabled = !isNameValid;
         }
 
-        newNameInput.addEventListener('input', checkFormValidity);
+        newNameInput.addEventListener('input', checkNameValidity);
 
         // 6. Xử lý khi bấm Continue (ví dụ)
         continueButton.addEventListener('click', async function() {
@@ -128,8 +129,8 @@
         });
 
         // Đóng popup khi bấm ra ngoài (Optional)
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
+        changeNameModal.addEventListener('click', function(e) {
+            if (e.target === changeNameModal) {
                 closeModal();
             }
         });

@@ -1,6 +1,195 @@
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Security";
     Layout = "_SettingLayout";
 }
-<p>Security</p>
+<h2 class="page-title">Security</h2>
+<p class="page-subtitle">Manage password and two-factor authentication settings for your account.</p>
 
+<section class="two-fa-section">
+    <h4 style="margin-top: 70px">Two-Factor Authentication</h4>
+    <p class="page-subtitle">Two-factor authentication (also known as 2FA) helps protect your account by requiring you to enter an additional code when you log in.</p>
+    <h6> Enabled Methods</h6>
+    <div class="method-list">
+        <div class="method-item">
+            <div class="method-icon">
+                <i class="bi bi-envelope"></i>
+            </div>
+            <div class="method-info">
+                <div class="method-header">
+                    <h6 style="margin-top: 10px">Email</h6>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <p class="method-detail">Use your email address as your two-factor authentication. You'll be asked to enter the security code sent to the address associated with your account.</p>
+            </div>
+            <div class="method-actions">
+                <button class="btn-more"><i class="bi bi-three-dots"></i></button>
+            </div>
+        </div>
+
+        <div class="method-item">
+            <div class="method-icon icon-sms">
+                <i class="bi bi-chat-dots"></i>
+            </div>
+            <div class="method-info">
+                <div class="method-header">
+                    <h6 style="margin-top: 10px">SMS</h6>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                    <span class="badge-primary">Primary</span>
+                </div>
+                <p class="method-detail">Use your phone number as your two-factor authentication. You'll be asked to enter the security code sent to your phone via SMS message.</p>
+            </div>
+            <div class="method-actions">
+                <button class="btn-more"><i class="bi bi-three-dots"></i></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<h4 style="margin-top: 70px">Change your password</h4>
+<p class="page-subtitle">For your security, we highly recommend that you choose a unique password that you don't use for any other online account.</p>
+<button class="normal-yellow-btn" id="change-password-btn">Change Password</button>
+<style>
+    body {
+        color: #ffffff;
+    }
+    .method-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .method-item {
+        background-color: #1e1f22; /* Màu nền card */
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    /* Icon */
+    .method-icon {
+        font-size: 36px;
+        color: #f472b6; /* Màu hồng nhạt cho icon */
+        padding-top: 5px;
+    }
+
+    .method-info {
+        flex-grow: 1;
+    }
+
+    .method-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+    }
+
+    .check-icon {
+        color: #22c55e; /* Màu xanh lá cho tích xanh */
+        font-size: 0.9rem;
+    }
+
+    /* Badge Primary */
+    .badge-primary {
+        background-color: #ffa90a;
+        color: black;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .method-detail {
+        color: #b0b0b0;
+        font-size: 0.9rem;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* Button 3 chấm */
+    .btn-more {
+        background: none;
+        border: none;
+        color: #a0a0a0;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 5px;
+    }
+
+    .btn-more:hover {
+        color: #ffffff;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Lấy các phần tử cần thiết
+        console.log("Script bat dau chay!");
+        const OpenChangePasswordBtn = document.getElementById('change-password-btn');
+        const updatePasswordModal = document.getElementById('update-password-modal');
+        const closePasswordBtn = updatePasswordModal.querySelector('.close-btn');
+        const cancelPassBtn = document.getElementById('cancel-change-pass');
+        const continueBtn =  document.getElementById('continue-change-pass');
+        const loadingOverlay =  document.getElementById('loading-overlay');
+
+        const currentPassword = document.getElementById('current-password');
+        const newPassword = document.getElementById('new-password');
+
+        console.log("Script Reset input field!");
+        OpenChangePasswordBtn.addEventListener('click', function() {
+            updatePasswordModal.style.display = 'flex';
+            currentPassword.value = '';
+            newPassword.value = '';
+        })
+
+        OpenChangePasswordBtn.addEventListener('click', function() {
+            updatePasswordModal.style.display = 'flex';
+            updatePasswordModal.style.index = 3;
+        })
+        
+        function closeModal() {
+            updatePasswordModal.style.display = 'none';
+            updatePasswordModal.style.index = 0;
+        }
+        closePasswordBtn.addEventListener('click', closeModal);
+        cancelPassBtn.addEventListener('click', closeModal);
+        
+        continueBtn.addEventListener('click', async function() {
+            loadingOverlay.style.display = 'flex';
+            const formData = new FormData();
+
+            formData.append('CurrentPassword', currentPassword.value);
+            formData.append('NewPassword', newPassword.value);
+
+            try {
+                const response = await fetch('/Account/UpdatePassword', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    alert('Change password failed');
+                    return;
+                }
+
+                alert('Password updated successfully');
+                closeModal();
+            }
+            catch (e) {
+                console.error('Update Failed', e);
+                alert('Server error');
+            }
+            finally {loadingOverlay.style.display = 'none';}
+        });
+        
+        updatePasswordModal.addEventListener('click', function(e) {
+            if (e.target === updatePasswordModal) {
+                closeModal();
+            }
+        });
+
+    });
+</script>

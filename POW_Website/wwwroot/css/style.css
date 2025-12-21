@@ -327,6 +327,21 @@ img {
     width: auto;
 }
 
+.normal-yellow-btn {
+    background-color: #ffa90a;
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: auto;
+}
+
+.normal-yellow-btn:hover {
+    background-color: rgba(255, 169, 10, 0.62);
+}
 .yellow-button {
     background-color: #ffc107; /* Màu vàng cam cho Add to Cart */
     color: #333;

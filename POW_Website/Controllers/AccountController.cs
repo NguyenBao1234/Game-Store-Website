@@ -228,6 +228,26 @@ public class AccountController : Controller
 
         return Ok(new { success = true, displayName = user.DisplayName });
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> UpdatePassword( ChangePasswordVM model)
+    {
+        var user = await mUserManager.GetUserAsync(User);
+        Console.WriteLine("Check user");
+        if (user == null) return NotFound();
+        Console.WriteLine($"Check Change:{model.CurrentPassword} to new {model.NewPassword}");
+        // 1. Đổi mật khẩu (Identity tự check current password)
+        var result = await mUserManager.ChangePasswordAsync(
+            user,
+            model.CurrentPassword,
+            model.NewPassword
+        );
+        if (!result.Succeeded) return NotFound();
+        Console.WriteLine("Change success");
+        await mSignInManager.RefreshSignInAsync(user);
+        
+        return Ok(new { success = true});
+    }
 
     public IActionResult Security()
     {
