@@ -253,4 +253,10 @@ public class GameService : IGameService
         mDBContext.OrderItem.Add(new OrderItem {GameId = gameId, OrderId = inOrderId});
         mDBContext.SaveChanges();
     }
+
+    public IQueryable<Game> GetLibraryGames(string inUserId)
+    {
+        var libId = mDBContext.UserLibrary.Where(ul => ul.UserId == inUserId).Select(ul => ul.Id).FirstOrDefault();
+        return mDBContext.LibraryItem.Where(li => li.LibraryId == libId).Select(li => li.Game);
+    }
 }

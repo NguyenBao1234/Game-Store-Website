@@ -22,8 +22,9 @@
     var userId = ViewBag.UserID;
 
 }
+
 <div class="container search-offset-top" style="margin-top: 100px; margin-bottom: 50px"> 
-    
+    <h1>Library</h1>
     <div class="row justify-content-center mb-5">
         <div class="col-lg-12 position-relative">
             <form asp-controller="Game" asp-action="Index" method="get" asp-route-term="">
@@ -161,38 +162,11 @@
                     var bInWishlis = DbUtils.IsGameInWishlist(game.Id, wishlistId);
 
                     <div class="game-card">
-                        @if (bInWishlis)
-                        {
-                            <a asp-controller="Game" asp-action="RemoveWishlistFromSearch" asp-route-wishItemId="@game.Id">
-                                <button class="wishlist-btn" title="Remove from wishlist">
-                                    <i class="bi bi-check"></i>
-                                </button>
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Game" asp-action="AddToWishlistFromSearch" asp-route-gameId="@game.Id">
-                                <button class="wishlist-btn" title="Add to wishlist">
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </a>
-                        }
-
                         <a asp-controller="Game" asp-action="Detail" asp-route-slug="@game.Slug" class="text-decoration-none text-white">
                             <img src="@game.BgImageUrl" alt="@game.Title" class="game-thumbnail"/>
                             <div class="game-info">
                                 <h6 class="fw-semibold mb-1">@game.Title</h6>
                                 <p class="small text-muted mb-2">@game.ShortDescription</p>
-                                <p class="price mb-0">
-                                    @if (game.Price == 0 || game.Price == null)
-                                    {
-                                        <span class="text-success">Free</span>
-                                    }
-                                    else
-                                    {
-                                        <span>@game.Price?.ToString("C")</span>
-                                    }
-                                </p>
                             </div>
                         </a>
                     </div>

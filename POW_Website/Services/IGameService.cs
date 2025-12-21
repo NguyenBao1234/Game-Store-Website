@@ -32,4 +32,6 @@ public interface IGameService
     void AddLibraryItem(int gameId, int inLibraryId);
     public int AddNewOrder(string inUserId, decimal price, decimal? discountAmount);
     void AddOrderItem(int gameId, int inOrderId);
+    
+    IQueryable<Game> GetLibraryGames(string inUserId);
 }

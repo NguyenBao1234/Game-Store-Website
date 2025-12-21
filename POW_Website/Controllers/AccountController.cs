@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using POWStudio.Models;
+using POWStudio.Models.Enum;
 using POWStudio.Models.ViewModels;
+using POWStudio.Services;
 
 namespace POWStudio.Controllers;
 
@@ -12,12 +14,13 @@ public class AccountController : Controller
     private readonly UserManager<ApplicationUser> mUserManager;
     private readonly SignInManager<ApplicationUser> mSignInManager;
     private readonly GameStoreDbContext mDbContext;
-
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, GameStoreDbContext dbContext) //inject
+    private readonly IGameService _gameService;
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, GameStoreDbContext dbContext, IGameService gameService ) //inject
     {
         mUserManager = userManager;
         mSignInManager = signInManager;
         mDbContext = dbContext;
+        _gameService = gameService;
     }
     //LOGIN ______________________-
     [HttpGet]
@@ -26,6 +29,7 @@ public class AccountController : Controller
     {
         return View();
     }
+    
     [HttpPost]
     [Route("/Login")]
     [ValidateAntiForgeryToken]
@@ -320,5 +324,49 @@ public class AccountController : Controller
             ModelState.AddModelError("RedeemCode", "Code does not exist..");
         }
         return View(model);
+    }
+    
+public IActionResult Library(string inSearchTerm, List<string> inCategoryNames, decimal? inMinPrice, decimal? inMaxPrice, GameSortOption inSortOption, bool inSortAscending = true)
+    {
+        IQueryable<Game> games;
+
+        var categoryObjs = _gameService.GetAllCategories().ToList();
+        List<string> categories = new List<string>();
+        foreach (var category in categoryObjs) categories.Add(category.Name);
+        
+        List<int>SelectCategoryIds = new List<int>();
+        foreach (var category in categoryObjs)
+            if (inCategoryNames.Contains(category.Name))  SelectCategoryIds.Add(category.Id);
+        
+        ViewData["AllCategories"] = categories;
+        
+        if (string.IsNullOrEmpty(inSearchTerm)) games = _gameService.GetLibraryGames(mUserManager.GetUserId(User));
+        else games = _gameService.GetGamesByTerm(inSearchTerm, 0, true);
+        var sortedGames = _gameService.GetGamesBySortOption(games, inSortOption, inSortAscending);
+        var priceRangeGames = _gameService.GetGamesByPriceRange(sortedGames, inMinPrice??0, inMaxPrice??999999);
+        var gameByFilter = _gameService.GetGamesByCategory(priceRangeGames,SelectCategoryIds);
+
+        ViewData["CurrentSearchTerm"] = inSearchTerm;
+        ViewData["SelectedCategories"] =  inCategoryNames;
+        ViewData["SortOption"] = inSortOption;
+        ViewData["SortAscending"] = inSortAscending;
+        ViewData["MinPrice"] = inMinPrice;
+        ViewData["MaxPrice"] = inMaxPrice;
+        ViewBag.UserId =  mUserManager.GetUserId(User);
+        return View(gameByFilter.ToList());
+    }
+    
+    [HttpGet]
+    public IActionResult SuggestGames(string term)
+    {
+        if (string.IsNullOrEmpty(term)) return Content("");
+        
+        var gameSuggestions = _gameService.GetGamesByTerm(term, 4, false); 
+        
+        // Truyền từ khóa tìm kiếm để dùng cho việc highlight trong View
+        ViewData["SearchTerm"] = term;
+
+        // Trả về Partial View chứa kết quả
+        return PartialView("_SuggestionResultPartial", gameSuggestions); 
     }
 }

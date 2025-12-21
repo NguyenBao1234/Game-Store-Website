@@ -10,6 +10,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="IdentityDropdown">
                 <a class="dropdown-item text-white" asp-controller="Account" asp-action="Profile">Profile</a>
+                <a class="dropdown-item text-white" asp-controller="Account" asp-action="Library">Library</a>
                 @if (User.IsInRole("Admin"))
                 {
                     <a class="nav-link text-white" asp-controller="Admin" asp-action="Admin">Admin</a>
