@@ -369,4 +369,6 @@ public IActionResult Library(string inSearchTerm, List<string> inCategoryNames, 
         // Trả về Partial View chứa kết quả
         return PartialView("_SuggestionResultPartial", gameSuggestions); 
     }
+    
+    
 }

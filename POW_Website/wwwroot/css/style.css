@@ -226,7 +226,7 @@ img {
 .footer-socials a:hover {
     color: white;
 }
-.centered-text-container {
+.centered-content-container {
     max-width: 1225px;
     margin: 0 auto;
     padding: 100px 40px;
@@ -235,33 +235,33 @@ img {
     text-justify: inter-word; 
 }
 
-.centered-text-container h2 {
+.centered-content-container h2 {
     font-size: 2em;
     margin-bottom: 20px;
     color: #fff; 
     letter-spacing: 2px; 
 }
 
-.centered-text-container p {
+.centered-content-container p {
     font-size: 1.1em;
     margin-bottom: 15px;
     line-height: 1.8; 
     color: #e0e0e0; 
 }
 
-.centered-text-container ul {
+.centered-content-container ul {
     list-style: none;
     padding: 0;
     margin-top: 30px;
 }
 
-.centered-text-container ul li {
+.centered-content-container ul li {
     font-size: 1em;
     margin-bottom: 10px;
     color: #ccc;
 }
 
-.centered-text-container ul li strong {
+.centered-content-container ul li strong {
     color: #fff;
 }
 

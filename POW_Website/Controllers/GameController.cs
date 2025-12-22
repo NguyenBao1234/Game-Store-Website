@@ -77,7 +77,7 @@ public class GameController : Controller
         {
             return NotFound();
         }
-
+        
         var rates = _gameService.GetRates(game.Id).ToList();
         int PositiveAmout = 0;
         int  NegativeAmout = 0;
@@ -148,7 +148,7 @@ public class GameController : Controller
         ViewBag.bGameInCart = userId != null && _gameService.IsGameInCart(game.Id,userId);
         ViewBag.bGameInWishlist = userId != null && _gameService.IsGameInWishlist(game.Id,userId);
         ViewBag.bOwned = _gameService.IsGameInLibrary(game.Id, userId);
-        return View("Detail", new GameDetailModel{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
+        return View("Detail", new GameDetailVM{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
     }
 
     public IActionResult Wishlist()
@@ -244,5 +244,34 @@ public class GameController : Controller
         };
 
         return View(orderVM);
+    }
+    [HttpPost]
+    public async Task<IActionResult> FilterReviews(int gameId, string sortBy)
+    {
+        var query = _gameService.GetRates(gameId);
+
+        switch (sortBy.ToLower())
+        {
+            case "positive": query = query.Where(r => r.bRecomended == true); break;
+            case "negative": query = query.Where(r => r.bRecomended == false); break;
+            case "date": query = query.OrderByDescending(r => r.Date); break;
+            case "helpful": query = query.OrderByDescending(r => r.LikeAmount); break;
+            case "funny": query = query.OrderByDescending(r => r.FunnyAmount); break;
+            default: return NoContent();
+        }
+
+        var result = await query.Select(r => new {
+            userName = r.User.DisplayName,
+            isRecommended = r.bRecomended,
+            comment = r.Comment,
+            date = r.Date.ToString("MMM dd, yyyy"),
+            likes = r.LikeAmount ?? 0,
+            dislikes = r.DislikeAmount ?? 0,
+            funny = r.FunnyAmount ?? 0
+        }).ToListAsync();
+
+        if (result == null) return NoContent();
+
+        return Ok(result);
     }
 }
