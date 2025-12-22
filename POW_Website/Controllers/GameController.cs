@@ -78,7 +78,7 @@ public class GameController : Controller
             return NotFound();
         }
         
-        var rates = _gameService.GetRates(game.Id).ToList();
+        var rates = _gameService.GetRates(game.Id).OrderByDescending(r=>r.Date).ToList();
         int PositiveAmout = 0;
         int  NegativeAmout = 0;
         foreach (var rate in rates)
@@ -141,6 +141,7 @@ public class GameController : Controller
                 break;
         }
         var userId = mUserManager.GetUserId(User);
+        ViewBag.GameId = game.Id;
         ViewBag.JudgedRating = (int)judgedRating;
         ViewBag.JudgedRatingString = judgedRatingString;
         ViewBag.Screenshots = _gameService.GetScreenshotUrls(game.Id);
@@ -246,19 +247,20 @@ public class GameController : Controller
         return View(orderVM);
     }
     [HttpPost]
-    public async Task<IActionResult> FilterReviews(int gameId, string sortBy)
+    public async Task<IActionResult> FilterReviews(int gameId, string filterBy, string sortBy)
     {
         var query = _gameService.GetRates(gameId);
 
-        switch (sortBy.ToLower())
+
+        if (filterBy == "positive") query = query.Where(r => r.bRecomended == true);
+        else if (filterBy == "negative") query = query.Where(r => r.bRecomended == false);
+
+        query = sortBy.ToLower() switch
         {
-            case "positive": query = query.Where(r => r.bRecomended == true); break;
-            case "negative": query = query.Where(r => r.bRecomended == false); break;
-            case "date": query = query.OrderByDescending(r => r.Date); break;
-            case "helpful": query = query.OrderByDescending(r => r.LikeAmount); break;
-            case "funny": query = query.OrderByDescending(r => r.FunnyAmount); break;
-            default: return NoContent();
-        }
+            "helpful" => query.OrderByDescending(r => r.LikeAmount),
+            "funny" => query.OrderByDescending(r => r.FunnyAmount),
+            _ => query.OrderByDescending(r => r.Date) 
+        };
 
         var result = await query.Select(r => new {
             userName = r.User.DisplayName,
@@ -269,8 +271,6 @@ public class GameController : Controller
             dislikes = r.DislikeAmount ?? 0,
             funny = r.FunnyAmount ?? 0
         }).ToListAsync();
-
-        if (result == null) return NoContent();
 
         return Ok(result);
     }

@@ -554,14 +554,16 @@ window.onclick = function(event) {
             <div class="filter-bar mb-4 p-3" style="background: #141414; border: 1px solid #333; border-radius: 4px;">
                 <div class=" d-flex flex-wrap gap-2 align-items-center">
                     <span class="text-muted small me-2">FILTER BY:</span>
-                    <button class="btn btn-gold-outline btn-sm filter-btn" data-filter="positive">Positive</button>
-                    <button class="btn btn-gold-outline btn-sm filter-btn" data-filter="negative">Negative</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="filter" data-value="positive">Positive</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="filter" data-value="negative">Negative</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn active-gold" data-group="filter" data-value="all">All</button>
 
                     <div class="vr mx-2" style="background-color: #444;"></div>
+
                     <span class="text-muted small me-2">SORT BY:</span>
-                    <button class="btn btn-gold-outline btn-sm filter-btn" data-filter="date">Recent</button>
-                    <button class="btn btn-gold-outline btn-sm filter-btn" data-filter="helpful">Helpful</button>
-                    <button class="btn btn-gold-outline btn-sm filter-btn" data-filter="funny">Funny</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn active-gold" data-group="sort" data-value="date">Recent</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="sort" data-value="helpful">Helpful</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="sort" data-value="funny">Funny</button>
                 </div>
             </div>
         }
@@ -583,66 +585,69 @@ window.onclick = function(event) {
                 
             </div>
         }
-        @foreach (var rate in Model.Rates)
-        {
-            <div class="review-card mb-4" style="background: #111; border: 1px solid #333; border-radius: 4px; border-left: 4px solid @(rate.bRecomended ? "#ffc107" : "#ff4444");">
-                <div class="row g-0">
-                    <div class="col-md-3 p-3" style="background: rgba(255, 255, 255, 0.03);">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="avatar-placeholder me-2 d-flex align-items-center justify-content-center"
-                                 style="width: 40px; height: 40px; border: 1px solid #ffc107; background: #000;">
-                                <i class="bi bi-person-fill" style="color: #ffc107;"></i>
+        <div id="reviews-list-target">
+            @foreach (var rate in Model.Rates)
+            {
+                <div class="review-card mb-4" style="background: #111; border: 1px solid #333; border-radius: 4px; border-left: 4px solid @(rate.bRecomended ? "#ffc107" : "#ff4444");">
+                    <div class="row g-0">
+                        <div class="col-md-3 p-3" style="background: rgba(255, 255, 255, 0.03);">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-placeholder me-2 d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; border: 1px solid #ffc107; background: #000;">
+                                    <i class="bi bi-person-fill" style="color: #ffc107;"></i>
+                                </div>
+                                <strong style="color: #eee;">@rate.User.DisplayName</strong>
                             </div>
-                            <strong style="color: #eee;">@rate.User.DisplayName</strong>
+
+                            <div class="recommendation-badge mb-2">
+                                @if (rate.bRecomended)
+                                {
+                                    <div class="d-flex align-items-center" style="color: #ffc107;">
+                                        <i class="bi bi-hand-thumbs-up-fill fs-4 me-2"></i>
+                                        <span class="fw-bold small">RECOMMENDED</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center" style="color: #ff4444;">
+                                        <i class="bi bi-hand-thumbs-down-fill fs-4 me-2"></i>
+                                        <span class="fw-bold small">NOT RECOMMENDED</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="text-muted small">Posted: @rate.Date.ToString("MMM dd, yyyy")</div>
                         </div>
 
-                        <div class="recommendation-badge mb-2">
-                            @if (rate.bRecomended)
-                            {
-                                <div class="d-flex align-items-center" style="color: #ffc107;">
-                                    <i class="bi bi-hand-thumbs-up-fill fs-4 me-2"></i>
-                                    <span class="fw-bold small">RECOMMENDED</span>
+                        <div class="col-md-9 p-3 d-flex flex-column">
+                            <div class="review-body mb-auto">
+                                <p class="review-comment" style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">
+                                    @rate.Comment
+                                </p>
+                            </div>
+
+                            <div class="review-footer pt-3 mt-3" style="border-top: 1px solid #222;">
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    <span class="small text-muted me-2">Was this review helpful?</span>
+
+                                    <button class="btn btn-gold-outline btn-sm">
+                                        <i class="bi bi-hand-thumbs-up"></i> Yes <span>@(rate.LikeAmount ?? 0)</span>
+                                    </button>
+
+                                    <button class="btn btn-gold-outline btn-sm">
+                                        <i class="bi bi-hand-thumbs-down"></i> No <span>@(rate.DislikeAmount ?? 0)</span>
+                                    </button>
+
+                                    <button class="btn btn-gold-outline btn-sm">
+                                        <i class="bi bi-emoji-laughing"></i> Funny <span>@(rate.FunnyAmount ?? 0)</span>
+                                    </button>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="d-flex align-items-center" style="color: #ff4444;">
-                                    <i class="bi bi-hand-thumbs-down-fill fs-4 me-2"></i>
-                                    <span class="fw-bold small">NOT RECOMMENDED</span>
-                                </div>
-                            }
-                        </div>
-                        <div class="text-muted small">Posted: @rate.Date.ToString("MMM dd, yyyy")</div>
-                    </div>
-
-                    <div class="col-md-9 p-3 d-flex flex-column">
-                        <div class="review-body mb-auto">
-                            <p class="review-comment" style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">
-                                @rate.Comment
-                            </p>
-                        </div>
-
-                        <div class="review-footer pt-3 mt-3" style="border-top: 1px solid #222;">
-                            <div class="d-flex align-items-center flex-wrap gap-2">
-                                <span class="small text-muted me-2">Was this review helpful?</span>
-
-                                <button class="btn btn-gold-outline btn-sm">
-                                    <i class="bi bi-hand-thumbs-up"></i> Yes <span>@(rate.LikeAmount ?? 0)</span>
-                                </button>
-
-                                <button class="btn btn-gold-outline btn-sm">
-                                    <i class="bi bi-hand-thumbs-down"></i> No <span>@(rate.DislikeAmount ?? 0)</span>
-                                </button>
-
-                                <button class="btn btn-gold-outline btn-sm">
-                                    <i class="bi bi-emoji-laughing"></i> Funny <span>@(rate.FunnyAmount ?? 0)</span>
-                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }   
+        </div>
+        
     </div>
 </div>
 <style>
@@ -681,3 +686,112 @@ window.onclick = function(event) {
         color: #777 !important;
     }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const targetContainer = document.getElementById('reviews-list-target');
+    
+    // Khởi tạo giá trị mặc định
+    let currentFilter = 'all';
+    let currentSort = 'date';
+    const gameId = @ViewBag.GameId;
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const group = this.getAttribute('data-group');
+            const value = this.getAttribute('data-value');
+
+            // 1. Chỉ xóa active trong cùng một group
+            document.querySelectorAll(`.filter-btn[data-group="${group}"]`).forEach(b => {
+                b.classList.remove('active-gold');
+            });
+            this.classList.add('active-gold');
+
+            // 2. Cập nhật biến trạng thái tương ứng
+            if (group === 'filter') {
+                currentFilter = value;
+            } else {
+                currentSort = value;
+            }
+
+            // 3. Gọi hàm fetch với cả 2 tham số
+            fetchAndRender(currentFilter, currentSort);
+        });
+    });
+
+    async function fetchAndRender(filter, sort) {
+        targetContainer.innerHTML = `
+            <div class="text-center p-5">
+                <div class="spinner-border text-warning" role="status"></div>
+                <p class="mt-2 text-warning fw-bold" style="letter-spacing: 2px;">LOADING...</p>
+            </div>`;
+
+        try {
+            const formData = new FormData();
+            formData.append('gameId', gameId);
+            formData.append('filterBy', filter); // Gửi thêm loại filter (Positive/Negative/All)
+            formData.append('sortBy', sort);     // Gửi loại sort (Date/Helpful/Funny)
+
+            const response = await fetch('/Game/FilterReviews', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                renderHTML(data);
+            }
+        } catch (error) {
+            targetContainer.innerHTML = '<p class="text-danger text-center">Error loading reviews.</p>';
+        }
+    }
+
+    function renderHTML(data) {
+        if (!data || data.length === 0) {
+            targetContainer.innerHTML = '<div class="text-center text-muted p-5">No reviews found for these criteria.</div>';
+            return;
+        }
+
+        let html = '';
+        data.forEach(rate => {
+            const color = rate.isRecommended ? '#ffc107' : '#ff4444';
+            const statusText = rate.isRecommended ? 'RECOMMENDED' : 'NOT RECOMMENDED';
+            const icon = rate.isRecommended ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-down-fill';
+
+            html += `
+            <div class="review-card mb-4" style="background: #111; border: 1px solid #333; border-radius: 4px; border-left: 4px solid ${color};">
+                <div class="row g-0">
+                    <div class="col-md-3 p-3" style="background: rgba(255, 255, 255, 0.03);">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar-placeholder me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border: 1px solid #ffc107; background: #000;">
+                                <i class="bi bi-person-fill" style="color: #ffc107;"></i>
+                            </div>
+                            <strong style="color: #eee;">${rate.userName}</strong>
+                        </div>
+                        <div class="recommendation-badge mb-2" style="color: ${color}">
+                            <i class="bi ${icon} fs-4 me-2"></i>
+                            <span class="fw-bold small">${statusText}</span>
+                        </div>
+                        <div class="text-muted small">Posted: ${rate.date}</div>
+                    </div>
+                    <div class="col-md-9 p-3 d-flex flex-column">
+                        <div class="review-body mb-auto">
+                            <p class="review-comment" style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">${rate.comment}</p>
+                        </div>
+                        <div class="review-footer pt-3 mt-3" style="border-top: 1px solid #222;">
+                            <div class="d-flex align-items-center flex-wrap gap-2">
+                                <span class="small text-muted me-2">Was this review helpful?</span>
+                                <button class="btn btn-gold-outline btn-sm">Yes (${rate.likes})</button>
+                                <button class="btn btn-gold-outline btn-sm">No (${rate.dislikes})</button>
+                                <button class="btn btn-gold-outline btn-sm">Funny (${rate.funny})</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        targetContainer.innerHTML = html;
+    }
+});
+</script>
