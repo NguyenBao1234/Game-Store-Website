@@ -5,43 +5,33 @@
 <h3 class="sidebar-title">Account</h3>
 <ul class="sidebar-menu">
     <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")">
-        <a asp-controller="Account" asp-action="Profile" class="menu-item-button">Profile</a>
+        <a asp-controller="Account" asp-action="Profile" class="option-item-btn">Profile</a>
     </li>
     @* <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "LinkedAccounts" ? "active" : "")"> *@
     @*     <a asp-controller="Account" asp-action="LinkedAccounts" class="menu-item-button">Linked accounts</a> *@
     @* </li> *@
     <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Security" ? "active" : "")">
-        <a asp-controller="Account" asp-action="Security" class="menu-item-button">Password &amp; Security</a>
+        <a asp-controller="Account" asp-action="Security" class="option-item-btn">Password &amp; Security</a>
     </li>
 </ul>
 
 <h3 class="sidebar-title mt">Payment</h3>
 <ul class="sidebar-menu">
     <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "PaymentSettings" ? "active" : "")">
-        <a asp-controller="Account" asp-action="PaymentSettings" class="menu-item-button">Payment settings</a>
+        <a asp-controller="Account" asp-action="PaymentSettings" class="option-item-btn">Payment settings</a>
     </li>
     <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Order" ? "active" : "")">
-        <a asp-controller="Account" asp-action="Order" class="menu-item-button">Transactions</a>
+        <a asp-controller="Account" asp-action="Order" class="option-item-btn">Transactions</a>
     </li>
     <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "RedeemCode" ? "active" : "")">
-        <a asp-controller="Account" asp-action="RedeemCode" class="menu-item-button">Redeem code</a>
+        <a asp-controller="Account" asp-action="RedeemCode" class="option-item-btn">Redeem code</a>
     </li>
 </ul>
 
 <style>
-    .menu-item-button {
-        color: #a6a6a6; /* Màu chữ mặc định */
-        text-decoration: none; /* Bỏ gạch chân */
-        background-color: transparent; /* Nền trong suốt mặc định */
-        transition: background-color 0.2s, color 0.2s; /* Hiệu ứng chuyển đổi mượt mà */
-    }
 
-    /* Hiệu ứng khi di chuột (hover) */
-    .menu-item-button:hover {
-        color: #ffffff; /* Thay đổi màu chữ khi di chuột (tùy chọn) */
-    }
     /* Trạng thái Active - Thêm đoạn này */
-    .sidebar-menu li.active .menu-item-button {
+    .sidebar-menu li.active .option-item-btn {
         color: #1a1a1a; /* Ví dụ: màu tối trên nền cam sẽ dễ đọc hơn */
         font-weight: 600;
     }

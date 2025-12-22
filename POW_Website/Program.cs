@@ -30,6 +30,15 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<GameStoreDbContext>();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsAdmin", policy =>
+        policy.RequireRole("Admin"));
+
+    options.AddPolicy("IsStaff", policy =>
+        policy.RequireRole("Staff", "Admin"));
+});
+
 
 builder.Services.AddAuthorizationBuilder().AddPolicy("IsAdmin", policy => policy.RequireRole("Admin"));
 //____________________________________
@@ -49,6 +58,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // app.MapControllerRoute(

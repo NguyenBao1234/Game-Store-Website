@@ -1,38 +1,99 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item dropdown">
-            <a class="nav-link text-white dropdown-toggle" href="#" id="IdentityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle"></i>
+        var user = await UserManager.GetUserAsync(User);
+        var displayName = user?.DisplayName ?? User.Identity.Name;
+        <li class="nav-item dropdown custom-dropdown">
+            <a class="nav-link text-white dropdown-toggle no-caret" href="#" id="IdentityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle fs-5"></i>
+                <span>@displayName</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="IdentityDropdown">
-                <a class="dropdown-item text-white" asp-controller="Account" asp-action="Profile">Profile</a>
-                <a class="dropdown-item text-white" asp-controller="Account" asp-action="Library">Library</a>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg animated-fade-in" aria-labelledby="IdentityDropdown">
+                <li><h6 class="dropdown-header text-uppercase fw-bold opacity-50" style="font-size: 0.7rem;">User Account</h6></li>
+                <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="bi bi-person me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" asp-controller="Account" asp-action="Library"><i class="bi bi-collection me-2"></i>Library</a></li>
+                <li><a class="dropdown-item" asp-controller="Game" asp-action="Wishlist"><i class="bi bi-bookmark me-2"></i>Wishlist</a></li>
+                <li><a class="dropdown-item" asp-controller="Payment" asp-action="Cart"><i class="bi bi-cart me-2"></i>Wishlist</a></li>
+                
                 @if (User.IsInRole("Admin"))
                 {
-                    <a class="nav-link text-white" asp-controller="Admin" asp-action="Admin">Admin</a>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-warning" asp-controller="Admin" asp-action="Admin"><i class="bi bi-shield-lock me-2"></i>Admin</a></li>
                 }
-                <a class="dropdown-item text-white" asp-controller="Admin" asp-action="Admin">Admin</a>
-                <form asp-controller="Account" asp-action="LogoutPost" method="post">
-                    <button type="submit" class="dropdown-item">Log out</button>
-                </form>
 
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form asp-controller="Account" asp-action="LogoutPost" method="post" class="d-inline">
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="bi bi-box-arrow-right me-2"></i>Log out
+                        </button>
+                    </form>
+                </li>
             </ul>
         </li>
     }
     else
     {
-        <li class="nav-item dropdown">
-            <a class="nav-link text-white dropdown-toggle" href="#" id="IdentityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle"></i>
+        <li class="nav-item dropdown custom-dropdown">
+            <a class="nav-link text-white dropdown-toggle no-caret" href="#" id="IdentityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle fs-5"></i>
             </a>
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="IdentityDropdown">
-                <a class="dropdown-item text-white" asp-controller="Account" asp-action="Login">Login</a>
-                <a class="dropdown-item text-white" asp-controller="Account" asp-action="Register">Register</a>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg" aria-labelledby="IdentityDropdown">
+                <li><a class="dropdown-item" asp-controller="Account" asp-action="Login"><i class="bi bi-door-open me-2"></i>Login</a></li>
+                <li><a class="dropdown-item" asp-controller="Account" asp-action="Register"><i class="bi bi-pencil-square me-2"></i>Register</a></li>
             </ul>
         </li>
     }
 </ul>
+
+<style>
+    /* Xóa mũi tên dropdown */
+    .no-caret::after {
+        display: none !important;
+    }
+
+    /* Container menu */
+    .custom-dropdown .dropdown-menu {
+        --bs-dropdown-bg: #212529; /* Màu nền tối */
+        border-radius: 10px;
+        padding: 8px;
+        margin-top: 10px !important; /* Tạo khoảng cách nhỏ với navbar */
+        transition: opacity 0.15s linear, transform 0.15s ease-in-out;
+    }
+
+    /* Item cơ bản */
+    .custom-dropdown .dropdown-item {
+        border-radius: 6px;
+        padding: 8px 16px;
+        color: rgba(255, 255, 255, 0.8) !important;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Hover: Nền mờ trắng */
+    .custom-dropdown .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+    }
+
+    /* CHẶN NỀN XANH: Ghi đè trạng thái Active/Focus của Bootstrap */
+    .custom-dropdown .dropdown-item:active,
+    .custom-dropdown .dropdown-item:focus,
+    .custom-dropdown .dropdown-item.active {
+        background-color: rgba(255, 255, 255, 0.15) !important; /* Vẫn là nền mờ khi nhấn */
+        color: #fff !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Tùy chỉnh nút Logout trong Form để ăn theo style chung */
+    .custom-dropdown form .dropdown-item {
+        border: none;
+        background: none;
+        text-align: left;
+        width: 100%;
+    }
+</style>

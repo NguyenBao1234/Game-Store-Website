@@ -775,3 +775,15 @@ body {
 .border-gray {
     border-color: #444444 !important;
 }
+
+
+.option-item-btn {
+    color: #a6a6a6;
+    text-decoration: none;
+    background-color: transparent;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.option-item-btn:hover {
+    color: #ffffff;
+}
