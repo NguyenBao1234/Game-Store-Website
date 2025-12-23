@@ -6,12 +6,26 @@
     if (screenshots == null) screenshots = new List<string>(); //esure not null
     int judgedRating = ViewBag.JudgedRating;
     string judgedRatingString = ViewBag.JudgedRatingString;
+    int ratingAmount = ViewBag.RatingAmount;
     bool bOwned = ViewBag.bOwned;
     decimal gamePrice = @Model.Game.Price ?? 0.00m;
     decimal discountPrice = gamePrice * (decimal)((Model.Game.DiscountPercent ?? 0 )/ 100);
     decimal finalPrice = gamePrice - discountPrice;
+    bool bUserRated = ViewBag.bUserRated;
     bool bGameInCart = ViewBag.bGameInCart;
     bool bGameInWishlist = ViewBag.bGameInWishlist;
+
+    string colorClass = judgedRating switch
+    {
+        0    => "text-secondary",
+        1    => "text-danger-emphasis",      // Rất tệ
+        2    => "text-danger",             // Tệ
+        3    => "text-warning",            // Khá tệ
+        4    => "text-secondary",          // Mixed
+        5    => "text-info",               // Khá tốt
+        6    => "text-primary",            // Tốt
+        >= 7 => "text-success",            // Rất tốt
+    };
     
 }
 
@@ -59,33 +73,61 @@
             </div>
 
             <div class="action-price-container mt-4 mb-4">
-
-                <div class="price-display me-4">
-                    @if (gamePrice == 0.00m)
-                    {
-                        <span class="price-label">Giá:</span>
-                        <span class="price-value">FREE</span>
-                    }
-                    else
-                    {
-                        <span class="price-label">Price:</span>
-                        <div class="item-price-section">
-                            @if (Model.Game.DiscountPercent > 0)
-                            {
-                                <span class="discount-percent"> -@Model.Game.DiscountPercent% </span>
-
-                                <span class="original-price">
-                                    @Model.Game.Price?.ToString("C")
-                                </span>
-                            }
-
-                            <span class="final-price">@((Model.Game.Price * (1 - (decimal)(Model.Game.DiscountPercent ?? 0) / 100))?.ToString("C")) </span>
+                
+                <div class="rating-badge-section pe-3 border-end border-secondary border-opacity-25">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-star-fill @colorClass me-2 fs-5"></i>
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold @colorClass" style="line-height: 1.2; font-size: 0.9rem;">
+                                @judgedRatingString.ToUpper()
+                            </span>
+                            <span class="text-white-50" style="font-size: 0.75rem;">
+                                (@ratingAmount Reviews)
+                            </span>
                         </div>
-                    }
+                    </div>
                 </div>
+                
+                @if (!bOwned)
+                {
+                    <div class="price-display me-4">
+                        @if (gamePrice == 0.00m)
+                        {
+                            <span class="price-label">Price:</span>
+                            <span class="price-value">FREE</span>
+                        }
+                        else
+                        {
+                            <span class="price-label">Price:</span>
+                            <div class="item-price-section">
+                                @if (Model.Game.DiscountPercent > 0)
+                                {
+                                    <span class="discount-percent"> -@Model.Game.DiscountPercent% </span>
 
+                                    <span class="original-price">
+                                        @Model.Game.Price?.ToString("C")
+                                    </span>
+                                }
+
+                                <span class="final-price">@((Model.Game.Price * (1 - (decimal)(Model.Game.DiscountPercent ?? 0) / 100))?.ToString("C")) </span>
+                            </div>
+                        }
+                    </div>
+                }
                 @if (bOwned)
                 {
+                    <button class="sub-action-button @(bUserRated ? "active-gold" : "")" id="RateBtn">
+                        @if (bUserRated)
+                        {
+                            <i class="bi bi-star-fill me-2 text-warning"></i>
+                            <span>EDIT RATING</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-star me-2"></i>
+                            <span>RATE</span>
+                        }
+                    </button>
                     <a style="text-decoration: none" href="https://drive.usercontent.google.com/download?id=1rr9H8LLo5nFbWQjYct-GUYXlct9mPJnR&export=download&authuser=0&confirm=t&uuid=3957c54b-ed6a-443c-b15f-388532169645&at=ALWLOp4_hQ0r2vs3IGnfGObI4gcS:1763878211100" download>
                         <button class="action-button yellow-button" onclick="playGame(@Model.Game.Id)">
                             <i class="bi bi-controller me-2"></i> PLAY NOW
@@ -95,11 +137,13 @@
 
                 else if (gamePrice == 0.00m)
                 {
-                    <a>
-                        <button class="action-button yellow-button" onclick="addToLibrary(@Model.Game.Id)">
-                            <i class="bi bi-plus-circle me-2"></i> ADD TO LIBRARY
+                    <form asp-controller="Payment" asp-action="PlaceOrder" method="post" style="display:contents;">
+                        <input type="hidden" name="gameIds" value="@Model.Game.Id"/>
+
+                        <button type="submit" class="action-button yellow-button" style="width:100%; justify-content: center">
+                            ADD TO LIBRARY
                         </button>
-                    </a>
+                    </form>
                 }
                 else
                 {
@@ -110,15 +154,15 @@
                     @if (bGameInWishlist)
                     {
                         <a asp-controller="Game" asp-action="Wishlist">
-                            <button class="sub-button " >
-                                <i class="bi bi-bookmark-check-fill"></i> 
+                            <button class="sub-button ">
+                                <i class="bi bi-bookmark-check-fill"></i>
                             </button>
                         </a>
                     }
                     else
                     {
-                        <form asp-controller="Game" asp-action="AddToWishlistFromDetail" asp-route-gameId="@Model.Game.Id" style="display:contents;" >
-                            <input type="hidden" name="gameId" value="@Model.Game.Id" />
+                        <form asp-controller="Game" asp-action="AddToWishlistFromDetail" asp-route-gameId="@Model.Game.Id" style="display:contents;">
+                            <input type="hidden" name="gameId" value="@Model.Game.Id"/>
                             <button class="sub-button">
                                 <i class="bi bi-bookmark-plus-fill"></i>
                             </button>
@@ -128,8 +172,8 @@
                     @if (bGameInCart)
                     {
                         <a asp-controller="Payment" asp-action="Cart">
-                            <button class="sub-button " >
-                                <i class="bi bi-cart-check-fill"></i> 
+                            <button class="sub-button ">
+                                <i class="bi bi-cart-check-fill"></i>
                             </button>
                         </a>
 
@@ -137,7 +181,7 @@
                     else
                     {
                         <form asp-controller="Payment" asp-action="AddToCart" method="post" style="display:contents;">
-                            <input type="hidden" name="gameId" value="@Model.Game.Id" />
+                            <input type="hidden" name="gameId" value="@Model.Game.Id"/>
 
                             <button class="sub-button">
                                 <i class="bi bi-cart-fill"></i>
@@ -178,7 +222,7 @@
     }
 </div>
 
-@if (screenshots.Count > 0)
+@if (screenshots.Count > 0 && @Model.Game.bPublic)
 {
     <div class="container my-5">
 
@@ -212,23 +256,7 @@
     </div>
 }
 
-@{
-    int rating = ViewBag.JudgedRating;
-    string ratingText = ViewBag.JudgedRatingString;
 
-    // Sử dụng class màu sắc đã định nghĩa
-    string colorClass = rating switch
-    {
-        0    => "text-secondary",
-        1    => "text-danger-emphasis",      // Rất tệ
-        2    => "text-danger",             // Tệ
-        3    => "text-warning",            // Khá tệ
-        4    => "text-secondary",          // Mixed
-        5    => "text-info",               // Khá tốt
-        6    => "text-primary",            // Tốt
-        >= 7 => "text-success",            // Rất tốt
-    };
-}
 <style>
 .thumbnail-carousel .carousel-inner {
     overflow-x: auto; 
@@ -476,6 +504,46 @@
     </div>
 </div>
 
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #16120f; border: 1px solid #ffc107; color: #acb2b8;">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white">WRITE A REVIEW</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewForm">
+                    <input type="hidden" name="GameId" value="@Model.Game.Id" />
+                    
+                    <label class="d-block mb-2 small text-uppercase fw-bold text-warning">Do you recommend this game?</label>
+                    <div class="d-flex gap-3 mb-4">
+                        <input type="radio" class="btn-check" name="bRecomended" id="recTrue" value="true" checked>
+                        <label class="btn btn-outline-warning d-flex align-items-center gap-2 flex-fill py-2" for="recTrue">
+                            <i class="bi bi-hand-thumbs-up-fill fs-4"></i> Yes
+                        </label>
+
+                        <input type="radio" class="btn-check" name="bRecomended" id="recFalse" value="false">
+                        <label class="btn btn-outline-danger d-flex align-items-center gap-2 flex-fill py-2" for="recFalse">
+                            <i class="bi bi-hand-thumbs-down-fill fs-4"></i> No
+                        </label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Comment" class="form-label small text-uppercase fw-bold text-warning">Your Review</label>
+                        <textarea class="form-control" name="Comment" id="Comment" rows="5" 
+                                  style="background: #000; color: #eee; border: 1px solid #333;" 
+                                  placeholder="Describe what you liked or disliked about this game..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">CANCEL</button>
+                <button type="button" class="btn btn-gold-outline px-4" id="submitReview">POST REVIEW</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
 const fullImages = @Html.Raw(Json.Serialize(screenshots));// convert img url C# (ViewBag) into JavaScript
@@ -571,7 +639,7 @@ window.onclick = function(event) {
         
         @if (Model.Rates.IsNullOrEmpty())
         {
-            <div class="no-reviews-container text-center p-5 mt-3" 
+            <div class="text-center p-5 mt-3" 
                  style="background: #111; border: 1px dashed #444; border-radius: 8px;">
         
                 <div class="mb-3">
@@ -599,7 +667,7 @@ window.onclick = function(event) {
                                 <strong style="color: #eee;">@rate.User.DisplayName</strong>
                             </div>
 
-                            <div class="recommendation-badge mb-2">
+                            <div class=" mb-2">
                                 @if (rate.bRecomended)
                                 {
                                     <div class="d-flex align-items-center" style="color: #ffc107;">
@@ -619,26 +687,26 @@ window.onclick = function(event) {
                         </div>
 
                         <div class="col-md-9 p-3 d-flex flex-column">
-                            <div class="review-body mb-auto">
-                                <p class="review-comment" style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">
+                            <div class=" mb-auto">
+                                <p style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">
                                     @rate.Comment
                                 </p>
                             </div>
 
-                            <div class="review-footer pt-3 mt-3" style="border-top: 1px solid #222;">
+                            <div class=" pt-3 mt-3" style="border-top: 1px solid #222;">
                                 <div class="d-flex align-items-center flex-wrap gap-2">
                                     <span class="small text-muted me-2">Was this review helpful?</span>
 
-                                    <button class="btn btn-gold-outline btn-sm">
-                                        <i class="bi bi-hand-thumbs-up"></i> Yes <span>@(rate.LikeAmount ?? 0)</span>
+                                    <button class="btn btn-gold-outline btn-sm" data-type="yes" onclick="sendReaction(@rate.Id, 'yes', this)">
+                                        <i class="bi bi-hand-thumbs-up"></i> Yes (<span class="count">@(rate.LikeAmount ?? 0)</span>)
                                     </button>
-
-                                    <button class="btn btn-gold-outline btn-sm">
-                                        <i class="bi bi-hand-thumbs-down"></i> No <span>@(rate.DislikeAmount ?? 0)</span>
+    
+                                    <button class="btn btn-gold-outline btn-sm" data-type="no" onclick="sendReaction(@rate.Id, 'no', this)">
+                                        <i class="bi bi-hand-thumbs-down"></i> No (<span class="count">@(rate.DislikeAmount ?? 0)</span>)
                                     </button>
-
-                                    <button class="btn btn-gold-outline btn-sm">
-                                        <i class="bi bi-emoji-laughing"></i> Funny <span>@(rate.FunnyAmount ?? 0)</span>
+    
+                                    <button class="btn btn-gold-outline btn-sm" data-type="funny" onclick="sendReaction(@rate.Id, 'funny', this)">
+                                        <i class="bi bi-emoji-laughing"></i> Funny (<span class="count">@(rate.FunnyAmount ?? 0)</span>)
                                     </button>
                                 </div>
                             </div>
@@ -719,47 +787,47 @@ document.addEventListener("DOMContentLoaded", function () {
             fetchAndRender(currentFilter, currentSort);
         });
     });
-
-    async function fetchAndRender(filter, sort) {
-        targetContainer.innerHTML = `
+});
+async function fetchAndRender(filter, sort) {
+    targetContainer.innerHTML = `
             <div class="text-center p-5">
                 <div class="spinner-border text-warning" role="status"></div>
                 <p class="mt-2 text-warning fw-bold" style="letter-spacing: 2px;">LOADING...</p>
             </div>`;
 
-        try {
-            const formData = new FormData();
-            formData.append('gameId', gameId);
-            formData.append('filterBy', filter); // Gửi thêm loại filter (Positive/Negative/All)
-            formData.append('sortBy', sort);     // Gửi loại sort (Date/Helpful/Funny)
+    try {
+        const formData = new FormData();
+        formData.append('gameId', gameId);
+        formData.append('filterBy', filter); // Gửi thêm loại filter (Positive/Negative/All)
+        formData.append('sortBy', sort);     // Gửi loại sort (Date/Helpful/Funny)
 
-            const response = await fetch('/Game/FilterReviews', {
-                method: 'POST',
-                body: formData
-            });
+        const response = await fetch('/Game/FilterReviews', {
+            method: 'POST',
+            body: formData
+        });
 
-            if (response.ok) {
-                const data = await response.json();
-                renderHTML(data);
-            }
-        } catch (error) {
-            targetContainer.innerHTML = '<p class="text-danger text-center">Error loading reviews.</p>';
+        if (response.ok) {
+            const data = await response.json();
+            renderHTML(data);
         }
+    } catch (error) {
+        targetContainer.innerHTML = '<p class="text-danger text-center">Error loading reviews.</p>';
+    }
+}
+
+function renderHTML(data) {
+    if (!data || data.length === 0) {
+        targetContainer.innerHTML = '<div class="text-center text-muted p-5">No reviews found for these criteria.</div>';
+        return;
     }
 
-    function renderHTML(data) {
-        if (!data || data.length === 0) {
-            targetContainer.innerHTML = '<div class="text-center text-muted p-5">No reviews found for these criteria.</div>';
-            return;
-        }
+    let html = '';
+    data.forEach(rate => {
+        const color = rate.isRecommended ? '#ffc107' : '#ff4444';
+        const statusText = rate.isRecommended ? 'RECOMMENDED' : 'NOT RECOMMENDED';
+        const icon = rate.isRecommended ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-down-fill';
 
-        let html = '';
-        data.forEach(rate => {
-            const color = rate.isRecommended ? '#ffc107' : '#ff4444';
-            const statusText = rate.isRecommended ? 'RECOMMENDED' : 'NOT RECOMMENDED';
-            const icon = rate.isRecommended ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-down-fill';
-
-            html += `
+        html += `
             <div class="review-card mb-4" style="background: #111; border: 1px solid #333; border-radius: 4px; border-left: 4px solid ${color};">
                 <div class="row g-0">
                     <div class="col-md-3 p-3" style="background: rgba(255, 255, 255, 0.03);">
@@ -769,29 +837,138 @@ document.addEventListener("DOMContentLoaded", function () {
                             </div>
                             <strong style="color: #eee;">${rate.userName}</strong>
                         </div>
-                        <div class="recommendation-badge mb-2" style="color: ${color}">
+                        <div class=" mb-2" style="color: ${color}">
                             <i class="bi ${icon} fs-4 me-2"></i>
                             <span class="fw-bold small">${statusText}</span>
                         </div>
                         <div class="text-muted small">Posted: ${rate.date}</div>
                     </div>
                     <div class="col-md-9 p-3 d-flex flex-column">
-                        <div class="review-body mb-auto">
-                            <p class="review-comment" style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">${rate.comment}</p>
+                        <div class=" mb-auto">
+                            <p style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">${rate.comment}</p>
                         </div>
-                        <div class="review-footer pt-3 mt-3" style="border-top: 1px solid #222;">
+                        <div class=" pt-3 mt-3" style="border-top: 1px solid #222;">
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <span class="small text-muted me-2">Was this review helpful?</span>
-                                <button class="btn btn-gold-outline btn-sm">Yes (${rate.likes})</button>
-                                <button class="btn btn-gold-outline btn-sm">No (${rate.dislikes})</button>
-                                <button class="btn btn-gold-outline btn-sm">Funny (${rate.funny})</button>
+                                <button class="btn btn-gold-outline btn-sm" data-type="yes" onclick="sendReaction(${rate.id}, 'yes', this)">
+                                    <i class="bi bi-hand-thumbs-up"></i> Yes (<span class="count">${rate.likes}</span>)
+                                </button>
+    
+                                <button class="btn btn-gold-outline btn-sm" data-type="no" onclick="sendReaction(${rate.id}, 'no', this)">
+                                    <i class="bi bi-hand-thumbs-down"></i> No (<span class="count">${rate.dislikes}</span>)
+                                </button>
+    
+                                <button class="btn btn-gold-outline btn-sm" data-type="funny" onclick="sendReaction(${rate.id}, 'funny', this)">
+                                    <i class="bi bi-emoji-laughing"></i> Funny (<span class="count">${rate.funny}</span>)
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>`;
-        });
-        targetContainer.innerHTML = html;
+    });
+    targetContainer.innerHTML = html;
+}
+
+async function sendReaction(reviewId, type, buttonElement) {
+    const card = buttonElement.closest('.review-card');
+    const allButtons = card.querySelectorAll('.btn-gold-outline');
+
+    // Tìm xem trước đó user có đang chọn nút nào không (trong nhóm Yes/No)
+    let previousBtn = null;
+    if (type === 'yes' || type === 'no') {
+        previousBtn = card.querySelector(`.btn-gold-outline.active-gold[data-type="yes"], .btn-gold-outline.active-gold[data-type="no"]`);
+    } else {
+        // Riêng nút Funny thì độc lập
+        previousBtn = card.querySelector(`.btn-gold-outline.active-gold[data-type="funny"]`);
     }
-});
+
+    const isRemoving = buttonElement.classList.contains('active-gold');
+    const previousType = (previousBtn && previousBtn !== buttonElement) ? previousBtn.getAttribute('data-type') : null;
+
+    try {
+        const formData = new FormData();
+        formData.append('reviewId', reviewId);
+        formData.append('reactionType', type);
+        formData.append('isRemoving', isRemoving);
+        if (previousType) formData.append('previousType', previousType);
+
+        const response = await fetch('/Game/ReactToReview', { method: 'POST', body: formData });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // Cập nhật lại số cho cả 3 nút trong card đó
+            updateButtonUI(card, 'yes', data.likes);
+            updateButtonUI(card, 'no', data.dislikes);
+            updateButtonUI(card, 'funny', data.funny);
+
+            // Cập nhật trạng thái Active
+            if (isRemoving) {
+                buttonElement.classList.remove('active-gold');
+            } else {
+                if (previousBtn) previousBtn.classList.remove('active-gold');
+                buttonElement.classList.add('active-gold');
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function updateButtonUI(card, type, count) {
+    const btn = card.querySelector(`button[data-type="${type}"]`);
+    if (btn) {
+        const span = btn.querySelector('.count');
+        if (span) span.innerText = count;
+    }
+}
+</script>
+
+
+@* RATING FEATURE *@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rateBtn = document.getElementById('RateBtn');
+        const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+        const submitBtn = document.getElementById('submitReview');
+
+        // Biến trạng thái từ Razor truyền xuống JS (để hiển thị thông báo nếu cần)
+        const isEditMode = @(bUserRated.ToString().ToLower());
+
+        if (rateBtn) {
+            rateBtn.addEventListener('click', function () {
+                // Nếu là Edit, có thể thay đổi title modal cho khớp
+                document.querySelector('.modal-title').innerText = isEditMode ? 'EDIT YOUR REVIEW' : 'WRITE A REVIEW';
+                reviewModal.show();
+            });
+        }
+
+        submitBtn.addEventListener('click', async function () {
+            const form = document.getElementById('reviewForm');
+            const formData = new FormData(form);
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> SAVING...';
+
+            try {
+                // Action PostReview bây giờ sẽ xử lý logic Upsert (Update if exist, else Insert)
+                const response = await fetch('/Game/PostReview', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    location.reload(); // Reload để cập nhật lại nút và danh sách review
+                } else {
+                    alert("Error: Could not save your review.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'POST REVIEW';
+            }
+        });
+    });
 </script>

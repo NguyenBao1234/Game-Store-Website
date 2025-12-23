@@ -6,7 +6,6 @@ namespace POWStudio.Services;
 using System.Collections.Generic;
 using System.Linq;
 
-
 public class GameService : IGameService
 {
     private readonly GameStoreDbContext mDBContext;
@@ -35,6 +34,18 @@ public class GameService : IGameService
             return mDBContext.Game.Take(inLimitAmount);
         }
         IQueryable<Game> query = mDBContext.Game.Where(g => g.Title.Contains(term));
+        
+        if (!inGetAll && inLimitAmount > 0) query = query.Take(inLimitAmount);
+        return query;
+    }
+    public IQueryable<Game> GetLibGamesByTerm(string term, int inLimitAmount = 4, bool inGetAll = false, string inUserId = null)
+    {
+        if (string.IsNullOrEmpty(term))
+        {
+            return mDBContext.Game.Take(inLimitAmount);
+        }
+
+        var query = GetLibraryGames(inUserId).Where(lg=>lg.Title.Contains(term));
         
         if (!inGetAll && inLimitAmount > 0) query = query.Take(inLimitAmount);
         return query;

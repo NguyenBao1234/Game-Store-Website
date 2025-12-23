@@ -359,7 +359,30 @@ img {
     background-color: #e0a800;
     transform: translateY(-2px);
 }
+.sub-action-button
+{
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    justify-content: center;
 
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+.sub-action-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px); /* Hiệu ứng bay lên nhẹ */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Tạo bóng nhẹ */
+}
 .sub-button {
     padding: 12px;
     width: 50px;

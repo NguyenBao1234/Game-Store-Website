@@ -355,19 +355,19 @@ public IActionResult Library(string inSearchTerm, List<string> inCategoryNames, 
         ViewBag.UserId =  mUserManager.GetUserId(User);
         return View(gameByFilter.ToList());
     }
-    
+
     [HttpGet]
-    public IActionResult SuggestGames(string term)
+    public IActionResult SuggestLibGames(string term)
     {
         if (string.IsNullOrEmpty(term)) return Content("");
-        
-        var gameSuggestions = _gameService.GetGamesByTerm(term, 4, false); 
-        
+
+        var gameSuggestions = _gameService.GetGamesByTerm(term, 4, false);
+
         // Truyền từ khóa tìm kiếm để dùng cho việc highlight trong View
         ViewData["SearchTerm"] = term;
 
         // Trả về Partial View chứa kết quả
-        return PartialView("_SuggestionResultPartial", gameSuggestions); 
+        return PartialView("_SuggestionResultPartial", gameSuggestions);
     }
     
     

@@ -16,7 +16,9 @@ public class GameController : Controller
     private readonly IGameService _gameService;
     private readonly GameStoreDbContext mDbContext;
     private readonly UserManager<ApplicationUser> mUserManager;
-    public GameController(UserManager<ApplicationUser> userManager, IGameService gameService, GameStoreDbContext mDbContextContext)
+
+    public GameController(UserManager<ApplicationUser> userManager, IGameService gameService,
+        GameStoreDbContext mDbContextContext)
     {
         mUserManager = userManager;
         _gameService = gameService;
@@ -25,68 +27,83 @@ public class GameController : Controller
 
     [Route("/Games")]
     [HttpGet]
-    public IActionResult Index(string inSearchTerm, List<string> inCategoryNames, decimal? inMinPrice, decimal? inMaxPrice, GameSortOption inSortOption, bool inSortAscending = true)
+    public IActionResult Index(string inSearchTerm, List<string> inCategoryNames, decimal? inMinPrice,
+        decimal? inMaxPrice, GameSortOption inSortOption, bool inSortAscending = true)
     {
         IQueryable<Game> games;
 
         var categoryObjs = _gameService.GetAllCategories().ToList();
         List<string> categories = new List<string>();
         foreach (var category in categoryObjs) categories.Add(category.Name);
-        
-        List<int>SelectCategoryIds = new List<int>();
+
+        List<int> SelectCategoryIds = new List<int>();
         foreach (var category in categoryObjs)
-            if (inCategoryNames.Contains(category.Name))  SelectCategoryIds.Add(category.Id);
-        
+            if (inCategoryNames.Contains(category.Name))
+                SelectCategoryIds.Add(category.Id);
+
         ViewData["AllCategories"] = categories;
-        
+
         if (string.IsNullOrEmpty(inSearchTerm)) games = _gameService.GetAll();
         else games = _gameService.GetGamesByTerm(inSearchTerm, 0, true);
         var sortedGames = _gameService.GetGamesBySortOption(games, inSortOption, inSortAscending);
-        var priceRangeGames = _gameService.GetGamesByPriceRange(sortedGames, inMinPrice??0, inMaxPrice??999999);
-        var gameByFilter = _gameService.GetGamesByCategory(priceRangeGames,SelectCategoryIds);
+        var priceRangeGames = _gameService.GetGamesByPriceRange(sortedGames, inMinPrice ?? 0, inMaxPrice ?? 999999);
+        var gameByFilter = _gameService.GetGamesByCategory(priceRangeGames, SelectCategoryIds);
 
         ViewData["CurrentSearchTerm"] = inSearchTerm;
-        ViewData["SelectedCategories"] =  inCategoryNames;
+        ViewData["SelectedCategories"] = inCategoryNames;
         ViewData["SortOption"] = inSortOption;
         ViewData["SortAscending"] = inSortAscending;
         ViewData["MinPrice"] = inMinPrice;
         ViewData["MaxPrice"] = inMaxPrice;
-        ViewBag.UserId =  mUserManager.GetUserId(User);
+        ViewBag.UserId = mUserManager.GetUserId(User);
         return View(gameByFilter.ToList());
     }
-    
+
     [HttpGet]
     public IActionResult SuggestGames(string term)
     {
         if (string.IsNullOrEmpty(term)) return Content("");
-        
-        var gameSuggestions = _gameService.GetGamesByTerm(term, 4, false); 
-        
+
+        var gameSuggestions = _gameService.GetGamesByTerm(term, 4, false);
+
         // Truyền từ khóa tìm kiếm để dùng cho việc highlight trong View
         ViewData["SearchTerm"] = term;
 
         // Trả về Partial View chứa kết quả
-        return PartialView("_SuggestionResultPartial", gameSuggestions); 
+        return PartialView("_SuggestionResultPartial", gameSuggestions);
     }
-    
+
     [Route("/{slug}")]
     public IActionResult Detail(string slug)
     {
+        var userId = mUserManager.GetUserId(User);
         var game = _gameService.GetBySlug(slug);
         if (game == null)
         {
             return NotFound();
         }
-        
-        var rates = _gameService.GetRates(game.Id).OrderByDescending(r=>r.Date).ToList();
+
+        var rates = _gameService.GetRates(game.Id).OrderByDescending(r => r.Date).ToList();
+        bool bUserRated = false;
+        foreach (var rate in rates)
+        {
+            if(rate.UserId == userId)
+            {
+                bUserRated = true;
+                break;
+            }
+        }
         int PositiveAmout = 0;
-        int  NegativeAmout = 0;
+        int NegativeAmout = 0;
+        int RatingAmount = 0;
         foreach (var rate in rates)
         {
             if (rate.bRecomended) PositiveAmout++;
             else NegativeAmout++;
+            RatingAmount++;
         }
-        var sumRate = PositiveAmout + NegativeAmout; 
+
+        var sumRate = PositiveAmout + NegativeAmout;
         double score = sumRate == 0 ? 0 : (double)PositiveAmout / sumRate;
         JudgedRating judgedRating;
         if (sumRate >= 500)
@@ -109,9 +126,9 @@ public class GameController : Controller
             else judgedRating = JudgedRating.VeryNegative;
         }
         else if (sumRate == 0) judgedRating = JudgedRating.None;
-        else 
+        else
         {
-            if (score >= 0.80) judgedRating = JudgedRating.Positive;
+            if (score >= 0.65) judgedRating = JudgedRating.Positive;
             else if (score >= 0.40) judgedRating = JudgedRating.Mixed;
             else judgedRating = JudgedRating.Negative;
         }
@@ -140,16 +157,19 @@ public class GameController : Controller
             default:
                 break;
         }
-        var userId = mUserManager.GetUserId(User);
+
+        
         ViewBag.GameId = game.Id;
         ViewBag.JudgedRating = (int)judgedRating;
         ViewBag.JudgedRatingString = judgedRatingString;
+        ViewBag.RatingAmount = RatingAmount;
         ViewBag.Screenshots = _gameService.GetScreenshotUrls(game.Id);
         ViewBag.UserId = userId;
-        ViewBag.bGameInCart = userId != null && _gameService.IsGameInCart(game.Id,userId);
-        ViewBag.bGameInWishlist = userId != null && _gameService.IsGameInWishlist(game.Id,userId);
+        ViewBag.bUserRated = bUserRated;
+        ViewBag.bGameInCart = userId != null && _gameService.IsGameInCart(game.Id, userId);
+        ViewBag.bGameInWishlist = userId != null && _gameService.IsGameInWishlist(game.Id, userId);
         ViewBag.bOwned = _gameService.IsGameInLibrary(game.Id, userId);
-        return View("Detail", new GameDetailVM{Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
+        return View("Detail", new GameDetailVM { Game = game, Rates = rates }); // trỏ tới Views/Game/Detail.cshtml
     }
 
     public IActionResult Wishlist()
@@ -162,25 +182,27 @@ public class GameController : Controller
 
     public IActionResult RemoveWishlist(int wishItemId)
     {
-        var wishlistItem = mDbContext.WishlistItem.FirstOrDefault(wi=> wi.Id== wishItemId);
+        var wishlistItem = mDbContext.WishlistItem.FirstOrDefault(wi => wi.Id == wishItemId);
         if (wishlistItem != null)
         {
             mDbContext.WishlistItem.Remove(wishlistItem);
             var sum = mDbContext.SaveChanges();
         }
+
         return RedirectToAction("Wishlist");
     }
 
     public IActionResult AddToWishlistFromDetail(int gameId)
     {
-        
+
         var gameSlug = _gameService.GetGameById(gameId).Slug;
         var userId = mUserManager.GetUserId(User);
         var cartId = _gameService.GetCartId(userId);
         _gameService.AddToWishlist(gameId, cartId);
 
         return RedirectToAction("Detail", "Game", new { slug = gameSlug });
-    }    
+    }
+
     public IActionResult AddToWishlistFromSearch(int gameId)
     {
         var gameSlug = _gameService.GetGameById(gameId).Slug;
@@ -190,14 +212,16 @@ public class GameController : Controller
 
         return RedirectToAction("Index");
     }
+
     public IActionResult RemoveWishlistFromSearch(int wishItemId)
     {
-        var wishlistItem = mDbContext.WishlistItem.FirstOrDefault(wi=> wi.Id== wishItemId);
+        var wishlistItem = mDbContext.WishlistItem.FirstOrDefault(wi => wi.Id == wishItemId);
         if (wishlistItem != null)
         {
             mDbContext.WishlistItem.Remove(wishlistItem);
             var sum = mDbContext.SaveChanges();
         }
+
         return RedirectToAction("Index");
     }
 
@@ -217,7 +241,7 @@ public class GameController : Controller
                 .Select(x => new GameInOrderVM
                 {
                     Name = x.Game.Title,
-                    Price = x.Game.Price??0,
+                    Price = x.Game.Price ?? 0,
                 })
                 .ToList();
 
@@ -246,6 +270,7 @@ public class GameController : Controller
 
         return View(orderVM);
     }
+
     [HttpPost]
     public async Task<IActionResult> FilterReviews(int gameId, string filterBy, string sortBy)
     {
@@ -259,10 +284,11 @@ public class GameController : Controller
         {
             "helpful" => query.OrderByDescending(r => r.LikeAmount),
             "funny" => query.OrderByDescending(r => r.FunnyAmount),
-            _ => query.OrderByDescending(r => r.Date) 
+            _ => query.OrderByDescending(r => r.Date)
         };
 
-        var result = await query.Select(r => new {
+        var result = await query.Select(r => new
+        {
             userName = r.User.DisplayName,
             isRecommended = r.bRecomended,
             comment = r.Comment,
@@ -273,5 +299,77 @@ public class GameController : Controller
         }).ToListAsync();
 
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ReactToReview(int reviewId, string reactionType, bool isRemoving, string previousType = null!)
+    {
+        var review = await mDbContext.Rate.FindAsync(reviewId);
+        if (review == null) return NotFound();
+
+        // 1. Xử lý giảm (Unreact hoặc Swap)
+        if (isRemoving || !string.IsNullOrEmpty(previousType))
+        {
+            string typeToReduce = isRemoving ? reactionType : previousType;
+            UpdateAmount(review, typeToReduce, -1);
+        }
+
+        // 2. Xử lý tăng (React hoặc Swap)
+        if (!isRemoving)
+        {
+            UpdateAmount(review, reactionType, 1);
+        }
+
+        await mDbContext.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            likes = review.LikeAmount ?? 0,
+            dislikes = review.DislikeAmount ?? 0,
+            funny = review.FunnyAmount ?? 0
+        });
+    }
+
+    private void UpdateAmount(Rate review, string type, int delta)
+    {
+        if (type == "yes") review.LikeAmount = Math.Max(0, (review.LikeAmount ?? 0) + delta);
+        else if (type == "no") review.DislikeAmount = Math.Max(0, (review.DislikeAmount ?? 0) + delta);
+        else if (type == "funny") review.FunnyAmount = Math.Max(0, (review.FunnyAmount ?? 0) + delta);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> PostReview(Rate inputRate)
+    {
+        var userId = mUserManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        // Tìm kiếm review cũ của User này cho Game hiện tại
+        var existingRate = await mDbContext.Rate
+            .FirstOrDefaultAsync(r => r.GameId == inputRate.GameId && r.UserId == userId);
+
+        if (existingRate != null)
+        {
+            // --- LOGIC UPDATE ---
+            existingRate.bRecomended = inputRate.bRecomended;
+            existingRate.Comment = inputRate.Comment;
+            existingRate.Date = DateTime.Now; // Cập nhật ngày chỉnh sửa mới nhất
+        
+            mDbContext.Rate.Update(existingRate);
+        }
+        else
+        {
+            // --- LOGIC ADD NEW ---
+            inputRate.UserId = userId;
+            inputRate.Date = DateTime.Now;
+            inputRate.LikeAmount = 0;
+            inputRate.DislikeAmount = 0;
+            inputRate.FunnyAmount = 0;
+        
+            mDbContext.Rate.Add(inputRate);
+        }
+
+        await mDbContext.SaveChangesAsync();
+        return Ok();
     }
 }
