@@ -1,0 +1,203 @@
+@using Microsoft.IdentityModel.Tokens
+@model POWStudio.Models.ViewModels.RatingAdminVM;
+@{
+    ViewBag.Title = "Rating";
+    Layout = "_Layout";
+}
+
+<div class="reviews-container mt-5" style="background: #171717">
+    
+    <div class="centered-content-container">
+        <h3 class="mb-4 text-white border-bottom border-warning pb-2" style="border-width: 2px !important;">
+            REVIEWS OF <span style="color: #ffc107;"> @ViewBag.GameName</span>
+        </h3>
+        
+        
+        @if (!Model.Rates.IsNullOrEmpty())
+        {
+            <div class="filter-bar mb-4 p-3" style="background: #141414; border: 1px solid #333; border-radius: 4px;">
+                <div class=" d-flex flex-wrap gap-2 align-items-center">
+                    <span class="text-muted small me-2">FILTER BY:</span>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="filter" data-value="positive">Positive</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="filter" data-value="negative">Negative</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn active-gold" data-group="filter" data-value="all">All</button>
+
+                    <div class="vr mx-2" style="background-color: #444;"></div>
+
+                    <span class="text-muted small me-2">SORT BY:</span>
+                    <button class="btn btn-gold-outline btn-sm filter-btn active-gold" data-group="sort" data-value="date">Recent</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="sort" data-value="helpful">Helpful</button>
+                    <button class="btn btn-gold-outline btn-sm filter-btn" data-group="sort" data-value="funny">Funny</button>
+                </div>
+            </div>
+        }
+        
+        
+        @if (Model.Rates.IsNullOrEmpty())
+        {
+            <div class="text-center p-5 mt-3" 
+                 style="background: #111; border: 1px dashed #444; border-radius: 8px;">
+        
+                <div class="mb-3">
+                    <i class="bi bi-chat-square-dots" style="font-size: 3rem; color: #333;"></i>
+                </div>
+        
+                <h4 class="text-white">No reviews yet</h4>
+                <p style="color: #777; max-width: 400px; margin: 0 auto;">
+                    Be the first one to share your thoughts about this game with the community!
+                </p>
+                
+            </div>
+        }
+        <div id="reviews-list-target">
+            @foreach (var rate in Model.Rates)
+            {
+                <div class="review-card mb-4" style="background: #111; border: 1px solid #333; border-radius: 4px; border-left: 4px solid @(rate.bRecomended ? "#ffc107" : "#ff4444");">
+                    <div class="row g-0">
+                        <div class="col-md-3 p-3" style="background: rgba(255, 255, 255, 0.03);">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-placeholder me-2 d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; border: 1px solid #ffc107; background: #000;">
+                                    <i class="bi bi-person-fill" style="color: #ffc107;"></i>
+                                </div>
+                                <strong style="color: #eee;">@rate.User.DisplayName</strong>
+                            </div>
+
+                            <div class=" mb-2">
+                                @if (rate.bRecomended)
+                                {
+                                    <div class="d-flex align-items-center" style="color: #ffc107;">
+                                        <i class="bi bi-hand-thumbs-up-fill fs-4 me-2"></i>
+                                        <span class="fw-bold small">RECOMMENDED</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center" style="color: #ff4444;">
+                                        <i class="bi bi-hand-thumbs-down-fill fs-4 me-2"></i>
+                                        <span class="fw-bold small">NOT RECOMMENDED</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="text-muted small">Posted: @rate.Date.ToString("MMM dd, yyyy")</div>
+                        </div>
+
+                        <div class="col-md-9 p-3 d-flex flex-column">
+                            <div class=" mb-auto">
+                                <p style="color: #ccc; white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">
+                                    @rate.Comment
+                                </p>
+                            </div>
+
+                            <div class=" pt-3 mt-3" style="border-top: 1px solid #222;">
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    
+                                    <button class="btn btn-outline-danger btn-sm" onclick="deleteReview(@rate.Id)">
+                                        <i class="bi bi-trash me-2"></i> Delete
+                                    </button>
+                                    <small class="text-muted ms-auto">
+                                        Stats: @rate.LikeAmount <i class="bi bi-hand-thumbs-up"></i> | @rate.DislikeAmount <i class="bi bi-hand-thumbs-down"></i> | @rate.FunnyAmount <i class="bi bi-emoji-laughing"></i>
+                                    </small>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }   
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    let currentFilter = 'all';
+    let currentSort = 'date';
+    let fetchAdminReviewsGlobal; // Đây là biến global
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const targetContainer = document.getElementById('reviews-list-target');
+        const gameId = @(ViewContext.RouteData.Values["GameId"] ?? 0);
+
+        // --- SỬA TẠI ĐÂY: Gán hàm vào biến global ---
+        fetchAdminReviewsGlobal = fetchAdminReviews; 
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const group = this.getAttribute('data-group');
+                const value = this.getAttribute('data-value');
+
+                document.querySelectorAll(`.filter-btn[data-group="${group}"]`).forEach(b => {
+                    b.classList.remove('active-gold');
+                });
+                this.classList.add('active-gold');
+
+                if (group === 'filter') currentFilter = value;
+                else currentSort = value;
+
+                // Gọi hàm trực tiếp
+                fetchAdminReviews(currentFilter, currentSort);
+            });
+        });
+
+        // Giữ nguyên hàm này bên trong DOMContentLoaded để dùng được biến gameId và targetContainer
+        async function fetchAdminReviews(filter, sort) {
+            targetContainer.innerHTML = `<div class="text-center p-5 text-warning">...LOADING...</div>`;
+            try {
+                const formData = new FormData();
+                formData.append('gameId', gameId);
+                formData.append('filterBy', filter);
+                formData.append('sortBy', sort);
+                console.log("reloading...");
+                const response = await fetch('/Admin/Rating/FilterAdmin', { // Kiểm tra lại URL này cho chuẩn với Controller
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderAdminHTML(data);
+                }
+                else {
+                    // Nếu server trả về lỗi (ví dụ 500 do danh sách trống hoặc lỗi mapping)
+                    console.log("Response not ok, reloading...");
+                    location.reload();
+                }
+            } catch (error) {
+                location.reload();
+            }
+        }
+
+        function renderAdminHTML(data) {
+            // ... giữ nguyên code vẽ HTML của bạn ...
+        }
+    });
+
+    // Hàm deleteReview nằm ngoài (Global)
+    async function deleteReview(reviewId) {
+        if (!confirm("Are you sure?")) return;
+
+        try {
+            const formData = new FormData();
+            formData.append('id', reviewId);
+
+            const response = await fetch('/Admin/Rating/DeleteReview', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                // GỌI HÀM GLOBAL TẠI ĐÂY
+                if (typeof fetchAdminReviewsGlobal === "function") {
+                    fetchAdminReviewsGlobal(currentFilter, currentSort);
+                }
+            } else {
+                alert("Error: Could not delete.");
+            }
+        } catch (error) {
+            alert("An error occurred.");
+        }
+    }
+
+</script>

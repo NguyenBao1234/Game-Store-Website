@@ -719,37 +719,6 @@ window.onclick = function(event) {
     </div>
 </div>
 <style>
-    /* Gold Theme Customization */
-    .btn-gold-outline {
-        background: transparent;
-        border: 1px solid #444;
-        color: #ffc107;
-        font-size: 0.85rem;
-        transition: all 0.3s ease;
-    }
-
-    .btn-gold-outline:hover {
-        background: #ffc107;
-        color: #000;
-        border-color: #ffc107;
-        box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
-    }
-    
-    .btn-gold-outline.active-gold {
-        background: #ffc107 !important;
-        color: #000 !important;
-        box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
-    }
-    .review-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .review-card:hover {
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        border-color: #444;
-    }
-
-    /* Biến đổi text-muted để không bị quá chìm trên nền đen */
     .text-muted {
         color: #777 !important;
     }
@@ -971,4 +940,35 @@ function updateButtonUI(card, type, count) {
             }
         });
     });
+
+    async function deleteReview(reviewId) {
+        // 1. Xác nhận trước khi xóa
+        if (!confirm("Are you sure you want to permanentely delete this review? This action cannot be undone.")) {
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('id', reviewId);
+
+            const response = await fetch('/Admin/Rating/DeleteReview', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                // 2. Thông báo thành công (tùy chọn)
+                console.log("Deleted successfully");
+
+                // 3. Gọi lại hàm fetch hiện tại để cập nhật danh sách (giữ nguyên filter/sort đang chọn)
+                // Biến currentFilter và currentSort đã được khai báo ở phạm vi global hoặc trong scope DOMContentLoaded của bạn
+                fetchAdminReviews(currentFilter, currentSort);
+            } else {
+                alert("Error: Could not delete the review.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred while trying to delete.");
+        }
+    }
 </script>

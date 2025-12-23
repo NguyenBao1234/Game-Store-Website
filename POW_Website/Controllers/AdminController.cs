@@ -123,7 +123,7 @@ public class AdminController : Controller
 
         mDbContext.SaveChanges();
 
-        return RedirectToAction("Admin", "Home");
+        return RedirectToAction("Admin", "Admin");
     }
     [HttpGet]
     [Route("/Admin/AddGame")]
@@ -192,7 +192,7 @@ public class AdminController : Controller
         game = mDbContext.Game.Find(id);
         mDbContext.Game.Remove(game);
         mDbContext.SaveChanges();
-        return RedirectToAction("Admin", "Home");
+        return RedirectToAction("Admin", "Admin");
     }
 
     [HttpGet]
@@ -310,9 +310,57 @@ public class AdminController : Controller
         
         return View(filter);
     }
-
-    public IActionResult Rating()
+    
+    [HttpPost]
+    public async Task<IActionResult> FilterAdmin(int gameId, string filterBy, string sortBy)
     {
-        throw new NotImplementedException();
+        var query = _gameService.GetRates(gameId);
+
+        // 1. FILTER
+        if (filterBy == "positive") query = query.Where(r => r.bRecomended);
+        else if (filterBy == "negative") query = query.Where(r => !r.bRecomended);
+
+        // 2. SORT
+        query = sortBy.ToLower() switch
+        {
+            "helpful" => query.OrderByDescending(r => r.LikeAmount),
+            "funny" => query.OrderByDescending(r => r.FunnyAmount),
+            _ => query.OrderByDescending(r => r.Date) // Default: Recent
+        };
+
+        var result = await query.Select(r => new {
+            id = r.Id,
+            userName = r.User.DisplayName,
+            isRecommended = r.bRecomended,
+            comment = r.Comment,
+            date = r.Date.ToString("MMM dd, yyyy"),
+            likes = r.LikeAmount ?? 0,
+            dislikes = r.DislikeAmount ?? 0,
+            funny = r.FunnyAmount ?? 0
+        }).ToListAsync();
+        
+        return Ok(result);
+    }
+    
+    [Route("/Admin/Rating/{GameId}")]
+    public IActionResult Rating(int GameId)
+    {
+        var gameName = mDbContext.Game.FirstOrDefault(g => g.Id == GameId).Title;
+        ViewBag.GameName = gameName?.ToUpper();
+        var ratesQuery = _gameService.GetRates(GameId).OrderByDescending(r=>r.Date);
+        var rates =  ratesQuery.ToList();
+        return View(new RatingAdminVM{Rates = rates});
+    }
+    [HttpPost]
+    [Route("/Admin/Rating/DeleteReview")]
+    public async Task<IActionResult> DeleteReview(int id)
+    {
+        var review = await mDbContext.Rate.FindAsync(id);
+        if (review == null) return NotFound(new { message = "Review not found" });
+
+        mDbContext.Rate.Remove(review);
+        await mDbContext.SaveChangesAsync();
+
+        return Ok(new { success = true });
     }
 }

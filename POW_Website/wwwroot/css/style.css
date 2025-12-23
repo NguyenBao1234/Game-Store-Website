@@ -810,3 +810,35 @@ body {
 .option-item-btn:hover {
     color: #ffffff;
 }
+
+.review-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border-color: #444;
+}
+
+/* Gold Theme Customization */
+.btn-gold-outline {
+    background: transparent;
+    border: 1px solid #444;
+    color: #ffc107;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-gold-outline:hover {
+    background: #ffc107;
+    color: #000;
+    border-color: #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+}
+
+.btn-gold-outline.active-gold {
+    background: #ffc107 !important;
+    color: #000 !important;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+    
