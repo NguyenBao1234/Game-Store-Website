@@ -1,9 +1,68 @@
 @{
     ViewData["Title"] = "- About POW";
 }
-<div class = "content-card" style="height: 100vh; background-image: url('Image/ArtworkGame/FirstSplashBg2.jpg')">
-    <div class="center-content-wrapper">
-        <h1 class="mt-4">POW is an indie game developer</h1>
-        <p>POW love developing game</p>
+
+<style>
+    .about-section {
+        height: 100vh;
+        background: linear-gradient(to right, rgba(0,0,0,0.7) 30%, transparent), 
+                    url('Image/ArtworkGame/FirstSplashBg2.jpg') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        color: #fff;
+        padding-left: 10%;
+    }
+
+    .content-wrapper {
+        max-width: 600px;
+        border-left: 1px solid rgba(255, 255, 255, 0.3); /* Đường kẻ dọc thanh lịch */
+        padding-left: 40px;
+    }
+
+    .brand-name {
+        font-size: 0.9rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .main-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 25px;
+    }
+
+    .description {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 300;
+    }
+
+    .accent-color {
+        color: #e67e22; /* Một chút điểm xuyết màu sắc tinh tế */
+    }
+</style>
+
+<div class="about-section">
+    <div class="content-wrapper">
+        <span class="brand-name">Indie Game Studio</span>
+        <h1 class="main-title">POW is more than <br/> just <span class="accent-color">coding.</span></h1>
+        
+        <div class="description">
+            <p>
+                Founded on the belief that games are the ultimate form of art, 
+                POW specializes in crafting immersive digital worlds. 
+                We don't just develop games; we build emotions, 
+                challenges, and memories.
+            </p>
+            <p style="margin-top: 20px; font-style: italic;">
+                "Small team, big dreams, endless passion."
+            </p>
+        </div>
     </div>
 </div>

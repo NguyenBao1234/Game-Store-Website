@@ -97,64 +97,65 @@
             }
         </ul>
     </div>
-</div>
-
-
-<nav aria-label="Order Pagination">
-    <ul class="pagination justify-content-end mb-4">
         
-        @if (Model.Page > 1)
-        {
-            <li class="page-item">
-                <a class="page-link bg-dark text-light border-secondary" 
-                   asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page - 1)" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">Previous</span>
-                </a>
-            </li>
-        }
-        
-        @if (Model.TotalPages > 1)
-        {
-            @for (int i = 1; i <= Model.TotalPages; i++)
+    <nav aria-label="Order Pagination">
+        <ul class="pagination justify-content-end mb-4">
+            
+            @if (Model.Page > 1)
             {
-                <li class="page-item @(i == Model.Page ? "active" : "")">
-                    @{
-                        // Xác định các lớp màu cho trạng thái Active/Inactive
-                        string linkClasses = (i == Model.Page) 
-                            ? "bg-warning text-dark border-warning" // Màu Active (ví dụ: xanh dương sáng)
-                            : "bg-dark text-light border-secondary"; // Màu Inactive (Dark Theme)
-                    }
-                    <a class="page-link @linkClasses" asp-controller="Admin" asp-action="Order" asp-route-page="@i">@i</a>
+                <li class="page-item">
+                    <a class="page-link bg-dark text-light border-secondary" 
+                       asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page - 1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
                 </li>
             }
-        }
+            
+            @if (Model.TotalPages > 1)
+            {
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.Page ? "active" : "")">
+                        @{
+                            // Xác định các lớp màu cho trạng thái Active/Inactive
+                            string linkClasses = (i == Model.Page) 
+                                ? "bg-warning text-dark border-warning" // Màu Active (ví dụ: xanh dương sáng)
+                                : "bg-dark text-light border-secondary"; // Màu Inactive (Dark Theme)
+                        }
+                        <a class="page-link @linkClasses" asp-controller="Admin" asp-action="Order" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            }
 
-        @if (Model.Page < Model.TotalPages)
-        {
-            <li class="page-item">
-                <a class="page-link bg-dark text-light border-secondary" 
-                   asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page + 1)" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </li>
-        }
-    </ul>
-</nav>
+            @if (Model.Page < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link bg-dark text-light border-secondary" 
+                       asp-controller="Admin" asp-action="Order" asp-route-page="@(Model.Page + 1)" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
 
-<div class="mt-4 p-3 d-flex justify-content-end gap-3 rounded-0" style="background-color: #1a1a1a; border: 1px solid #333;">
-        
-        <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
-           asp-controller="Admin" asp-action="Admin">
-            <i class="bi bi-house"></i> Admin Home
-        </a>
-        
-        <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
-           asp-controller="Admin" asp-action="SaleReport">
-            <i class="bi bi-pen"></i> Sale Report
-        </a>
+    <div class="mt-4 p-3 d-flex justify-content-end gap-3 rounded-0" style="background-color: #1a1a1a; border: 1px solid #333;">
+            
+            <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
+               asp-controller="Admin" asp-action="Admin">
+                <i class="bi bi-house"></i> Admin Home
+            </a>
+            
+            <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
+               asp-controller="Admin" asp-action="SaleReport">
+                <i class="bi bi-pen"></i> Sale Report
+            </a>
+    </div>
 </div>
+
+
 
 
 <script>
