@@ -1,22 +1,21 @@
 ﻿@model POWStudio.Models.GameCategory
+
 @{
-    ViewData["Title"] = "Add game";
-    // Đảm bảo bạn có CSS Dark Mode và Josefin Sans đã nhúng
+    ViewBag.Title = "- Edit Game";
+    var selectedCategories = ViewBag.SelectedCategories as List<int>;
 }
-
 <div class="container py-5" style="max-width: 800px; margin-top: 100px">
-
-    <h1 class="text-white fw-bold mb-5 text-center">
-        <i class="bi bi-controller me-2"></i> Thêm Game Mới
+    <h1 class="text-warning fw-bold mb-5 text-center">
+        <i class="bi bi-pencil-square me-2"></i> Chỉnh Sửa Game
     </h1>
-
-    <form asp-controller="Game" asp-action="AddGame" method="post">
-        
+    <form asp-controller="Admin" asp-action="EditGame" method="post">
+        <input type="hidden" asp-for="GameId"/>
         <h3 class="text-warning border-bottom border-warning pb-2 mb-4">Thông tin cơ bản</h3>
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <div class="form-floating">
-                    <input asp-for="Game.Title" type="text" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="Tên Game"/>
+                    <input asp-for="Game.Title" type="text"
+                           class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="Tên Game"/>
                     <label asp-for="Game.Title" class="text-secondary">Tên Game</label>
                 </div>
             </div>
@@ -27,19 +26,31 @@
                         multiple="multiple" data-multi-select>
                     @foreach (var category in ViewBag.Categories)
                     {
-                        <option value="@category.Value">@category.Text</option>
+                        bool isSelected = (selectedCategories != null && selectedCategories.Contains(int.Parse(category.Value)));
+                        if (isSelected)
+                        {
+                            <option value="@category.Value" selected="">@category.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@category.Value">@category.Text</option>
+                        }
                     }
                 </select>
             </div>
             <div class="col-md-6">
                 <div class="form-floating">
-                    <input asp-for="Game.Slug" type="text" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="Slug (URL thân thiện)"/>
+                    <input asp-for="Game.Slug" type="text"
+                           class="form-control bg-dark text-light rounded-0 border-secondary"
+                           placeholder="Slug (URL thân thiện)"/>
                     <label asp-for="Game.Slug" class="text-secondary">Slug (URL thân thiện)</label>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-floating">
-                    <input asp-for="Game.TitleImageUrl" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="URL ảnh tiêu đề"/>
+                    <input asp-for="Game.TitleImageUrl"
+                           class="form-control bg-dark text-light rounded-0 border-secondary"
+                           placeholder="URL ảnh tiêu đề"/>
                     <label asp-for="Game.TitleImageUrl" class="text-secondary">URL Ảnh Tiêu Đề</label>
                 </div>
             </div>
@@ -68,7 +79,7 @@
             </div>
             <div class="col-md-10">
                 <div class="form-floating">
-                    <input asp-for="Game.BgImageUrl" type="url" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="URL ảnh nền"/>
+                    <input asp-for="Game.BgImageUrl" class="form-control bg-dark text-light rounded-0 border-secondary" placeholder="URL ảnh nền"/>
                     <label asp-for="Game.BgImageUrl" class="text-secondary">URL Ảnh Nền</label>
                 </div>
             </div>
@@ -128,11 +139,10 @@
 
         <div class="d-grid mt-5">
             <button type="submit" class="btn btn-warning btn-lg rounded-0 fw-bold">
-                Add Game
+                Save Changes
             </button>
         </div>
-        
     </form>
-    
+
     <div asp-validation-summary="All" class="text-danger mt-4 text-center"></div>
 </div>

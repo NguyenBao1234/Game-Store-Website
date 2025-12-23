@@ -310,4 +310,9 @@ public class AdminController : Controller
         
         return View(filter);
     }
+
+    public IActionResult Rating()
+    {
+        throw new NotImplementedException();
+    }
 }

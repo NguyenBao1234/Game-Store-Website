@@ -19,8 +19,9 @@
             <thead>
                 <tr>
                     <th scope="col" style="width: 5%;">ID</th>
-                    <th scope="col" style="width: 40%;">Tên Game</th>
+                    <th scope="col" style="width: 40%;">Name</th>
                     @* <th scope="col" style="width: 25%;">Danh mục</th> *@
+                    <th scope="col" style="width: 15%;" class="text-center">Rating</th>
                     <th scope="col" style="width: 15%;" class="text-center">Edit</th>
                     <th scope="col" style="width: 15%;" class="text-center">Delete</th>
                 </tr>
@@ -31,6 +32,13 @@
                     <tr>
                         <th scope="row">@game.Id</th>
                         <td>@game.Title</td>
+                        
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-outline-warning rounded-0 px-3" 
+                               asp-controller="Admin" asp-action="Rating" asp-route-id="@game.Id">
+                                Edit
+                            </a>
+                        </td>
                         
                         <td class="text-center">
                             <a class="btn btn-sm btn-outline-warning rounded-0 px-3" 
