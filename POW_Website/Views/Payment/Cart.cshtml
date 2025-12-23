@@ -10,7 +10,9 @@
 <div class="cart-page-container">
 
     <div class="cart-items-list">
-        <h2>My Cart</h2>
+        <h2 class="important-page-title">
+            <i class="bi bi-cart"></i> My Cart
+        </h2>
         @foreach (var cartItem in Model)
         {
             var game = cartItem.Game;
@@ -167,7 +169,7 @@
         
     </div>
 </div>
-
+<div class="vh-100"></div>
 <script>
     // Popup thanh toan
     var modal = document.getElementById("paymentModal");

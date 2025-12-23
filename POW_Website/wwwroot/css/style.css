@@ -841,4 +841,9 @@ body {
     color: #000 !important;
     box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
-    
+.important-page-title{
+    display: flex;
+    align-items: center; /* Căn giữa icon và chữ theo chiều dọc */
+    gap: 15px;           /* Tạo khoảng cách giữa icon và chữ */
+    font-size: 2rem;     /* Kích thước của cả cụm (nếu muốn chữ cũng to) */
+}

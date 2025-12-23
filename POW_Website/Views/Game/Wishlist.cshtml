@@ -7,7 +7,9 @@
 <div class="wishlist-page-container">
 
     <div>
-        <h2>Wishlist</h2>
+        <h2 class="important-page-title">
+            <i class="bi bi-bookmark"></i> Wishlist
+        </h2>
         @foreach (var wishlistItem in Model)
         {
             var game = wishlistItem.Game;
@@ -80,7 +82,7 @@
     </div>
     
 </div>
-
+<div class="vh-100"></div>
 <style>.wishlist-page-container {
 
         max-width: 65vw;
