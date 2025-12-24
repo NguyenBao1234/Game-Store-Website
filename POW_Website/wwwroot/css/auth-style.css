@@ -1,0 +1,126 @@
+body {
+    font-family: 'Josefin Sans', sans-serif;
+}
+.form-control,
+.btn,
+label {
+    font-family: 'Josefin Sans', sans-serif !important;
+}
+.auth-overlay {
+    height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.75)),
+    url('/Image/Other/ThapRuaHN.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+}
+
+.auth-card {
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 50px;
+    width: 100%;
+    max-width: 550px;
+    min-width: 450px;
+    color: white;
+    border-radius: 4px;
+}
+
+.auth-header h1 {
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+}
+
+.form-floating > .form-control {
+    background: transparent !important;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0;
+    color: white !important;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.form-floating > .form-control:focus {
+    box-shadow: none;
+    border-bottom-color: #ffcc00;
+}
+
+.form-floating > label {
+    color: rgba(255, 255, 255, 0.5);
+    padding-left: 0;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: #ffcc00;
+    transform: scale(0.85) translateY(-1rem) translateX(0.15rem);
+}
+
+.btn-auth-main {
+    background: #ffcc00;
+    color: #000;
+    font-weight: 700;
+    border: none;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.btn-auth-main:hover {
+    background: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-auth-secondary {
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-auth-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.auth-link {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.auth-link:hover {
+    color: #ffcc00;
+}
+
+.form-check-input:checked {
+    background-color: #ffcc00;
+    border-color: #ffcc00;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+
+    -webkit-transition: background-color 5000s ease-in-out 0s;
+    transition: background-color 5000s ease-in-out 0s;
+
+
+    -webkit-text-fill-color: white !important;
+
+
+    caret-color: white;
+}
+
+
+input:-webkit-autofill {
+    box-shadow: 0 0 0px 1000px transparent inset;
+}
