@@ -1,5 +1,6 @@
-﻿@model POWStudio.Models.Category
-
+﻿@using Microsoft.AspNetCore.Authorization
+@model POWStudio.Models.Category
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewData["Title"] = "- Add Category";
 }

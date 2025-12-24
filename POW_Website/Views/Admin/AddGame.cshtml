@@ -1,4 +1,6 @@
-﻿@model POWStudio.Models.GameCategory
+﻿@using Microsoft.AspNetCore.Authorization
+@model POWStudio.Models.GameCategory
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewData["Title"] = "Add game";
     // Đảm bảo bạn có CSS Dark Mode và Josefin Sans đã nhúng

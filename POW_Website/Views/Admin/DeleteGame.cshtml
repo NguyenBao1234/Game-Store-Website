@@ -1,5 +1,6 @@
-﻿@model POWStudio.Models.Game
-
+﻿@using Microsoft.AspNetCore.Authorization
+@model POWStudio.Models.Game
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewBag.Title = "- Delete Game";
 }

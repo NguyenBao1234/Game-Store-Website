@@ -157,7 +157,7 @@
                 @foreach (var game in Model)
                 {
 
-                    var wishlistId = DbUtils.GetCartId(userId);
+                    var wishlistId = DbUtils.GetWishlistId(userId);
                     var bInWishlis = DbUtils.IsGameInWishlist(game.Id, wishlistId);
 
                     <div class="game-card">

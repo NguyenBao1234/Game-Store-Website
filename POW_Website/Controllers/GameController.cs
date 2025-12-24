@@ -175,6 +175,7 @@ public class GameController : Controller
     public IActionResult Wishlist()
     {
         var userId = mUserManager.GetUserId(User);
+        if(userId == null) return RedirectToAction("Login", "Account");
         var wishlist = _gameService.GetWishlistItems(userId).ToList();
         ViewBag.UserId = userId;
         return View(wishlist);
@@ -207,7 +208,7 @@ public class GameController : Controller
     {
         var gameSlug = _gameService.GetGameById(gameId).Slug;
         var userId = mUserManager.GetUserId(User);
-        var cartId = _gameService.GetCartId(userId);
+        var cartId = _gameService.GetWishlistId(userId);
         _gameService.AddToWishlist(gameId, cartId);
 
         return RedirectToAction("Index");

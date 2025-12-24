@@ -1,5 +1,6 @@
-﻿@model POWStudio.Models.GameCategory
-
+﻿@using Microsoft.AspNetCore.Authorization
+@model POWStudio.Models.GameCategory
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewBag.Title = "- Edit Game";
     var selectedCategories = ViewBag.SelectedCategories as List<int>;

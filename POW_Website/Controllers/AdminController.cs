@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,7 +10,7 @@ using POWStudio.Services;
 using POWStudio.Utils;
 
 namespace POWStudio.Controllers;
-
+[Authorize(Policy = "IsAdmin")]
 public class AdminController : Controller
 {
     private readonly ILogger<HomeController> _logger;

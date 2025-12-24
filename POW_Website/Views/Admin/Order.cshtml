@@ -1,5 +1,6 @@
+@using Microsoft.AspNetCore.Authorization
 @model POWStudio.Models.ViewModels.OrderVM
-
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewData["Title"] = "Order List";
 }

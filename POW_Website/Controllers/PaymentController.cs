@@ -24,6 +24,7 @@ public class PaymentController : Controller
     public IActionResult Cart()
     {
         var userId = mUserManager.GetUserId(User);
+        if(userId == null) return RedirectToAction("Login", "Account");
         var cartItems = _gameService.GetCartItems(userId).ToList();
 
         decimal totalDiscount = 0;

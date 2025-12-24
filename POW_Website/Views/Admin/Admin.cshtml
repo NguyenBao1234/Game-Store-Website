@@ -1,5 +1,7 @@
-﻿@model IEnumerable<POWStudio.Models.Game>
+﻿@using Microsoft.AspNetCore.Authorization
+@model IEnumerable<POWStudio.Models.Game>
 @inject POWStudio.Models.GameStoreDbContext mDbContext
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewData["Title"] = "- Admin";
     var spotlightData = mDbContext.GameSpotlight.ToDictionary(s => s.GameId, s => s.Priority);

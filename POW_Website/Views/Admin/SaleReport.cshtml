@@ -1,4 +1,6 @@
+@using Microsoft.AspNetCore.Authorization
 @model POWStudio.Models.ViewModels.ReportSaleVM
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewBag.Title = "Sale Report";
 }

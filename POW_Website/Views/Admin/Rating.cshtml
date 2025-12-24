@@ -1,5 +1,7 @@
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.IdentityModel.Tokens
 @model POWStudio.Models.ViewModels.RatingAdminVM;
+@attribute [Authorize(Policy = "IsAdmin")]
 @{
     ViewBag.Title = "Rating";
     Layout = "_Layout";
