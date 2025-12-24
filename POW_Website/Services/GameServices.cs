@@ -107,6 +107,11 @@ public class GameService : IGameService
         return mDBContext.Game;
     }
 
+    public IQueryable<Game?> GetSpotlightGames()
+    {
+        return mDBContext.GameSpotlight.OrderByDescending(gs=>gs.Priority).Select(gs => gs.Game);
+    }
+
     public IQueryable<Category> GetAllCategories()
     {
         return mDBContext.Category;

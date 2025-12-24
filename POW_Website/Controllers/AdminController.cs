@@ -29,7 +29,6 @@ public class AdminController : Controller
     {
         try
         {
-            //var models = mDbContext.GameCategory.Include(g => g.Game).Include(g => g.Category).ToList();
             var games = _gameService.GetAll().ToList();
             if (games.Count == 0) ViewBag.Message = "No data in GameCategory.";
             return View(games);
@@ -43,6 +42,51 @@ public class AdminController : Controller
         {
             _logger.LogError(ex, "Unexpected error in Admin()");
             return RedirectToAction("Error", new { message = "Unhandled error." });
+        }
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> UpdateSpotlight(int gameId, bool isActive, int priority)
+    {
+        try
+        {
+            var spotlightItem = await mDbContext.GameSpotlight.FindAsync(gameId);
+
+            if (!isActive)
+            {
+                // Nếu người dùng tắt Spotlight -> Xóa khỏi bảng
+                if (spotlightItem != null)
+                {
+                    mDbContext.GameSpotlight.Remove(spotlightItem);
+                }
+            }
+            else
+            {
+                // Nếu người dùng bật Spotlight
+                if (spotlightItem != null)
+                {
+                    // Đã tồn tại -> Cập nhật Priority
+                    spotlightItem.Priority = priority;
+                    mDbContext.GameSpotlight.Update(spotlightItem);
+                }
+                else
+                {
+                    // Chưa có -> Thêm mới
+                    var newSpotlight = new GameSpotlight
+                    {
+                        GameId = gameId,
+                        Priority = priority
+                    };
+                    await mDbContext.GameSpotlight.AddAsync(newSpotlight);
+                }
+            }
+
+            await mDbContext.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = ex.Message });
         }
     }
     

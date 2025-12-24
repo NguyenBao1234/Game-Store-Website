@@ -108,7 +108,21 @@
         </div>
         
     </div>
+    
+    <div class="container py-4" >
+        <div class="mt-4 p-3 d-flex justify-content-end gap-3 rounded-0" style="background-color: #1a1a1a; border: 1px solid #333;">
+            
+            <a class="btn btn-warning btn-lg rounded-0 fw-bold" 
+               asp-controller="Admin" asp-action="Admin">
+                <i class="bi bi-house"></i> Admin Home
+            </a>
+        </div>
+    </div>
+    
+
 </div>
+
+<div class="vh-100"></div>
 
 <script>
     let currentFilter = 'all';
@@ -170,11 +184,10 @@
         }
 
         function renderAdminHTML(data) {
-            // ... giữ nguyên code vẽ HTML của bạn ...
         }
     });
 
-    // Hàm deleteReview nằm ngoài (Global)
+
     async function deleteReview(reviewId) {
         if (!confirm("Are you sure?")) return;
 
@@ -188,7 +201,6 @@
             });
 
             if (response.ok) {
-                // GỌI HÀM GLOBAL TẠI ĐÂY
                 if (typeof fetchAdminReviewsGlobal === "function") {
                     fetchAdminReviewsGlobal(currentFilter, currentSort);
                 }

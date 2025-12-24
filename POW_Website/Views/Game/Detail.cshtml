@@ -756,47 +756,47 @@ document.addEventListener("DOMContentLoaded", function () {
             fetchAndRender(currentFilter, currentSort);
         });
     });
-});
-async function fetchAndRender(filter, sort) {
-    targetContainer.innerHTML = `
+
+    async function fetchAndRender(filter, sort) {
+        targetContainer.innerHTML = `
             <div class="text-center p-5">
                 <div class="spinner-border text-warning" role="status"></div>
                 <p class="mt-2 text-warning fw-bold" style="letter-spacing: 2px;">LOADING...</p>
             </div>`;
 
-    try {
-        const formData = new FormData();
-        formData.append('gameId', gameId);
-        formData.append('filterBy', filter); // Gửi thêm loại filter (Positive/Negative/All)
-        formData.append('sortBy', sort);     // Gửi loại sort (Date/Helpful/Funny)
+        try {
+            const formData = new FormData();
+            formData.append('gameId', gameId);
+            formData.append('filterBy', filter); // Gửi thêm loại filter (Positive/Negative/All)
+            formData.append('sortBy', sort);     // Gửi loại sort (Date/Helpful/Funny)
 
-        const response = await fetch('/Game/FilterReviews', {
-            method: 'POST',
-            body: formData
-        });
+            const response = await fetch('/Game/FilterReviews', {
+                method: 'POST',
+                body: formData
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            renderHTML(data);
+            if (response.ok) {
+                const data = await response.json();
+                renderHTML(data);
+            }
+        } catch (error) {
+            targetContainer.innerHTML = '<p class="text-danger text-center">Error loading reviews.</p>';
         }
-    } catch (error) {
-        targetContainer.innerHTML = '<p class="text-danger text-center">Error loading reviews.</p>';
-    }
-}
-
-function renderHTML(data) {
-    if (!data || data.length === 0) {
-        targetContainer.innerHTML = '<div class="text-center text-muted p-5">No reviews found for these criteria.</div>';
-        return;
     }
 
-    let html = '';
-    data.forEach(rate => {
-        const color = rate.isRecommended ? '#ffc107' : '#ff4444';
-        const statusText = rate.isRecommended ? 'RECOMMENDED' : 'NOT RECOMMENDED';
-        const icon = rate.isRecommended ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-down-fill';
+    function renderHTML(data) {
+        if (!data || data.length === 0) {
+            targetContainer.innerHTML = '<div class="text-center text-muted p-5">No reviews found for these criteria.</div>';
+            return;
+        }
 
-        html += `
+        let html = '';
+        data.forEach(rate => {
+            const color = rate.isRecommended ? '#ffc107' : '#ff4444';
+            const statusText = rate.isRecommended ? 'RECOMMENDED' : 'NOT RECOMMENDED';
+            const icon = rate.isRecommended ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-down-fill';
+
+            html += `
             <div class="review-card mb-4" style="background: #111; border: 1px solid #333; border-radius: 4px; border-left: 4px solid ${color};">
                 <div class="row g-0">
                     <div class="col-md-3 p-3" style="background: rgba(255, 255, 255, 0.03);">
@@ -835,9 +835,12 @@ function renderHTML(data) {
                     </div>
                 </div>
             </div>`;
-    });
-    targetContainer.innerHTML = html;
-}
+        });
+        targetContainer.innerHTML = html;
+    }
+    
+});
+
 
 async function sendReaction(reviewId, type, buttonElement) {
     const card = buttonElement.closest('.review-card');

@@ -27,7 +27,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var games = _gameService.GetAll();
+        var games = _gameService.GetSpotlightGames();
         return View(games);
     }
 
